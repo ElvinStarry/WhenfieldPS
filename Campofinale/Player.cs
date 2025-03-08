@@ -198,10 +198,21 @@ namespace Campofinale
         }
         public void Initialize()
         {
-            foreach (var item in ResourceManager.characterTable)
+            if (Server.config.serverOptions.defaultCharacters.giveAllCharacters)
             {
-                chars.Add(new Character(roleId,item.Key,20));
+                foreach (var item in ResourceManager.characterTable)
+                {
+                    chars.Add(new Character(roleId, item.Key, Server.config.serverOptions.defaultCharacters.defaultLevel));
+                }
             }
+            else
+            {
+                foreach (var item in Server.config.serverOptions.defaultCharacters.characters)
+                {
+                    chars.Add(new Character(roleId, item.Key, Server.config.serverOptions.defaultCharacters.defaultLevel));
+                }
+            }
+            
             foreach(var item in itemTable)
             {
                 if(item.Value.maxStackCount == -1)
