@@ -29,7 +29,7 @@ New tutorial will be added in the next days on the wiki, in the meanwhile you ca
 
 ## Discord for support
 
-If you want to discuss, ask for support or help with this project, join our [Discord Server](https://discord.gg/gPvqhfdMU6)!
+If you want to discuss, ask for support or help with this project, join our [Discord Server](https://discord.gg/wbqqFYaNzD)!
 
 ## Note
 
