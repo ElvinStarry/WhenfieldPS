@@ -209,7 +209,7 @@ namespace Campofinale
             {
                 foreach (var item in Server.config.serverOptions.defaultCharacters.characters)
                 {
-                    chars.Add(new Character(roleId, item.Key, Server.config.serverOptions.defaultCharacters.defaultLevel));
+                    chars.Add(new Character(roleId, item, Server.config.serverOptions.defaultCharacters.defaultLevel));
                 }
             }
             
