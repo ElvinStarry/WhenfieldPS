@@ -23,6 +23,9 @@ The list of all characters is [here](docs/CharactersTable.md).<br>
 The list of all items is [here](docs/ItemsTable.md).<br>
 
 If you want to open the in-game console, go to `Settings -> Platform & Account -> Account Settings (Access Account button)`. To view available commands, type `help`.
+## Tutorial
+
+New tutorial will be added in the next days on the wiki, in the meanwhile you can ask help in the Discord server
 
 ## Discord for support
 
