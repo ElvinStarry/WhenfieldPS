@@ -26,7 +26,7 @@ namespace Campofinale
         public int defaultSceneNumId = 98;
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public int maxPlayers = 20;
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Include)]
         public CharactersOptions defaultCharacters = new();
         public ServerOptions()
         {
