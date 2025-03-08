@@ -42,6 +42,7 @@ namespace Campofinale.Database
         public List<Scene> scenes = new();
         public Dictionary<int, List<int>> bitsets = new();
         public PlayerSafeZoneInfo savedSafeZone = new();
+        public Gender gender = Gender.GenFemale;
     }
     public class Account
     {
@@ -141,7 +142,8 @@ namespace Campofinale.Database
                 noSpawnAnymore = player.noSpawnAnymore,
                 scenes=player.sceneManager.scenes,
                 bitsets=player.bitsetManager.bitsets,
-                savedSafeZone = player.savedSaveZone
+                savedSafeZone = player.savedSaveZone,
+                gender=player.gender,
             };
             UpsertPlayerData(data);
         }

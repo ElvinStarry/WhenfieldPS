@@ -89,6 +89,7 @@ namespace Campofinale
         public string accountId = "";
         public string nickname = "Endministrator";
         public ulong roleId= 1;
+        public Gender gender=Gender.GenFemale;
         public uint level = 20;
         public uint xp = 0;
         //
@@ -139,7 +140,7 @@ namespace Campofinale
         {
             return chars.FindAll(c=> teams[teamIndex].members.Contains(c.guid));
         }
-        public void Load(string accountId)
+        public bool Load(string accountId)
         {
             this.accountId = accountId;
             PlayerData data = DatabaseManager.db.GetPlayerById(this.accountId);
@@ -161,6 +162,7 @@ namespace Campofinale
                 maxDashEnergy = data.maxDashEnergy;
                 curStamina = data.curStamina;
                 nextRecoverTime=data.nextRecoverTime;
+                if (data.gender > 0) gender = data.gender;
                 LoadCharacters();
                 mails = DatabaseManager.db.LoadMails(roleId);
                 inventoryManager.Load();
@@ -178,6 +180,7 @@ namespace Campofinale
             }
             sceneManager.Load();
             factoryManager.Load();
+            return (data != null);
         }
         public void LoadCharacters()
         {

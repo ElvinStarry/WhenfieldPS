@@ -20,7 +20,7 @@ namespace Campofinale.Packets.Sc
                 Level = client.level,
                 Exp=client.xp,
                 RoleName = client.nickname,
-                Gender = Gender.GenFemale,
+                Gender = client.gender,
                 ShortId="1",
                 
             };

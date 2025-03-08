@@ -65,9 +65,18 @@ namespace Campofinale.Packets.Cs
                     session.Disconnect();
                     return;
                 }
-                session.Load(account.id);
+                bool exist=session.Load(account.id);
                 
                 rsp.Uid = ""+session.accountId;
+                if (!exist)
+                {
+                    rsp.IsFirstLogin = true;
+                    //session.gender = Gender.GenInvalid;
+
+                    //session.Send(ScMsgId.ScLogin, rsp);
+                    //session.Send(new PacketScSyncBaseData(session));
+                    //return;
+                }
                 session.Send(ScMsgId.ScLogin, rsp);
                 
             }
