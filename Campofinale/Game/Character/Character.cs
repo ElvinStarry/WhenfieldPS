@@ -149,6 +149,11 @@ namespace Campofinale.Game.Character
             guid = GetOwner().random.Next();
             this.weaponGuid = GetOwner().inventoryManager.AddWeapon(ResourceManager.charGrowthTable[id].defaultWeaponId, 1).guid;
             this.curHp = CalcAttributes()[AttributeType.MaxHp].val;
+            if (level < 20) breakNode = "";
+            if (level >= 20 && level <= 40) breakNode = "charBreak20";
+            if (level > 40 && level <= 60) breakNode = "charBreak40";
+            if (level > 60 && level <= 70) breakNode = "charBreak60";
+            if (level > 70) breakNode = "charBreak70";
         }
         public int GetSkillMaxLevel()
         {

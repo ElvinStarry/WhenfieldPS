@@ -34,11 +34,11 @@ namespace Campofinale
 
         public class CharactersOptions
         {
-            [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+            [JsonProperty(DefaultValueHandling = DefaultValueHandling.Include)]
             public int defaultLevel = 1;
-            [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+            [JsonProperty(DefaultValueHandling = DefaultValueHandling.Include)]
             public bool giveAllCharacters = true;
-            [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+            [JsonProperty(DefaultValueHandling = DefaultValueHandling.Include)]
             public List<string> characters = new List<string>()
             {
                 "chr_0002_endminm",
