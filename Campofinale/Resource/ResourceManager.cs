@@ -78,6 +78,11 @@ namespace Campofinale.Resource
             return levelDatas.Find(a => a.id == name).idNum;
         }
         public static bool missingResources = false;
+        /// <summary>
+        /// Utility method for read a json file
+        /// </summary>
+        /// <param name="path">The file path</param>
+        /// <returns>Return the file content if the file exist, else it return an empty string</returns>
         public static string ReadJsonFile(string path)
         {
             try

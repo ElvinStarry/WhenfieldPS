@@ -11,7 +11,9 @@ namespace Campofinale.Resource
 {
     public class ResourceLoader
     {
-
+        /// <summary>
+        /// Load table cfg automatically inside ResourceManager fields
+        /// </summary>
         public static void LoadTableCfg()
         {
             var tableCfgTypes = GetAllTableCfgTypes();
@@ -19,7 +21,7 @@ namespace Campofinale.Resource
             foreach (var type in tableCfgTypes)
             {
                 var attr = type.GetCustomAttribute<TableCfgTypeAttribute>();
-                string json = ReadJsonFile(attr.Name);
+                string json = ResourceManager.ReadJsonFile(attr.Name);
                 FieldInfo field = GetResourceField(type);
                 if (field != null && json.Length > 0)
                 {
@@ -49,21 +51,7 @@ namespace Campofinale.Resource
 
             return JsonConvert.DeserializeObject(json, valueType);
         }
-        public static string ReadJsonFile(string path)
-        {
-            try
-            {
-                return File.ReadAllText(path);
-            }
-            catch (Exception e)
-            {
-                Logger.PrintError($"Error occured while loading {path} Err: {e.Message}");
-                ResourceManager.missingResources = true;
-                return "";
-            }
-
-        }
-
+        
         public static List<Type> GetAllTableCfgTypes()
         {
             return Assembly.GetExecutingAssembly()
