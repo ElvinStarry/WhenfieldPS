@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Campofinale.Resource.Table
 {
-    [TableCfgType("TableCfg/BlocDataTable.json", LoadPriority.LOW)]
-    public class BlocDataTable : TableCfgResource
+    [TableCfgType("TableCfg/SystemJumpTable.json", LoadPriority.LOW)]
+    public class SystemJumpTable
     {
-        public string blocId;
+        public int bindSystem;
     }
 }

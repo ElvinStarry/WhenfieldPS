@@ -28,19 +28,19 @@ namespace Campofinale.Resource
     public class ResourceManager
     {
         public static Dictionary<string, SceneAreaTable> sceneAreaTable = new();
-        public static StrIdNumTable strIdNumTable = new StrIdNumTable();
-        public static Dictionary<string, CharacterTable> characterTable = new();
-        public static Dictionary<string, SystemJumpTable> systemJumpTable = new();
+        public static StrIdNumTable strIdNumTable = new StrIdNumTable();//
+        public static Dictionary<string, CharacterTable> characterTable = new(); //
+        public static Dictionary<string, SystemJumpTable> systemJumpTable = new(); //
         public static Dictionary<string, SettlementBasicDataTable> settlementBasicDataTable = new();
         public static Dictionary<string, BlocMissionTable> blocMissionTable = new();
-        public static MissionAreaTable missionAreaTable = new();
+        public static MissionAreaTable missionAreaTable = new(); //
         public static Dictionary<string, DialogTextTable> dialogTextTable = new();
         public static Dictionary<string, GameSystemConfigTable> gameSystemConfigTable = new();
         public static Dictionary<string, WikiGroupTable> wikiGroupTable = new();
         public static Dictionary<string, object> blocUnlockTable = new();
         public static Dictionary<string, GameMechanicTable> gameMechanicTable = new();
         public static Dictionary<string, WeaponBasicTable> weaponBasicTable= new();
-        public static Dictionary<string, BlocDataTable> blocDataTable = new();
+        public static Dictionary<string, BlocDataTable> blocDataTable = new(); //
         public static Dictionary<string, ItemTable> itemTable = new();
         public static Dictionary<string, DomainDataTable> domainDataTable = new();
         public static Dictionary<string, CollectionTable> collectionTable = new();
@@ -59,16 +59,16 @@ namespace Campofinale.Resource
         public static Dictionary<string, SpaceShipCharBehaviourTable> spaceShipCharBehaviourTable = new();
         public static Dictionary<string, SpaceshipRoomInsTable> spaceshipRoomInsTable = new();
         public static Dictionary<string, DungeonTable> dungeonTable = new();
-        public static Dictionary<string, LevelGradeTable> levelGradeTable = new();
+        public static Dictionary<string, LevelGradeTable> levelGradeTable = new(); //
         public static Dictionary<string, RewardTable> rewardTable = new();
         public static Dictionary<string, AdventureTaskTable> adventureTaskTable = new();
-        public static StrIdNumTable dialogIdTable = new();
+        public static DialogIdTable dialogIdTable = new();//
         public static Dictionary<string, LevelShortIdTable> levelShortIdTable = new();
         public static Dictionary<string, FactoryBuildingTable> factoryBuildingTable = new();
         public static Dictionary<string, FacSTTNodeTable> facSTTNodeTable = new();
         public static Dictionary<string, FacSTTLayerTable> facSTTLayerTable = new();
-        public static Dictionary<int, ItemTypeTable> itemTypeTable = new();
-        public static InteractiveTable interactiveTable = new();
+        public static Dictionary<int, ItemTypeTable> itemTypeTable = new(); //
+        public static InteractiveTable interactiveTable = new(); //
         public static List<LevelScene> levelDatas = new();
         public static List<InteractiveData> interactiveData = new();    
 
@@ -104,7 +104,7 @@ namespace Campofinale.Resource
             dialogTextTable = JsonConvert.DeserializeObject<Dictionary<string, DialogTextTable>>(ReadJsonFile("TableCfg/DialogTextTable.json"));
             gameSystemConfigTable = JsonConvert.DeserializeObject<Dictionary<string, GameSystemConfigTable>>(ReadJsonFile("TableCfg/GameSystemConfigTable.json"));
             wikiGroupTable = JsonConvert.DeserializeObject<Dictionary<string, WikiGroupTable>>(ReadJsonFile("TableCfg/WikiGroupTable.json"));
-            dialogIdTable = JsonConvert.DeserializeObject<StrIdNumTable>(ReadJsonFile("Json/GameplayConfig/DialogIdTable.json"));
+            dialogIdTable = JsonConvert.DeserializeObject<DialogIdTable>(ReadJsonFile("Json/GameplayConfig/DialogIdTable.json"));
             blocUnlockTable = JsonConvert.DeserializeObject<Dictionary<string, object>>(ReadJsonFile("TableCfg/BlocUnlockTable.json"));
             gameMechanicTable= JsonConvert.DeserializeObject<Dictionary<string, GameMechanicTable>>(ReadJsonFile("TableCfg/GameMechanicTable.json"));
             weaponBasicTable = JsonConvert.DeserializeObject<Dictionary<string, WeaponBasicTable>>(ReadJsonFile("TableCfg/WeaponBasicTable.json"));
@@ -138,8 +138,9 @@ namespace Campofinale.Resource
             itemTypeTable = JsonConvert.DeserializeObject<Dictionary<int, ItemTypeTable>>(ReadJsonFile("TableCfg/ItemTypeTable.json"));
             interactiveTable = JsonConvert.DeserializeObject<InteractiveTable>(ReadJsonFile("Json/Interactive/InteractiveTable.json"));
             LoadInteractiveData();
-            LoadLevelDatas(); 
-             
+            LoadLevelDatas();
+            ResourceLoader.LoadTableCfg();
+           
             if (missingResources)
             {
                 Logger.PrintWarn("Missing some resources. The gameserver will probably crash.");
@@ -408,15 +409,7 @@ namespace Campofinale.Resource
         {
             public List<WikiGroup> list;
         }
-        public class InteractiveTable
-        {
-            public Dictionary<string, InteractiveTemplate> interactiveDataDict = new();
-
-            public class InteractiveTemplate
-            {
-                public string templateId;
-            }
-        }
+        
         public class WikiGroup
         {
             public string groupId;
@@ -785,19 +778,6 @@ namespace Campofinale.Resource
             public string settlementId;
             public string domainId;
         }
-        public class StrIdNumTable
-        {
-            public StrIdDic skill_group_id;
-            public StrIdDic item_id;
-            public Dictionary<string, int> dialogStrToNum;
-            public StrIdDic chapter_map_id;
-            public StrIdDic char_voice_id;
-            public StrIdDic char_doc_id;
-            public StrIdDic area_id;
-            public StrIdDic map_mark_temp_id;
-            public StrIdDic wiki_id;
-            public StrIdDic client_game_var_string_id;
-        }
         public class GachaCharPoolTable
         {
             public string id;
@@ -825,10 +805,7 @@ namespace Campofinale.Resource
         {
 
         }
-        public class SystemJumpTable
-        {
-            public int bindSystem;
-        }
+        
         public class StrIdDic
         {
             public Dictionary<string, int> dic;
@@ -845,11 +822,7 @@ namespace Campofinale.Resource
             public string enemyId;
             public string templateId;
         }
-        public class ItemTypeTable
-        {
-            public int itemType;
-            public ItemStorageSpace storageSpace;
-        }
+        
         public class ItemTable
         {
             public ItemValuableDepotType valuableTabType;
@@ -921,15 +894,7 @@ namespace Campofinale.Resource
             public string id;
             public int count;
         }
-        public class CharacterTable
-        {
-            public List<Attributes> attributes;
-            public string charId;
-            public int weaponType;
-            public string engName;
-            public int rarity;
-
-        }
+        
         public class Attributes
         {
             public int breakStage;

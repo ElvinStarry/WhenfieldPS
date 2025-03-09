@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace Campofinale.Resource.Table
 {
-    public class MissionAreaTable
+    [TableCfgType("Json/GameplayConfig/MissionAreaTable.json", LoadPriority.LOW)]
+    public class MissionAreaTable : TableCfgResource
     {
         public Dictionary<string, Dictionary<string, object>> m_areas;
     }
