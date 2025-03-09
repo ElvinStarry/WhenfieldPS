@@ -67,6 +67,7 @@ namespace Campofinale.Resource
         public static Dictionary<string, FactoryBuildingTable> factoryBuildingTable = new();
         public static Dictionary<string, FacSTTNodeTable> facSTTNodeTable = new();
         public static Dictionary<string, FacSTTLayerTable> facSTTLayerTable = new();
+        public static Dictionary<int, ItemTypeTable> itemTypeTable = new();
         public static InteractiveTable interactiveTable = new();
         public static List<LevelScene> levelDatas = new();
         public static List<InteractiveData> interactiveData = new();    
@@ -134,6 +135,7 @@ namespace Campofinale.Resource
             factoryBuildingTable = JsonConvert.DeserializeObject<Dictionary<string, FactoryBuildingTable>>(ReadJsonFile("TableCfg/FactoryBuildingTable.json"));
             facSTTNodeTable = JsonConvert.DeserializeObject<Dictionary<string, FacSTTNodeTable>>(ReadJsonFile("TableCfg/FacSTTNodeTable.json"));
             facSTTLayerTable = JsonConvert.DeserializeObject<Dictionary<string, FacSTTLayerTable>>(ReadJsonFile("TableCfg/FacSTTLayerTable.json"));
+            itemTypeTable = JsonConvert.DeserializeObject<Dictionary<int, ItemTypeTable>>(ReadJsonFile("TableCfg/ItemTypeTable.json"));
             interactiveTable = JsonConvert.DeserializeObject<InteractiveTable>(ReadJsonFile("Json/Interactive/InteractiveTable.json"));
             LoadInteractiveData();
             LoadLevelDatas(); 
@@ -843,6 +845,11 @@ namespace Campofinale.Resource
             public string enemyId;
             public string templateId;
         }
+        public class ItemTypeTable
+        {
+            public int itemType;
+            public ItemStorageSpace storageSpace;
+        }
         public class ItemTable
         {
             public ItemValuableDepotType valuableTabType;
@@ -850,6 +857,12 @@ namespace Campofinale.Resource
             public int maxStackCount;
             public bool backpackCanDiscard;
             public string modelKey;
+            public int type;
+
+            public ItemStorageSpace GetStorage()
+            {
+                return ResourceManager.itemTypeTable[type].storageSpace;
+            }
         }
         public class WeaponBasicTable
         {

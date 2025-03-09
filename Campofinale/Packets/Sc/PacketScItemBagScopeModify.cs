@@ -15,6 +15,11 @@ namespace Campofinale.Packets.Sc
 
         public PacketScItemBagScopeModify(Player client, Item item) {
 
+            if (item == null)
+            {
+                SetData(ScMsgId.ScItemBagScopeModify, new ScItemBagScopeModify());
+                return;
+            }
             ScItemBagScopeModify proto = new ScItemBagScopeModify()
             {
                 Depot =

@@ -19,10 +19,10 @@ namespace Campofinale.Packets.Sc
             {
                 Bag = new()
                 {
-                    GridLimit = 30,
+                    GridLimit = client.inventoryManager.items.maxBagSize,
                     Grids =
                     {
-                        new ScdItemGrid()
+                        /*new ScdItemGrid()
                         {
                             GridIndex=0,
                             Count=1,
@@ -79,7 +79,7 @@ namespace Campofinale.Packets.Sc
                                 InstId=300000000004,
 
                             },
-                        }
+                        }*/
                     }
                 },
                 FactoryDepot =
@@ -114,7 +114,17 @@ namespace Campofinale.Packets.Sc
                 proto.Bag = null;
             }
             proto.Depot.Add(i, new ScdItemDepot());
-            List<Item> items = client.inventoryManager.items.FindAll(item => item.ItemType == (ItemValuableDepotType)i);
+            foreach (var item in client.inventoryManager.items.bag)
+            {
+                proto.Bag.Grids.Add(new ScdItemGrid()
+                {
+                    Count=item.Value.amount,
+                    GridIndex=item.Key,
+                    Id=item.Value.id,
+                    Inst=item.Value.ToProto().Inst,
+                });
+            }
+            List<Item> items = client.inventoryManager.items.items.FindAll(item => item.ItemType == (ItemValuableDepotType)i);
             items.ForEach(item =>
             {
                 if (item.InstanceType())

@@ -61,7 +61,7 @@ namespace Campofinale.Game.Character
             }
 
             int updatedItemCount = 0;
-            foreach (var item in target.inventoryManager.items)
+            foreach (var item in target.inventoryManager.items.items)
             {
                 if (item.id.StartsWith("wpn_"))
                 {

@@ -48,6 +48,10 @@ namespace Campofinale.Game.Inventory
             this.level = level;
             guid = GetOwner().random.Next();
         }
+        public ItemStorageSpace StorageSpace()
+        {
+            return ResourceManager.itemTypeTable[GetItemTable().type].storageSpace;
+        }
         public ulong GetDefaultLevel()
         {
             switch (ItemType)
@@ -68,9 +72,14 @@ namespace Campofinale.Game.Inventory
         }
         public ItemValuableDepotType ItemType
         {
-            get{
+            get
+            {
                 return ResourceManager.GetItemTable(id).valuableTabType;
             }
+        }
+        public ItemTable GetItemTable()
+        {
+            return ResourceManager.GetItemTable(id);
         }
         public virtual ScdItemGrid ToProto()
         {

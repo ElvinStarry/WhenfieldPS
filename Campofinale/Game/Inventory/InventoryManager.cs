@@ -15,7 +15,7 @@ namespace Campofinale.Game.Inventory
     public class InventoryManager
     {
         public Player owner;
-        public List<Item> items= new List<Item>();
+        public InventoryList items;
 
         public int item_diamond_amt
         {
@@ -36,12 +36,12 @@ namespace Campofinale.Game.Inventory
 
         public Item GetItemById(string id)
         {
-            return items.Find(i => i.id == id);
+            return items.FindInAll(i => i.id == id);
         }
         public InventoryManager(Player o) {
 
             owner = o;
-        
+            items=new(o);
         }
         public void AddRewards(string rewardTemplateId, Vector3f pos, int sourceType=1)
         {
@@ -110,55 +110,35 @@ namespace Campofinale.Game.Inventory
         }
         public void Save()
         {
-            foreach (Item item in items)
+            foreach (Item item in items.items)
             {
                 DatabaseManager.db.UpsertItem(item);
             }
         }
         public void Load()
         {
-           items = DatabaseManager.db.LoadInventoryItems(owner.roleId);
+           items.items = DatabaseManager.db.LoadInventoryItems(owner.roleId);
         }
-        public Item AddItem(string id, int amt)
+        public Item AddItem(string id, int amt, bool notify=false)
         {
-            Item it = new()
+            Item item = new Item(owner.roleId, id, amt);
+           
+            Item itemNew = items.Add(item);
+            if (notify && itemNew != null)
             {
-                id = id,
-            };
-            if(!it.InstanceType())
-            {
-                
-                Item item = items.Find(i=>i.id == id);
-                if (item != null)
-                {
-                   // Logger.Print(id + ": " + amt+" added to existing");
-                    item.amount += amt;
-                    return item;
-                }
-                else
-                {
-                   // Logger.Print(id + ": " + amt + " added to new");
-                    item = new Item(owner.roleId, id, amt);
-                    items.Add(item);
-                    return item;
-                }
+                this.owner.Send(new PacketScItemBagScopeModify(this.owner, itemNew));
             }
-            else
-            {
-                //Logger.Print(id + ": " + amt + " added to new as instance");
-                Item item = new Item(owner.roleId, id, amt);
-                items.Add(item);
-                return item;
-            } 
+            return item;
         }
         public void RemoveItem(Item item,int amt)
         {
             item.amount -= amt;
             if(item.amount <= 0)
             {
-                items.Remove(item);
+                items.items.Remove(item);
                 DatabaseManager.db.DeleteItem(item);
             }
+            
             this.owner.Send(new PacketScItemBagScopeModify(this.owner, item));
         }
         public bool ConsumeItems(MapField<string, ulong> costItemId2Count)
@@ -211,11 +191,11 @@ namespace Campofinale.Game.Inventory
         public Dictionary<uint, int> GetInventoryChapter(string chapterId)
         {
             Dictionary<uint, int> dir= new Dictionary<uint, int>();
-            List<Item> citems = items.FindAll(i=>!i.InstanceType());
+            /*List<Item> citems = items.FindAll(i=>!i.InstanceType());
             foreach (Item item in citems)
             {
                 dir.Add((uint)ResourceManager.strIdNumTable.item_id.dic[item.id], item.amount);
-            }
+            }*/
 
             return dir;
         }

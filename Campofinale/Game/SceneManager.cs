@@ -379,7 +379,15 @@ namespace Campofinale.Game
                     if (!en.spawned)
                     {
                         en.spawned = true;
-                        GetOwner().Send(new PacketScObjectEnterView(GetOwner(), new List<Entity>() { en }));
+                        try
+                        {
+                            GetOwner().Send(new PacketScObjectEnterView(GetOwner(), new List<Entity>() { en }));
+                        }
+                        catch(Exception e)
+                        {
+
+                        }
+                        
                     }
                 }
                 else
