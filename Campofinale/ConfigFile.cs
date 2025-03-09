@@ -28,12 +28,7 @@ namespace Campofinale
         {
             public int defaultLevel = 1;
             public bool giveAllCharacters = true;
-            public List<string> characters = new List<string>()
-            {
-                "chr_0002_endminm",
-                "chr_0003_endminf",
-                "chr_0015_lifeng"
-            }; //used if giveAllCharacters is false
+            public List<string> characters = new List<string>(); //used if giveAllCharacters is false
 
             public CharactersOptions() { }
         }
