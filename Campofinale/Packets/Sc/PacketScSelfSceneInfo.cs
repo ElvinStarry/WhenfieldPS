@@ -74,7 +74,7 @@ namespace Campofinale.Packets.Sc
                     ScriptId = l.scriptId,
                     IsDone = false,
                     State = 1,
-
+                    
                 };
                 int i = 0;
                 foreach (var item in l.properties)

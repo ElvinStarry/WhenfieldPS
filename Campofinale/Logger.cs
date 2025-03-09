@@ -20,6 +20,10 @@ public static class Logger
         var method = frame?.GetMethod();
         return method?.DeclaringType?.Name ?? "Server";
     }
+    /// <summary>
+    /// Print a text in the console
+    /// </summary>
+    /// <param name="text"></param>
     public static void Print(string text)
     {
         string className = GetCallingClassName();
@@ -27,6 +31,10 @@ public static class Logger
         string prefix = "<" + "INFO".Pastel("03fcce") + $":{className.Pastel("999")}>";
         Console.WriteLine($"{prefix} " + text);
     }
+    /// <summary>
+    /// Print a text in the console as Error
+    /// </summary>
+    /// <param name="text"></param>
     public static void PrintError(string text)
     {
         string className = GetCallingClassName();
@@ -34,6 +42,10 @@ public static class Logger
         string prefix = "<" + "ERROR".Pastel("eb4034") + $":{className.Pastel("999")}>";
         Console.WriteLine($"{prefix} " + text.Pastel("917e7e"));
     }
+    /// <summary>
+    /// Print a text in the console as a Warn
+    /// </summary>
+    /// <param name="text"></param>
     public static void PrintWarn(string text)
     {
         string className = GetCallingClassName();
@@ -54,7 +66,10 @@ public static class Logger
         Logger.hideLogs = hideLogs;
         logWriter = new StreamWriter("latest.log", false);
     }
-
+    /// <summary>
+    /// Log a message
+    /// </summary>
+    /// <param name="message"></param>
     public static void Log(string message)
     {
         if (!hideLogs)

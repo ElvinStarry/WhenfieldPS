@@ -61,6 +61,11 @@ namespace Campofinale.Network
             byte networkValue = buf[index];
             return networkValue;
         }
+        /// <summary>
+        /// Parse the body using a specific IMessage proto class
+        /// </summary>
+        /// <typeparam name="TBody"></typeparam>
+        /// <returns></returns>
         public TBody DecodeBody<TBody>() where TBody : IMessage<TBody>, new()
         {
             return new MessageParser<TBody>(() => new()).ParseFrom(finishedBody);
@@ -76,35 +81,10 @@ namespace Campofinale.Network
 
             Buffer.BlockCopy(source, 0, destination, offset, source.Length);
         }
-        public static byte[] ToByteArray(IntPtr ptr, int length)
-        {
-            if (ptr == IntPtr.Zero)
-            {
-                throw new ArgumentException("Pointer cannot be null", nameof(ptr));
-            }
-
-            byte[] byteArray = new byte[length];
-            Marshal.Copy(ptr, byteArray, 0, length);
-            return byteArray;
-        }
-        public static IntPtr ByteArrayToIntPtr(byte[] data)
-        {
-            if (data == null) throw new ArgumentNullException(nameof(data));
-
-            // Allocate unmanaged memory
-            IntPtr ptr = Marshal.AllocHGlobal(data.Length);
-
-            // Copy the byte array to the unmanaged memory
-            Marshal.Copy(data, 0, ptr, data.Length);
-
-            return ptr;
-        }
         public static byte[] EncryptWithPublicKey(byte[] data, string publicKey)
         {
-            // Crea un oggetto RSA
             using (RSA rsa = RSA.Create())
             {
-
                 publicKey = publicKey.Replace("-----BEGIN PUBLIC KEY-----", "");
                 publicKey = publicKey.Replace("\r", "");
                 publicKey = publicKey.Replace("\n", "");
@@ -112,24 +92,44 @@ namespace Campofinale.Network
                 publicKey = publicKey.Trim();
                 Logger.Print(publicKey);
                 byte[] publicKey_ = Convert.FromBase64String(publicKey);
-                // Importa la chiave pubblica
                 rsa.ImportSubjectPublicKeyInfo(publicKey_, out _);
-
-                // Crittografa i dati
                 return rsa.Encrypt(data, RSAEncryptionPadding.OaepSHA256);
             }
         }
+        /// <summary>
+        /// Set the data of the packet with the Message Id and the body
+        /// </summary>
+        /// <param name="msgId"></param>
+        /// <param name="body">The proto message</param>
+        /// <returns>The current Packet</returns>
         public Packet SetData(ScMsgId msgId, IMessage body)
         {
             set_body = body;
             cmdId = (int)msgId;
             return this;
         }
+        /// <summary>
+        /// Encode the packet using the Packet class
+        /// </summary>
+        /// <param name="packet">The packet</param>
+        /// <param name="seq">the sequence id</param>
+        /// <param name="totalPackCount">the pack count</param>
+        /// <param name="currentPackIndex"></param>
+        /// <returns></returns>
         public static byte[] EncodePacket(Packet packet,ulong seq = 0, uint totalPackCount = 1, uint currentPackIndex = 0)
         {
             return EncodePacket(packet.cmdId,packet.set_body,seq, totalPackCount, currentPackIndex);
         }
         public static ulong seqNext = 1;
+        /// <summary>
+        /// Encode the packet using the msgId and the body
+        /// </summary>
+        /// <param name="msgId"></param>
+        /// <param name="body"></param>
+        /// <param name="seqNext_"></param>
+        /// <param name="totalPackCount"></param>
+        /// <param name="currentPackIndex"></param>
+        /// <returns></returns>
         public static byte[] EncodePacket(int msgId, IMessage body, ulong seqNext_ = 0, uint totalPackCount=1,uint currentPackIndex=0)
         {
             if (seqNext_ == 0)
@@ -149,6 +149,15 @@ namespace Campofinale.Network
 
             return data;
         }
+        /// <summary>
+        /// Encode the packet with msgId and body as byte array
+        /// </summary>
+        /// <param name="msgId"></param>
+        /// <param name="body"></param>
+        /// <param name="seqNext_"></param>
+        /// <param name="totalPackCount"></param>
+        /// <param name="currentPackIndex"></param>
+        /// <returns></returns>
         public static byte[] EncodePacket(int msgId, byte[] body, ulong seqNext_ = 0, uint totalPackCount = 1, uint currentPackIndex = 0)
         {
             if (seqNext_ == 0)
@@ -172,6 +181,12 @@ namespace Campofinale.Network
 
             return data;
         }
+        /// <summary>
+        /// Read the byteArray as a valid packet
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="byteArray"></param>
+        /// <returns>The decoded packet</returns>
         public static Packet Read(Player client,byte[] byteArray)
         {
             byte headLength = GetByte(byteArray, 0);

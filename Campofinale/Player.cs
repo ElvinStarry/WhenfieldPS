@@ -186,12 +186,20 @@ namespace Campofinale
         {
             chars = DatabaseManager.db.LoadCharacters(roleId);
         }
-        //Added in 1.0.7
+        /// <summary>
+        /// Get the character using the guid *Added in 1.0.7*
+        /// </summary>
+        /// <param name="guid"></param>
+        /// <returns></returns>
         public Character GetCharacter(ulong guid)
         {
             return chars.Find(c => c.guid == guid);
         }
-        
+        /// <summary>
+        /// Get the character using the template id
+        /// </summary>
+        /// <param name="templateId"></param>
+        /// <returns>Character</returns>
         public Character GetCharacter(string templateId)
         {
             return chars.Find(c => c.id==templateId);
