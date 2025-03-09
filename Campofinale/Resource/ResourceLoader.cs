@@ -37,8 +37,8 @@ namespace Campofinale.Resource
 
                 if (genericTypeDef == typeof(Dictionary<,>))
                 {
-                    var keyType = fieldType.GetGenericArguments()[0]; // String
-                    var valType = fieldType.GetGenericArguments()[1]; // Il tipo desiderato
+                    var keyType = fieldType.GetGenericArguments()[0];
+                    var valType = fieldType.GetGenericArguments()[1];
                     return JsonConvert.DeserializeObject(json, typeof(Dictionary<,>).MakeGenericType(keyType, valType));
                 }
                 else if (genericTypeDef == typeof(List<>))
@@ -47,7 +47,6 @@ namespace Campofinale.Resource
                 }
             }
 
-            // Oggetto singolo
             return JsonConvert.DeserializeObject(json, valueType);
         }
         public static string ReadJsonFile(string path)
@@ -85,16 +84,14 @@ namespace Campofinale.Resource
                 {
                     var genericTypeDef = fieldType.GetGenericTypeDefinition();
 
-                    // Controlla se è un Dictionary<TKey, TValue> e se TValue è del tipo richiesto
                     if (genericTypeDef == typeof(Dictionary<,>))
                     {
-                        var valueType = fieldType.GetGenericArguments()[1]; // Ottiene TValue
+                        var valueType = fieldType.GetGenericArguments()[1];
                         if (valueType == type)
                         {
                             return field;
                         }
                     }
-                    // Controlla se è una List<T> e se T è del tipo richiesto
                     else if (genericTypeDef == typeof(List<>) && fieldType.GetGenericArguments()[0] == type)
                     {
                         return field;
@@ -102,7 +99,6 @@ namespace Campofinale.Resource
                 }
                 else
                 {
-                    // Se il campo non è una collezione ma è direttamente del tipo richiesto
                     if (fieldType == type)
                     {
                         return field;
@@ -110,7 +106,7 @@ namespace Campofinale.Resource
                 }
             }
 
-            return null; // Nessun campo trovato
+            return null;
         }
     }
 }
