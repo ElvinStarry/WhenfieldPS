@@ -68,6 +68,8 @@ namespace Campofinale.Resource
         public static Dictionary<string, FacSTTNodeTable> facSTTNodeTable = new();
         public static Dictionary<string, FacSTTLayerTable> facSTTLayerTable = new();
         public static Dictionary<int, ItemTypeTable> itemTypeTable = new(); //
+        public static Dictionary<string, SNSChatTable> snsChatTable = new();//
+        public static Dictionary<string, GiftItemTable> giftItemTable = new();
         public static InteractiveTable interactiveTable = new(); //
         public static List<LevelScene> levelDatas = new();
         public static List<InteractiveData> interactiveData = new();    

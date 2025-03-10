@@ -46,6 +46,7 @@ namespace Campofinale.Game.Spaceship
                 IsWorking = isWorking,
                 PhysicalStrength = physicalStrength,
                 StationedRoomId = stationedRoomId,
+                
                 Skills =
                 {
                     new ScdSpaceshipCharSkill()

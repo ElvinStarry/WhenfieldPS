@@ -241,7 +241,7 @@ namespace Campofinale.Packets.Cs
             session.Send(new PacketScSpaceshipSync(session));
             session.Send(new PacketScSyncFullDungeonStatus(session));
             session.Send(new PacketScActivitySync(session));
-            
+            session.Send(new PacketScSnsGetChatList(session));
             session.Send(ScMsgId.ScSyncFullDataEnd, new ScSyncFullDataEnd());
             session.EnterScene();
             session.Initialized = true;
