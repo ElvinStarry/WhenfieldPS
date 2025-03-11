@@ -1,4 +1,5 @@
-﻿using Campofinale.Packets.Sc;
+﻿using Campofinale.Database;
+using Campofinale.Packets.Sc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -142,7 +143,27 @@ namespace Campofinale.Game.Inventory
             
             return null;
         }
+        public List<Item> FindAll(Predicate<Item> match, FindType findType = FindType.Items)
+        {
+            switch (findType)
+            {
+                case FindType.Items:
+                    return items.FindAll(match);
+                    break;
+                case FindType.FactoryDepots:
+                    //TODO
+                    break;
+                case FindType.Bag:
+                    var itemB = bag.Values.ToList().FindAll(match);
+                    if (itemB != null)
+                    {
+                        return itemB;
+                    }
+                    break;
+            }
 
+            return null;
+        }
         ///<summary>
         ///Add an item to the inventory (or increment it's amount if it's not an instance type, else add a new one or add to bag if it's a Factory item
         ///</summary>
@@ -156,6 +177,7 @@ namespace Campofinale.Game.Inventory
             if (item.InstanceType())
             {
                 items.Add(item);
+                DatabaseManager.db.UpsertItem(item);
                 return item;
             }
             else
@@ -164,17 +186,92 @@ namespace Campofinale.Game.Inventory
                 if (exist != null)
                 {
                     exist.amount += item.amount;
+                    DatabaseManager.db.UpsertItem(exist);
                     return exist;
                 }
                 else
                 {
                     items.Add(item);
+                    DatabaseManager.db.UpsertItem(item);
                     return item;
                 }
             }
 
         }
+        /// <summary>
+        /// Get the item amount from all depots
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public int GetItemAmount(string id)
+        {
+            int amt = 0;
+            Item item=Find(i=>i.id==id);
+            if (item != null)
+            {
+                amt += item.amount;
+            }
+            List<Item> bagItems = FindAll(i=>i.id==id,FindType.Bag);
+            foreach (Item bagItem in bagItems)
+            {
+                amt += bagItem.amount;
+            }
+            
+            return amt;
+        }
+        public void Remove(Item item)
+        {
+            if (items.Remove(item))
+            {
+                this.player.Send(new PacketScItemBagScopeModify(this.player, item));
+                DatabaseManager.db.DeleteItem(item);
+            }
+            else if (RemoveFromBag(item))
+            {
+                UpdateBagInventoryPacket();
+            }
+        }
 
-       
+        private bool RemoveFromBag(Item item)
+        {
+            for (int i = 0; i < maxBagSize; i++)
+            {
+                Item bagItem = null;
+                if (bag.ContainsKey(i))
+                {
+                    bagItem = bag[i];
+                    if (bagItem.guid == item.guid)
+                    {
+                        bag.Remove(i);
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        /// <summary>
+        /// Move item from bag grid to another position
+        /// </summary>
+        /// <param name="fromGrid"></param>
+        /// <param name="toGrid"></param>
+        public void MoveBagItem(int fromGrid, int toGrid)
+        {
+            Item item1 = bag[fromGrid];
+            Item item2 = null;
+            if (bag.ContainsKey(toGrid))
+            {
+                item2 = bag[toGrid];
+            }
+            bag[toGrid] = item1;
+            if (item2 != null)
+            {
+                bag[fromGrid] = item2;
+            }
+            else
+            {
+                bag.Remove(fromGrid);
+            }
+            UpdateBagInventoryPacket();
+        }
     }
 }

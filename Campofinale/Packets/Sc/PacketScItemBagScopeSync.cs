@@ -114,6 +114,7 @@ namespace Campofinale.Packets.Sc
                 proto.Bag = null;
             }
             proto.Depot.Add(i, new ScdItemDepot());
+            if(proto.Bag!=null)
             foreach (var item in client.inventoryManager.items.bag)
             {
                 proto.Bag.Grids.Add(new ScdItemGrid()

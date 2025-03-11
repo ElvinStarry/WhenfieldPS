@@ -26,6 +26,7 @@ namespace Campofinale.Packets.Cs
             if (character != null)
             {
                 character.potential=req.Level;
+                
                 //TODO consume Item ID
 
                 ScCharPotentialUnlock unlock = new()

@@ -163,9 +163,11 @@ namespace Campofinale
                 curStamina = data.curStamina;
                 nextRecoverTime=data.nextRecoverTime;
                 if (data.gender > 0) gender = data.gender;
+                
                 LoadCharacters();
                 mails = DatabaseManager.db.LoadMails(roleId);
                 inventoryManager.Load();
+                if (data.bag != null) inventoryManager.items.bag = data.bag;
                 spaceshipManager.Load();
                 if (data.scenes != null)
                 {

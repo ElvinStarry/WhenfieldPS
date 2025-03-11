@@ -43,6 +43,7 @@ namespace Campofinale.Database
         public Dictionary<int, List<int>> bitsets = new();
         public PlayerSafeZoneInfo savedSafeZone = new();
         public Gender gender = Gender.GenFemale;
+        public Dictionary<int, Item> bag = new();
     }
     public class Account
     {
@@ -144,6 +145,7 @@ namespace Campofinale.Database
                 bitsets=player.bitsetManager.bitsets,
                 savedSafeZone = player.savedSaveZone,
                 gender=player.gender,
+                bag=player.inventoryManager.items.bag
             };
             UpsertPlayerData(data);
         }

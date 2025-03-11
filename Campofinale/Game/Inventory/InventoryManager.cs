@@ -5,6 +5,7 @@ using Google.Protobuf.Collections;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -135,11 +136,47 @@ namespace Campofinale.Game.Inventory
             item.amount -= amt;
             if(item.amount <= 0)
             {
-                items.items.Remove(item);
-                DatabaseManager.db.DeleteItem(item);
+                items.Remove(item);
             }
-            
-            this.owner.Send(new PacketScItemBagScopeModify(this.owner, item));
+            else
+            {
+                this.owner.Send(new PacketScItemBagScopeModify(this.owner, item));
+                items.UpdateBagInventoryPacket();
+            }
+        }
+        
+        public bool ConsumeItem(string id, int amt)
+        {
+            Item item=items.FindInAll(i=>i.id== id);
+            if (item != null)
+            {
+                if(item.amount >= amt)
+                {
+                    item.amount -= amt;
+                    
+                    if(item.amount < 1)
+                    {
+                        items.Remove(item);
+                    }
+                    else
+                    {
+                        this.owner.Send(new PacketScItemBagScopeModify(this.owner, item));
+                        items.UpdateBagInventoryPacket();
+                    }
+                    return true;
+                }
+                else
+                {
+                    int toConsume = amt - item.amount;
+                    item.amount = 0;
+                    items.Remove(item);
+                    return ConsumeItem(id, toConsume);
+                }
+            }
+            else
+            {
+                return false;
+            }
         }
         public bool ConsumeItems(MapField<string, ulong> costItemId2Count)
         {
@@ -159,16 +196,8 @@ namespace Campofinale.Game.Inventory
             bool found = true;
             foreach (ItemInfo item in items)
             {
-                Item i= GetItemById(item.ResId);
-                if (i != null)
-                {
-                    if(i.amount < item.ResCount)
-                    {
-                        found = false;
-                        break;
-                    }
-                }
-                else
+                int amount = this.items.GetItemAmount(item.ResId);
+                if(amount < item.ResCount)
                 {
                     found = false;
                     break;
@@ -176,14 +205,7 @@ namespace Campofinale.Game.Inventory
             }
             foreach (ItemInfo item in items)
             {
-                Item i = GetItemById(item.ResId);
-                if (i != null)
-                {
-                    if (i.amount >= item.ResCount)
-                    {
-                       RemoveItem(i,item.ResCount);
-                    }
-                }
+                ConsumeItem(item.ResId, item.ResCount);
             }
             return found;
         }
@@ -198,6 +220,30 @@ namespace Campofinale.Game.Inventory
             }*/
 
             return dir;
+        }
+
+        public void DropItemsBag(CsItemBagAbandonInBag req)
+        {
+           if(req.TargetObjectId == 0)
+           {
+                foreach (var i in req.GridCut)
+                {
+                    Item item = items.bag[i.Key];
+                    item.amount -= i.Value;
+                    if(item.amount <= 0)
+                    {
+                        items.bag.Remove(i.Key);
+                    }
+                    owner.sceneManager.CreateDrop(owner.position, new RewardTable.ItemBundle()
+                    {
+                        count=i.Value,
+                        id=item.id,
+                    });
+                    
+                }
+                
+           }
+            items.UpdateBagInventoryPacket();
         }
     }
 }
