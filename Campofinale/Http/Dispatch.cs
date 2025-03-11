@@ -68,7 +68,7 @@ namespace Campofinale.Http
         [StaticRoute(HttpServerLite.HttpMethod.GET, "/serverStatus")]
         public static async Task serverStatus(HttpContext ctx)
         {
-            string resp = "{\"maxPlayers\":" + Server.config.serverOptions.maxPlayers + ", \"players\":" + Server.clients.Count + ", \"status\":\"Online\"}";
+            string resp = "{\"maxPlayers\":" + Server.config.serverOptions.maxPlayers + ", \"players\":" + Server.clients.Count + ", \"status\":\"Online\", \"gameVersion\":" + GameConstants.GAME_VERSION + ", \"serverVersion\":" + Server.ServerVersion + "}";
 
             ctx.Response.StatusCode = 200;
             ctx.Response.ContentLength = resp.Length;
