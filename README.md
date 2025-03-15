@@ -3,7 +3,7 @@
 
 Campofinale is a experimental server implementation for a certain factory building game.
 
-> **NOTICE:** Our old Discord server was raided (all members were removed), please rejoin our community using this new invite link: https://discord.gg/eGGXymVd4K
+> **NOTICE: Our old Discord server was raided (all members were removed), please rejoin our community using this new invite link: https://discord.gg/eGGXymVd4K**
 
 ## Current Features
 
