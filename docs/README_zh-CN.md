@@ -36,7 +36,7 @@ Campofinale 是为某个工厂建造游戏提供的实验性本地服务器实�
 
 ## 在Discord上寻求帮助
 
-如果你想讨论、寻求帮助或者协助我们完善和改进此项目，请加入我们的[Discord服务器](https://discord.gg/wbqqFYaNzD)!
+如果你想讨论、寻求帮助或者协助我们完善和改进此项目，请加入我们的[Discord服务器](https://discord.gg/eGGXymVd4K)!
 
 ## 附录
 
