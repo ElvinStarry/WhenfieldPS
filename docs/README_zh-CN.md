@@ -5,6 +5,8 @@
 
 Campofinale 是为某个工厂建造游戏提供的实验性本地服务器实现
 
+> **我们的旧 Discord 服务器遭到了袭击（攻击者踢走了所有成员），请使用以下新邀请链接重新加入我们的社区：[https://discord.gg/eGGXymVd4K](https://discord.gg/eGGXymVd4K)**
+
 ## 当前功能
 
 * 登录
