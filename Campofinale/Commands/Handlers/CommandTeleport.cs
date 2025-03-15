@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using static Campofinale.Resource.ResourceManager;
 using Campofinale.Packets.Sc;
 using MongoDB.Bson;
+using System.Globalization;
 
 namespace Campofinale.Commands.Handlers
 {
@@ -21,17 +22,27 @@ namespace Campofinale.Commands.Handlers
                 return;
             }
 
-            float x, y, z;
+            for (int i=0; i < args.Length; i++) 
+            {
+                args[i] = args[i].Replace(",", ".");
+            }
 
-            x = args[0] == "~" ? target.position.x : float.Parse(args[0]);
-            y = args[1] == "~" ? target.position.y : float.Parse(args[1]);
-            z = args[2] == "~" ? target.position.z : float.Parse(args[2]);
+            float[] pos = [target.position.x, target.position.y, target.position.z];
+
+            for (int i=0; i < args.Length; i++) {
+                if(args[i] == "~") continue;
+                
+                float curPos = pos[i];
+                pos[i] = float.Parse(args[i].StartsWith("--") ? args[i].Trim('-') : args[i], CultureInfo.InvariantCulture);
+                if (args[i].StartsWith('+')) pos[i] += curPos;
+                if (args[i].StartsWith("--")) pos[i] = curPos - pos[i];
+            }
 
             Vector3f position = new Vector3f(new Vector()
             {
-                X = x,
-                Y = y,
-                Z = z
+                X = pos[0],
+                Y = pos[1],
+                Z = pos[2]
             });
 
             target.position = position;

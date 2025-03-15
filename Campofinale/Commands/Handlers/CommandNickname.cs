@@ -19,11 +19,6 @@ namespace Campofinale.Commands.Handlers
                 return;
             }
 
-            for (int i=0; i < args.Length; i++) 
-            {
-                args[i] = Uri.UnescapeDataString(args[i]);
-            }
-
             target.nickname = string.Join(" ", args);
             target.Save();
             target.Send(new PacketScSetName(target, target.nickname));

@@ -30,7 +30,8 @@ namespace Campofinale.Http
         [StaticRoute(HttpServerLite.HttpMethod.GET, "/pcSdk/console")]
         public static async Task ConsoleResponce(HttpContext ctx)
         {
-            string cmd = ctx.Request.Query.Elements["command"].Replace("+"," ");
+            string encodedCmd = Uri.UnescapeDataString(ctx.Request.Query.Elements["command"]);
+            string cmd = Encoding.UTF8.GetString(Convert.FromBase64String(encodedCmd));
             string token = ctx.Request.Query.Elements["token"];
             string message = "";
             string[] split = cmd.Split(" ");
