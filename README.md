@@ -1,9 +1,9 @@
 # Campofinale
 [EN](README.md) | [IT](docs/README_it-IT.md) | [RU](docs/README_ru-RU.md) | [CN](docs/README_zh-CN.md) | [NL](docs/README_nl-NL.md)
 
-![Logo]()
-
 Campofinale is a experimental server implementation for a certain factory building game.
+
+> **NOTICE:** Our old Discord server was raided (all members were removed), please rejoin our community using this new invite link: https://discord.gg/eGGXymVd4K
 
 ## Current Features
 
@@ -29,7 +29,7 @@ New tutorial will be added in the next days on the wiki, in the meanwhile you ca
 
 ## Discord for support
 
-If you want to discuss, ask for support or help with this project, join our [Discord Server](https://discord.gg/wbqqFYaNzD)!
+If you want to discuss, ask for support or help with this project, join our [Discord Server](https://discord.gg/eGGXymVd4K)!
 
 ## Note
 
