@@ -176,7 +176,6 @@ namespace Campofinale.Game.Gacha
                     RewardIds =
                     {
                         $"reward_{transaction.rarity}starChar_weaponCoin",
-                       
                     },
                     
                 });
