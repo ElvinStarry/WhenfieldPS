@@ -1,11 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MongoDB.Bson;
 using static Campofinale.Resource.ResourceManager;
-using Newtonsoft.Json;
 using Campofinale.Game.Character;
 using Campofinale.Database;
 using Campofinale.Game.Inventory;

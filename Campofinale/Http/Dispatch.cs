@@ -1,18 +1,5 @@
-﻿using Campofinale.Database;
-using Campofinale.Game;
-using Campofinale.Game.Gacha;
-using Google.Protobuf.WellKnownTypes;
+﻿using Campofinale.Game;
 using HttpServerLite;
-using MongoDB.Bson.IO;
-using SQLite;
-using SQLiteNetExtensions.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Channels;
-using System.Threading.Tasks;
-using static Campofinale.Game.Gacha.GachaManager;
 
 namespace Campofinale.Http
 {

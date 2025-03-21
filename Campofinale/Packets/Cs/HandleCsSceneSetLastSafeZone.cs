@@ -1,16 +1,5 @@
-﻿using Campofinale.Game;
-using Campofinale.Network;
+﻿using Campofinale.Network;
 using Campofinale.Protocol;
-using Google.Protobuf;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Sockets;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-using static Campofinale.Resource.ResourceManager;
 
 namespace Campofinale.Packets.Cs
 {

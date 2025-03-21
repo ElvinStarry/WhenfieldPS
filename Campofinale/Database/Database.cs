@@ -3,19 +3,12 @@ using Campofinale.Game.Character;
 using Campofinale.Game.Gacha;
 using Campofinale.Game.Inventory;
 using Campofinale.Game.Spaceship;
-using Campofinale.Resource;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
-using static Campofinale.Player;
 using static Campofinale.Resource.ResourceManager;
-using static SQLite.SQLite3;
 
 namespace Campofinale.Database
 {

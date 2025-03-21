@@ -1,12 +1,6 @@
-﻿using Campofinale.Game.Entities;
-using Campofinale.Packets.Sc;
+﻿using Campofinale.Packets.Sc;
 using Campofinale.Protocol;
 using Campofinale.Resource;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Campofinale.Commands.Handlers
 {

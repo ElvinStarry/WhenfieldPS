@@ -1,16 +1,6 @@
-﻿
-using Campofinale.Network;
+﻿using Campofinale.Network;
 using Campofinale.Protocol;
 using Google.Protobuf;
-using Google.Protobuf.Collections;
-using Pastel;
-using SQLite;
-using SQLiteNetExtensions.Attributes;
-using System.Drawing;
-using System.Linq;
-using System.Numerics;
-using MongoDB.Bson.Serialization.Attributes;
-using System.Reflection;
 using System.Net.Sockets;
 using Campofinale.Packets.Sc;
 using Campofinale.Game.Character;

@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Campofinale.Database;
 using Campofinale.Game.Character;
 using Campofinale.Packets.Sc;

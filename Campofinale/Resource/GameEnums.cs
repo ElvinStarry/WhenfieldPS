@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Campofinale.Resource
+﻿namespace Campofinale.Resource
 {
     public enum MissionState : int// TypeDefIndex: 33630
     {

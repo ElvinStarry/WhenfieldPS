@@ -7,7 +7,6 @@
     using System.Collections.Immutable;
     using System.Linq.Expressions;
     using System.Reflection;
-    using System.Net.Sockets;
     using Campofinale.Protocol;
     using Campofinale.Network;
 

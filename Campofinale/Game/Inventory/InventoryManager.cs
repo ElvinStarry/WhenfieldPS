@@ -1,14 +1,6 @@
 ﻿using Campofinale.Database;
 using Campofinale.Packets.Sc;
-using Campofinale.Resource;
 using Google.Protobuf.Collections;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Metadata;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using static Campofinale.Resource.ResourceManager;
 
 namespace Campofinale.Game.Inventory

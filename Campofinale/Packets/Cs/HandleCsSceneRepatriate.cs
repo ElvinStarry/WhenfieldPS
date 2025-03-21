@@ -1,5 +1,4 @@
 ﻿using Campofinale.Network;
-using Campofinale.Packets.Sc;
 using Campofinale.Protocol;
 
 namespace Campofinale.Packets.Cs

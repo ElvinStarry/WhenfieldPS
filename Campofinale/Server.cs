@@ -1,29 +1,13 @@
-﻿
-using BeyondTools.VFS.Crypto;
-using Campofinale.Commands;
+﻿using Campofinale.Commands;
 using Campofinale.Database;
 using Campofinale.Game;
 using Campofinale.Http;
-using Campofinale.Network;
 using Campofinale.Protocol;
 using Campofinale.Resource;
-using Google.Protobuf;
-using Newtonsoft.Json;
 using Pastel;
-using SQLite;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using static Campofinale.Http.Dispatch;
-
 
 namespace Campofinale
 {

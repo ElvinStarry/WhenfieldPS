@@ -1,12 +1,6 @@
 ﻿using Campofinale.Database;
 using Campofinale.Protocol;
 using Campofinale.Resource;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using static Campofinale.Resource.ResourceManager;
 
 namespace Campofinale.Game.Gacha

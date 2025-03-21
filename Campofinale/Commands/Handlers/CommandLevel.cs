@@ -1,5 +1,4 @@
 ﻿using Campofinale.Commands;
-using Campofinale.Database;
 using Campofinale.Packets.Sc;
 using Campofinale.Resource;
 

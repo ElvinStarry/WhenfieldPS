@@ -3,12 +3,6 @@ using Campofinale.Packets.Sc;
 using Campofinale.Protocol;
 using Campofinale.Resource;
 using MongoDB.Bson.Serialization.Attributes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 using static Campofinale.Resource.ResourceManager;
 
 namespace Campofinale.Game.Factory

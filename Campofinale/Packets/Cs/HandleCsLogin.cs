@@ -7,7 +7,6 @@ using Campofinale.Protocol;
 using Campofinale.Resource;
 using System.Security.Cryptography;
 using static Campofinale.Resource.ResourceManager;
-using System.Reflection;
 
 namespace Campofinale.Packets.Cs
 {

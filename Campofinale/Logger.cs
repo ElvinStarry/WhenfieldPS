@@ -1,9 +1,5 @@
-using Campofinale;
 using Pastel;
-using System;
 using System.Diagnostics;
-using System.IO;
-using static System.Net.Mime.MediaTypeNames;
 public static class Logger
 {
 
