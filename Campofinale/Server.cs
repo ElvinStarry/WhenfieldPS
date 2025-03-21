@@ -8,6 +8,8 @@ using Pastel;
 using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
+using System.Runtime.InteropServices;
+using System.ServiceProcess;
 
 namespace Campofinale
 {
@@ -79,6 +81,7 @@ namespace Campofinale
             showLogs = !hideLogs;
             Logger.Print($"Logs are {(showLogs ? "enabled" : "disabled")}");
             Server.config = config;
+            StartDBService();
             DatabaseManager.Init();
             ResourceManager.Init();
             new Thread(new ThreadStart(DispatchServer)).Start();
@@ -175,6 +178,28 @@ namespace Campofinale
                 player.Save();
                 player.Kick(CODE.ErrServerClosed);
             }
+        }
+        private static void StartDBService()
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                try
+                {
+                    string mongodbService = "MongoDB";
+                    using (ServiceController service = new ServiceController(mongodbService))
+                    {
+                        if (service.Status != ServiceControllerStatus.Running)
+                        {
+                            Logger.Print($"Starting {mongodbService} service...");
+                            service.Start();
+                            service.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromSeconds(30));
+                            Logger.Print($"Started {mongodbService} service");
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Logger.PrintError($"Failed to Start MongoDB service: {e}");
+                }
         }
     }
 }
