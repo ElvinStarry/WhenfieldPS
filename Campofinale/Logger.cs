@@ -51,7 +51,9 @@ public static class Logger
     }
     public static string GetColor(string c)
     {
-        if (ClassColors.ContainsKey(c)) return ClassColors[c];
+        if (ClassColors.ContainsKey(c))
+            return ClassColors[c];
+        
         return "999";
     }
     private static StreamWriter logWriter;
@@ -60,26 +62,26 @@ public static class Logger
     public static void Initialize(bool hideLogs = false)
     {
         Logger.hideLogs = hideLogs;
+        
         logWriter = new StreamWriter("latest.log", false);
+        logWriter.AutoFlush = true;
     }
     /// <summary>
     /// Log a message
     /// </summary>
     /// <param name="message"></param>
-    public static void Log(string message)
+    private static void Log(string message)
     {
-        if (!hideLogs)
+        if(hideLogs)
+            return;
+        
+        try
         {
-            try
-            {
-                logWriter.WriteLine($"{DateTime.Now}: {message}");
-                logWriter.Flush();
-            }
-            catch(Exception e)
-            {
+            logWriter.WriteLine($"{DateTime.Now}: {message}");
+        }
+        catch(Exception e)
+        {
 
-            }
-           
         }
     }
 
