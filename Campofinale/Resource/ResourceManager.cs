@@ -37,15 +37,19 @@ namespace Campofinale.Resource
         public static Dictionary<string, ItemTable> itemTable = new();
         public static Dictionary<string, DomainDataTable> domainDataTable = new();
         public static Dictionary<string, CollectionTable> collectionTable = new();
-        public static Dictionary<string, GachaCharPoolTable> gachaCharPoolTable = new();
         public static Dictionary<string, CharBreakNodeTable> charBreakNodeTable = new();
         public static Dictionary<string, EnemyAttributeTemplateTable> enemyAttributeTemplateTable = new();
         public static Dictionary<string, CharLevelUpTable> charLevelUpTable = new();
         public static Dictionary<string, ExpItemDataMap> expItemDataMap = new();
         public static Dictionary<string, CharGrowthTable> charGrowthTable = new();
         public static Dictionary<string, WeaponUpgradeTemplateTable> weaponUpgradeTemplateTable = new();
+        //Gacha
+        public static Dictionary<string, GachaCharPoolTable> gachaCharPoolTable = new();
         public static Dictionary<string, GachaCharPoolContentTable> gachaCharPoolContentTable = new();
         public static Dictionary<string, GachaCharPoolTypeTable> gachaCharPoolTypeTable = new();
+        
+        public static Dictionary<string, GachaWeaponPoolTable> gachaWeaponPoolTable = new();
+        //
         public static Dictionary<string, EnemyTable> enemyTable = new();
         public static Dictionary<string, EquipTable> equipTable = new();
         public static Dictionary<string, EquipSuitTable> equipSuitTable = new();
@@ -63,6 +67,8 @@ namespace Campofinale.Resource
         public static Dictionary<int, ItemTypeTable> itemTypeTable = new(); //
         public static Dictionary<string, SNSChatTable> snsChatTable = new();//
         public static Dictionary<string, GiftItemTable> giftItemTable = new();
+        public static Dictionary<string, MissionDataTable> missionDataTable = new();
+
         public static InteractiveTable interactiveTable = new(); //
         public static List<LevelScene> levelDatas = new();
         public static List<InteractiveData> interactiveData = new();    
