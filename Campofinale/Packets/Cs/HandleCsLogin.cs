@@ -181,11 +181,42 @@ namespace Campofinale.Packets.Cs
             };*/
             //session.Send(ScMessageId.ScSyncAllMission, missions);
             string json1 = File.ReadAllText("44_ScSyncAllMission.json");
+           
+            
             ScSyncAllMission m = Newtonsoft.Json.JsonConvert.DeserializeObject<ScSyncAllMission>(json1);
             m.TrackMissionId = "";
-            session.Send(ScMsgId.ScSyncAllMission, m);
             
-
+            session.Send(ScMsgId.ScSyncAllMission, m);
+            /*session.Send(ScMsgId.ScSyncAllMission, new ScSyncAllMission()
+            {
+                Missions =
+                {
+                    {"e0m0", new Mission()
+                    {
+                        MissionId="e0m0",
+                        MissionState=(int)MissionState.Processing,
+                    } }
+                },
+                TrackMissionId = "e0m0",
+                
+                CurQuests =
+                {
+                    {"e0m0_q#1", new Quest()
+                    {
+                        QuestId="e0m0_q#1",
+                        QuestState=(int)QuestState.Processing,
+                        QuestObjectives =
+                        {
+                            new QuestObjective()
+                            {
+                                ConditionId="",
+                                
+                            }
+                        }
+                    } }
+                }
+            });*/
+            
             session.Send(new PacketScGachaSync(session));
             ScSettlementSyncAll settlements = new ScSettlementSyncAll()
             {

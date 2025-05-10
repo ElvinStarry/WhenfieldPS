@@ -8,6 +8,15 @@
         Completed = 3,
         Failed = 4
     }
+    public enum QuestState
+    {
+    
+        None = 0,
+        Available = 1,
+        Processing = 2,
+        Completed = 3,
+        Failed = 4,
+    }
     public enum InteractiveComponentType
     {
         TriggerObserver = 0,
