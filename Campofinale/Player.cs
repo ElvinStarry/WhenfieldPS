@@ -13,6 +13,7 @@ using Campofinale.Game.Gacha;
 using Campofinale.Game.Spaceship;
 using Campofinale.Game.Dungeons;
 using Campofinale.Game.Factory;
+using Campofinale.Game.Mission;
 
 
 namespace Campofinale
@@ -94,6 +95,7 @@ namespace Campofinale
         public GachaManager gachaManager;
         public BitsetManager bitsetManager;
         public FactoryManager factoryManager;
+        public MissionSystem missionSystem;
         public int teamIndex = 0;
         public List<Team> teams= new List<Team>();
         public List<Mail> mails = new List<Mail>();
@@ -123,6 +125,7 @@ namespace Campofinale
             gachaManager = new(this);
             spaceshipManager = new(this);   
             factoryManager = new(this);
+            missionSystem = new(this);
             receivorThread = new Thread(new ThreadStart(Receive));
            
         }
