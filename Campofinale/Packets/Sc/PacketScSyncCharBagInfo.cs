@@ -25,7 +25,10 @@ namespace Campofinale.Packets.Sc
                 },
                
             };
-            client.chars.ForEach(c => proto.CharInfo.Add(c.ToProto()));
+            client.chars.ForEach(c =>
+            {
+                proto.CharInfo.Add(c.ToProto());
+            });
             client.teams.ForEach(c =>
             {
                 proto.TeamInfo.Add(new CharTeamInfo()

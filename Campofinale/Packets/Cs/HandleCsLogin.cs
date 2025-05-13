@@ -186,15 +186,38 @@ namespace Campofinale.Packets.Cs
             ScSyncAllMission m = Newtonsoft.Json.JsonConvert.DeserializeObject<ScSyncAllMission>(json1);
             m.TrackMissionId = "";
             
+            
             session.Send(ScMsgId.ScSyncAllMission, m);
-            /*session.Send(ScMsgId.ScSyncAllMission, new ScSyncAllMission()
+           /* session.Send(ScMsgId.ScSyncAllMission, new ScSyncAllMission()
             {
+                NewMissionTags =
+                {
+                    new NewMissionTag()
+                    {
+                        MissionId="e0m0",
+                        QuestId="e0m0_q#1",
+                    }
+                },
+                
                 Missions =
                 {
                     {"e0m0", new Mission()
                     {
                         MissionId="e0m0",
                         MissionState=(int)MissionState.Processing,
+                        SucceedId=-1,
+                        Properties =
+                        {
+                            {1,new DynamicParameter()
+                            {
+                                RealType=1,
+                                ValueType=1,
+                                ValueBoolList =
+                                {
+                                    true
+                                }
+                            } }
+                        }
                     } }
                 },
                 TrackMissionId = "e0m0",
@@ -209,8 +232,9 @@ namespace Campofinale.Packets.Cs
                         {
                             new QuestObjective()
                             {
-                                ConditionId="",
+                                ConditionId="f6415b84",
                                 
+                                IsComplete=false
                             }
                         }
                     } }
