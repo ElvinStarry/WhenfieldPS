@@ -32,10 +32,18 @@
                 max = values.Max();
             }
             InitializeWithBitCount(max);
-            foreach(var i in values)
+            try
             {
-                SetBit(i, true);
+                foreach (var i in values)
+                {
+                    SetBit(i, true);
+                }
             }
+            catch (Exception ex)
+            {
+
+            }
+           
         }
 
         public LongBitSet(ulong[] bits)

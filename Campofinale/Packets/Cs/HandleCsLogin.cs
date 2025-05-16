@@ -133,8 +133,8 @@ namespace Campofinale.Packets.Cs
             m.TrackMissionId = "";
             
             
-            //session.Send(ScMsgId.ScSyncAllMission, m);
-            session.Send(ScMsgId.ScSyncAllMission, new ScSyncAllMission()
+            session.Send(ScMsgId.ScSyncAllMission, m);
+           /* session.Send(ScMsgId.ScSyncAllMission, new ScSyncAllMission()
             {
                 NewMissionTags =
                 {
@@ -182,7 +182,7 @@ namespace Campofinale.Packets.Cs
                         }
                     } }
                 }
-            });
+            });*/
             
             session.Send(new PacketScGachaSync(session));
             ScSettlementSyncAll settlements = new ScSettlementSyncAll()

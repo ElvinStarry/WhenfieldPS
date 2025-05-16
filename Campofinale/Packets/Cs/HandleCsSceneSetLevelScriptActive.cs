@@ -39,14 +39,35 @@ namespace Campofinale.Packets.Cs
             [Server.Handler(CsMsgId.CsSceneLevelScriptEventTrigger)]
         public static void HandleCsSceneLevelScriptEventTrigger(Player session, CsMsgId cmdId, Packet packet)
         {
-            CsSceneLevelScriptEventTrigger req = packet.DecodeBody<CsSceneLevelScriptEventTrigger>();
             
+            CsSceneLevelScriptEventTrigger req = packet.DecodeBody<CsSceneLevelScriptEventTrigger>();
+            ScSceneUpdateLevelScriptProperty update1 = new()
+            {
+                SceneNumId = req.SceneNumId,
+                ScriptId = req.ScriptId,
+
+            };
+            session.Send(ScMsgId.ScSceneUpdateLevelScriptProperty, update1);
+            ScSceneTriggerClientLevelScriptEvent trigger = new()
+            {
+                EventName = req.EventName,
+                SceneNumId = req.SceneNumId,
+                ScriptId = req.ScriptId
+            };
+            session.Send(ScMsgId.ScSceneTriggerClientLevelScriptEvent, trigger);
+            ScSceneUpdateLevelScriptProperty update2 = new()
+            {
+                SceneNumId = req.SceneNumId,
+                ScriptId = req.ScriptId,
+
+            };
+            session.Send(ScMsgId.ScSceneUpdateLevelScriptProperty, update2);
             ScSceneLevelScriptEventTrigger rsp = new ScSceneLevelScriptEventTrigger()
             {
                 
             };
             
-            session.Send(ScMsgId.ScSceneLevelScriptEventTrigger, rsp,packet.csHead.UpSeqid);
+            session.Send(ScMsgId.ScSceneLevelScriptEventTrigger, rsp);
 
         }
     }
