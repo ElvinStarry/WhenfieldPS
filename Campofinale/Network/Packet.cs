@@ -186,7 +186,7 @@ namespace Campofinale.Network
             Array.Copy(byteArray, 3, csHeadBytes, 0, headLength);
             Array.Copy(byteArray, 3+ headLength, BodyBytes, 0, bodyLength);
             CSHead csHead_ = CSHead.Parser.ParseFrom(csHeadBytes);
-            if (Server.config.logOptions.packets)
+            if (Server.config.logOptions.packets && !Server.csMessageToHide.Contains((CsMsgId)csHead_.Msgid))
             {
                 Logger.Print(csHead_.ToString());
             }
