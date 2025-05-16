@@ -51,6 +51,8 @@ namespace Campofinale
         public static string ServerVersion = "1.1.2-dev";
         public static bool Initialized = false;
         public static bool showLogs = true;
+        public static bool showWarningLogs = true;
+        public static bool showBodyLogs = false;
         public static Dispatch dispatch;
         public static ResourceManager resourceManager;
         public static ConfigFile config;
@@ -60,7 +62,7 @@ namespace Campofinale
         {
             return resourceManager;
         }
-        public void Start(bool hideLogs = false, ConfigFile config = null)
+        public void Start(ConfigFile config)
         {
             {
                 Assembly assembly = Assembly.GetExecutingAssembly();
@@ -77,10 +79,14 @@ namespace Campofinale
             }
             
             Logger.Initialize();
-            Logger.Print($"Starting server version {ServerVersion} with supported client version {GameConstants.GAME_VERSION}");
-            showLogs = !hideLogs;
-            Logger.Print($"Logs are {(showLogs ? "enabled" : "disabled")}");
             Server.config = config;
+            showLogs = config.logOptions.packets;
+            showWarningLogs = config.logOptions.packetWarnings;
+            showBodyLogs = config.logOptions.packetBodies;
+            Logger.Print($"Starting server version {ServerVersion} with supported client version {GameConstants.GAME_VERSION}");
+            Logger.Print($"Logs are {(showLogs ? "enabled" : "disabled")}");
+            Logger.Print($"Warning logs are {(showWarningLogs ? "enabled" : "disabled")}");
+            Logger.Print($"Packet body logs are {(showBodyLogs ? "enabled" : "disabled")}");
             StartDBService();
             DatabaseManager.Init();
             ResourceManager.Init();

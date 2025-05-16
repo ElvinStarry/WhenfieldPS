@@ -12,7 +12,7 @@ class Program
     {
         Console.Title = "Initializing...";
 
-        bool disableLogs = args.Length > 0 && args[0].ToLower() == "nologs";
+        //bool disableLogs = args.Length > 0 && args[0].ToLower() == "nologs";
 
         ConfigFile config = new ConfigFile();
         if (File.Exists("server_config.json"))
@@ -23,7 +23,7 @@ class Program
 
         new Thread(() =>
         {
-            new Server().Start(disableLogs, config);
+            new Server().Start(config);
         }).Start();
         AppDomain.CurrentDomain.ProcessExit += (_, _) =>
         {

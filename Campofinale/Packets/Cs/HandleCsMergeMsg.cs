@@ -1,5 +1,9 @@
-﻿using Campofinale.Network;
+﻿using System.Drawing;
+
+using Campofinale.Network;
 using Campofinale.Protocol;
+
+using Pastel;
 
 namespace Campofinale.Packets.Cs
 {
@@ -30,8 +34,9 @@ namespace Campofinale.Packets.Cs
                 };
                 if (Server.config.logOptions.packets)
                 {
-                    Logger.Print("CmdId: " + (CsMsgId)packet.csHead.Msgid);
-                    Logger.Print(BitConverter.ToString(packet.finishedBody).Replace("-", string.Empty).ToLower());
+                    Logger.Print("Recieved Packet: " + ((CsMsgId)packet.csHead.Msgid).ToString().Pastel(Color.LightCyan) + $" Id: {packet.csHead.Msgid} with {packet.finishedBody.Length} Bytes");
+                    if (Server.config.logOptions.packetBodies)
+                        Logger.Print(BitConverter.ToString(packet.finishedBody).Replace("-", string.Empty).ToLower());
                 }
 
                 try

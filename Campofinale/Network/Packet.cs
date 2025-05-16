@@ -134,7 +134,7 @@ namespace Campofinale.Network
             PutByteArray(data, head.ToByteArray(), 3);
             PutByteArray(data, body.ToByteArray(), 3+head.ToByteArray().Length);
             if(Server.config.logOptions.packets && !Server.scMessageToHide.Contains((ScMsgId)msgId))
-                Logger.Print($"Sending packet: {((ScMsgId)msgId).ToString().Pastel(Color.LightBlue)} id: {msgId} with {data.Length} bytes");
+                Logger.Print($"Sending Packet: {((ScMsgId)msgId).ToString().Pastel(Color.LightBlue)} Id: {msgId} with {data.Length} Bytes");
 
             return data;
         }
@@ -166,7 +166,7 @@ namespace Campofinale.Network
             PutByteArray(data, head.ToByteArray(), 3);
             PutByteArray(data, body, 3 + head.ToByteArray().Length);
             if (Server.config.logOptions.packets && !Server.scMessageToHide.Contains((ScMsgId)msgId))
-                Logger.Print($"Sending packet: {((ScMsgId)msgId).ToString().Pastel(Color.LightBlue)} id: {msgId} with {data.Length} bytes");
+                Logger.Print($"Sending Packet: {((ScMsgId)msgId).ToString().Pastel(Color.LightBlue)} Id: {msgId} with {data.Length} Bytes");
 
             return data;
         }
@@ -186,10 +186,10 @@ namespace Campofinale.Network
             Array.Copy(byteArray, 3, csHeadBytes, 0, headLength);
             Array.Copy(byteArray, 3+ headLength, BodyBytes, 0, bodyLength);
             CSHead csHead_ = CSHead.Parser.ParseFrom(csHeadBytes);
-            if (Server.config.logOptions.packets && !Server.csMessageToHide.Contains((CsMsgId)csHead_.Msgid))
+            /*if (Server.config.logOptions.packets && !Server.csMessageToHide.Contains((CsMsgId)csHead_.Msgid))
             {
                 Logger.Print(csHead_.ToString());
-            }
+            }*/
             seqNext = csHead_.UpSeqid;
             return new Packet() { csHead = csHead_, finishedBody = BodyBytes,cmdId=csHead_.Msgid };
         }

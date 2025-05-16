@@ -31,8 +31,10 @@
     }
     public class LogSettings
     {
-        public bool packets;
-        public bool debugPrint=false;
+        public bool packets = true;
+        public bool packetWarnings = true;
+        public bool packetBodies = false;
+        public bool debugPrint = false;
 
         public LogSettings()
         {

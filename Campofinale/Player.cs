@@ -14,6 +14,8 @@ using Campofinale.Game.Spaceship;
 using Campofinale.Game.Dungeons;
 using Campofinale.Game.Factory;
 using Campofinale.Game.Mission;
+using Pastel;
+using System.Drawing;
 
 
 namespace Campofinale
@@ -504,8 +506,9 @@ namespace Campofinale
 
                             if (Server.config.logOptions.packets && !Server.csMessageToHide.Contains((CsMsgId)packet.csHead.Msgid))
                             {
-                                Logger.Print("CmdId: " + (CsMsgId)packet.csHead.Msgid);
-                                Logger.Print(BitConverter.ToString(packet.finishedBody).Replace("-", string.Empty).ToLower());
+                                Logger.Print("Recieved Packet: " + ((CsMsgId)packet.csHead.Msgid).ToString().Pastel(Color.LightCyan) + $" Id: {packet.csHead.Msgid} with {packet.finishedBody.Length} Bytes");
+                                if (Server.config.logOptions.packetBodies)
+                                    Logger.Print(BitConverter.ToString(packet.finishedBody).Replace("-", string.Empty).ToLower());
                             }
                            
                             try

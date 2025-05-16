@@ -1,3 +1,5 @@
+using Campofinale;
+
 using Pastel;
 using System.Diagnostics;
 public static class Logger
@@ -44,6 +46,9 @@ public static class Logger
     /// <param name="text"></param>
     public static void PrintWarn(string text)
     {
+        if (!Server.config.logOptions.packetWarnings)
+            return;
+
         string className = GetCallingClassName();
         Logger.Log(text);
         string prefix = "<" + "WARN".Pastel("ff9100") + $":{className.Pastel("999")}>";
