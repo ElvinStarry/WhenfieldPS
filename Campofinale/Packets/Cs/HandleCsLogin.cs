@@ -12,11 +12,16 @@ namespace Campofinale.Packets.Cs
 {
     public class HandleCsLogin
     {
-        [Server.Handler(CsMsgId.CsCreateRole)]
-        public static void HandleCsCreateRole(Player session, CsMsgId cmdId, Packet packet)
+        [Server.Handler(CsMsgId.CsSetGender)]
+        public static void HandleCsSetGender(Player session, CsMsgId cmdId, Packet packet)
         {
-            CsCreateRole req = packet.DecodeBody<CsCreateRole>();
-            
+            CsSetGender req = packet.DecodeBody<CsSetGender>();
+            ScSetGender rsp = new()
+            {
+                Gender = req.Gender,
+            };
+            session.gender = rsp.Gender;
+            session.Send(ScMsgId.ScSetGender, rsp);
             
         }
         [Server.Handler(CsMsgId.CsLogin)]
@@ -121,65 +126,6 @@ namespace Campofinale.Packets.Cs
             session.Send(new PacketScItemBagScopeSync(session, ItemValuableDepotType.SpecialItem));
             session.Send(new PacketScSyncAllMail(session));
             session.Send(new PacketScSceneCollectionSync(session));
-            /*ScSyncAllMission missions = new()
-            {
-                Missions =
-                {
-                    {"e0m0", 
-                        new Mission()
-                        {
-                            MissionId="e0m0",
-                            MissionState=(int)MissionState.Processing,
-                            Properties =
-                            {
-                                {1,new DynamicParameter()
-                                {
-                                   ValueType=1,
-                                   RealType=1,
-                                    ValueBoolList =
-                                    {
-                                        true
-                                    }
-                                } 
-                                },
-                                {2,new DynamicParameter()
-                                {
-                                   ValueType=1,
-                                   RealType=1,
-                                    ValueBoolList =
-                                    {
-                                        false
-                                    }
-                                }
-                                },
-                                {3,new DynamicParameter()
-                                {
-                                   ValueType=1,
-                                   RealType=1,
-                                    ValueBoolList =
-                                    {
-                                        false
-                                    }
-                                }
-                                }
-                            }
-                        } 
-                    }
-                },
-                TrackMissionId= "e0m0",
-                CurQuests =
-                {
-                    {"e0m0#1", new Quest(){
-                        QuestId="e0m0#1",
-                        QuestState=2,
-                        QuestObjectives =
-                        {
-                            
-                        }
-                    }}
-                }
-            };*/
-            //session.Send(ScMessageId.ScSyncAllMission, missions);
             string json1 = File.ReadAllText("44_ScSyncAllMission.json");
            
             
@@ -187,16 +133,12 @@ namespace Campofinale.Packets.Cs
             m.TrackMissionId = "";
             
             
-            session.Send(ScMsgId.ScSyncAllMission, m);
-           /* session.Send(ScMsgId.ScSyncAllMission, new ScSyncAllMission()
+            //session.Send(ScMsgId.ScSyncAllMission, m);
+            session.Send(ScMsgId.ScSyncAllMission, new ScSyncAllMission()
             {
                 NewMissionTags =
                 {
-                    new NewMissionTag()
-                    {
-                        MissionId="e0m0",
-                        QuestId="e0m0_q#1",
-                    }
+                    
                 },
                 
                 Missions =
@@ -214,7 +156,7 @@ namespace Campofinale.Packets.Cs
                                 ValueType=1,
                                 ValueBoolList =
                                 {
-                                    true
+                                    false
                                 }
                             } }
                         }
@@ -224,6 +166,7 @@ namespace Campofinale.Packets.Cs
                 
                 CurQuests =
                 {
+                    
                     {"e0m0_q#1", new Quest()
                     {
                         QuestId="e0m0_q#1",
@@ -239,7 +182,7 @@ namespace Campofinale.Packets.Cs
                         }
                     } }
                 }
-            });*/
+            });
             
             session.Send(new PacketScGachaSync(session));
             ScSettlementSyncAll settlements = new ScSettlementSyncAll()

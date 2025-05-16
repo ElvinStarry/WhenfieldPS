@@ -12,13 +12,12 @@ namespace Campofinale.Packets.Sc
             {
                 Roleid = client.roleId,
                 Level = client.level,
-                Exp=client.xp,
+                Exp = client.xp,
                 RoleName = client.nickname,
                 Gender = client.gender,
-                ShortId="1",
-                
-            };
+                ShortId = "1",
 
+            };
             SetData(ScMsgId.ScSyncBaseData, proto);
         }
 

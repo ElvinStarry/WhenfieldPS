@@ -66,12 +66,13 @@ namespace Campofinale.Packets.Sc
                 {
                     ScriptId = l.scriptId,
                     IsDone = false,
-                    State = 1,
+                    State = 2,
                     
                 };
                 int i = 0;
                 foreach (var item in l.properties)
                 {
+                   
                     DynamicParameter p=item.ToProto();
                     if (p != null)
                     script.Properties.Add(l.GetPropertyId(item.key,script.Properties.Keys.ToList()), p);

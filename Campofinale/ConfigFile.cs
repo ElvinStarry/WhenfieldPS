@@ -10,7 +10,7 @@
     }
     public class ServerOptions
     {
-        public int defaultSceneNumId = 98;
+        public int defaultSceneNumId = 87;
         public int maxPlayers = 20;
         public CharactersOptions defaultCharacters = new();
         public ServerOptions()
