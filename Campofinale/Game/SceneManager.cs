@@ -301,7 +301,7 @@ namespace Campofinale.Game
            
             lv_scene.levelData.interactives.ForEach(en =>
             {
-                if (en.defaultHide || GetOwner().noSpawnAnymore.Contains(en.levelLogicId))
+                if (GetOwner().noSpawnAnymore.Contains(en.levelLogicId) && sceneNumId != 87)
                 {
                     return;
                 }
@@ -318,7 +318,7 @@ namespace Campofinale.Game
             });
             lv_scene.levelData.factoryRegions.ForEach(en =>
             {
-                if (en.defaultHide || GetOwner().noSpawnAnymore.Contains(en.levelLogicId))
+                if (GetOwner().noSpawnAnymore.Contains(en.levelLogicId) && sceneNumId!=87)
                 {
                     return;
                 }
@@ -329,11 +329,12 @@ namespace Campofinale.Game
                     levelLogicId = en.levelLogicId,
                     type = en.entityType,
                 };
+                
                 entities.Add(entity);
             });
             lv_scene.levelData.enemies.ForEach(en =>
             {
-                if(en.defaultHide || GetOwner().noSpawnAnymore.Contains(en.levelLogicId)) return;
+                if(GetOwner().noSpawnAnymore.Contains(en.levelLogicId) && sceneNumId != 87) return;
                 EntityMonster entity = new(en.entityDataIdKey,en.level,ownerId,en.position,en.rotation, sceneNumId, en.levelLogicId)
                 {
                     type=en.entityType,
@@ -344,7 +345,7 @@ namespace Campofinale.Game
             });
             lv_scene.levelData.npcs.ForEach(en =>
             {
-                if (en.defaultHide) return;
+                
                 if (en.npcGroupId.Contains("chr")) return;
                 EntityNpc entity = new(en.entityDataIdKey,ownerId,en.position,en.rotation, sceneNumId, en.levelLogicId)
                 {
@@ -355,48 +356,71 @@ namespace Campofinale.Game
                 };
                 entities.Add(entity);
             });
-            /*GetEntityExcludingChar().ForEach(e =>
+            GetEntityExcludingChar().ForEach(e =>
             {
-                GetOwner().Send(new PacketScObjectEnterView(GetOwner(),new List<Entity>() { e}));
-            });*/
+                GetOwner().Send(new PacketScObjectEnterView(GetOwner(), new List<Entity>() { e}));
+
+            });
             UpdateShowEntities();
+           
 
+        }
+        public void SpawnEntity(Entity en,bool spawnedCheck=true)
+        {
+            en.spawned = true;
+            List<Entity> toSpawn = new List<Entity>();
+            toSpawn.Add(en);
+            if (spawnedCheck)
+            {
+                foreach (Entity e in GetEntityExcludingChar().FindAll(e => e.belongLevelScriptId == en.belongLevelScriptId && e.spawned == false))
+                {
+                    e.spawned = true;
+                    toSpawn.Add(e);
+                }
+            }
+            else
+            {
+                foreach (Entity e in GetEntityExcludingChar().FindAll(e => e.belongLevelScriptId == en.belongLevelScriptId && e != en))
+                {
+                    e.spawned = true;
+                    toSpawn.Add(e);
 
+                }
+            }
+            toSpawn.ForEach(e =>
+            {
+                //GetOwner().Send(new PacketScObjectEnterView(GetOwner(), new List<Entity>() { e}));
+            });
+            UpdateShowEntities();
         }
         public void UpdateShowEntities()
         {
             foreach(Entity en in GetEntityExcludingChar())
             {
-                if (en.Position.Distance(GetOwner().position) < 200)
+                if (en.Position.Distance(GetOwner().position) < 250)
                 {
                     if (!en.spawned)
                     {
-                        en.spawned = true;
-                        try
-                        {
-                            GetOwner().Send(new PacketScObjectEnterView(GetOwner(), new List<Entity>() { en }));
-                        }
-                        catch(Exception e)
-                        {
-
-                        }
+                        SpawnEntity(en);
+                        
                         
                     }
                 }
                 else
                 {
-                    if (en.spawned)
+                   
+                    /*if (en.spawned)
                     {
                         
                         en.spawned = false;
                         GetOwner().Send(new PacketScObjectLeaveView(GetOwner(), new List<ulong>() { en.guid }));
                         en.Position=en.BornPos;
                         en.Rotation = en.Rotation;
-                    }
+                    }*/
                 }
             }
         }
-        
+
         public Player GetOwner()
         {
             return Server.clients.Find(c => c.roleId == ownerId);

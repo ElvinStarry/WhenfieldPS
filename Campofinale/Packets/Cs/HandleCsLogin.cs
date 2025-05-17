@@ -133,8 +133,8 @@ namespace Campofinale.Packets.Cs
             m.TrackMissionId = "";
             
             
-            session.Send(ScMsgId.ScSyncAllMission, m);
-           /* session.Send(ScMsgId.ScSyncAllMission, new ScSyncAllMission()
+           // session.Send(ScMsgId.ScSyncAllMission, m);
+            session.Send(ScMsgId.ScSyncAllMission, new ScSyncAllMission()
             {
                 NewMissionTags =
                 {
@@ -180,9 +180,49 @@ namespace Campofinale.Packets.Cs
                                 IsComplete=false
                             }
                         }
+                    } },
+                    {"e0m0_q#2", new Quest()
+                    {
+                        QuestId="e0m0_q#2",
+                        QuestState=(int)QuestState.Available,
+                        QuestObjectives =
+                        {
+                           new QuestObjective()
+                           {
+                               ConditionId="81736ca7",
+                               IsComplete=false,
+                           }
+                        }
+                    } },
+                    {"e0m0_q#3", new Quest()
+                    {
+                        QuestId="e0m0_q#3",
+                        QuestState=(int)QuestState.Available,
+                        QuestObjectives =
+                        {
+ 
+                        }
+                    } },
+                    {"e0m0_q#4", new Quest()
+                    {
+                        QuestId="e0m0_q#4",
+                        QuestState=(int)QuestState.Available,
+                        QuestObjectives =
+                        {
+
+                        }
+                    } },
+                    {"e0m0_q#5", new Quest()
+                    {
+                        QuestId="e0m0_q#5",
+                        QuestState=(int)QuestState.Available,
+                        QuestObjectives =
+                        {
+
+                        }
                     } }
                 }
-            });*/
+            });
             
             session.Send(new PacketScGachaSync(session));
             ScSettlementSyncAll settlements = new ScSettlementSyncAll()

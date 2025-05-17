@@ -689,14 +689,15 @@ namespace Campofinale.Resource
 
                         public float ToFloat()
                         {
-                            int intValueFromBit64 = (int)valueBit64; // Converti long in int
-                            float floatValueFromBit64 = BitConverter.ToSingle(BitConverter.GetBytes(intValueFromBit64), 0);
+                            int intValueFromBit64 = (int)valueBit64; 
+                            float floatValueFromBit64 = (float)BitConverter.Int64BitsToDouble(valueBit64);
+                            //float floatValueFromBit64 = BitConverter.ToSingle(BitConverter.GetBytes(intValueFromBit64), 0);
                             return floatValueFromBit64;
                         }
                         public int ToInt()
                         {
-                            int intValueFromBit64 = (int)valueBit64; // Converti long in int
-                           
+                            int intValueFromBit64 = (int)valueBit64;
+                          
                             return intValueFromBit64;
                         }
                     }

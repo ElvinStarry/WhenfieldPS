@@ -2,6 +2,7 @@
 using Campofinale.Game.Entities;
 using Campofinale.Network;
 using Campofinale.Protocol;
+using Campofinale.Resource;
 
 namespace Campofinale.Packets.Cs
 {
@@ -41,6 +42,59 @@ namespace Campofinale.Packets.Cs
         {
             
             CsSceneLevelScriptEventTrigger req = packet.DecodeBody<CsSceneLevelScriptEventTrigger>();
+            Logger.Print(req.Properties.ToString());
+            if(req.EventName== "#8777e316")
+            {
+                session.Send(ScMsgId.ScQuestStateUpdate, new ScQuestStateUpdate()
+                {
+                    QuestId = "e0m0_q#1",
+                    QuestState = (int)QuestState.Completed,
+                });
+                session.Send(ScMsgId.ScQuestStateUpdate, new ScQuestStateUpdate()
+                {
+                    QuestId = "e0m0_q#2",
+                    QuestState = (int)QuestState.Processing,
+                });
+            }
+            if(req.EventName== "#6ea2690d")
+            {
+                session.Send(ScMsgId.ScQuestStateUpdate, new ScQuestStateUpdate()
+                {
+                    QuestId = "e0m0_q#2",
+                    QuestState = (int)QuestState.Completed,
+                });
+                session.Send(ScMsgId.ScQuestStateUpdate, new ScQuestStateUpdate()
+                {
+                    QuestId = "e0m0_q#3",
+                    QuestState = (int)QuestState.Processing,
+                });
+            }
+            if (req.EventName == "#bb79de30")
+            {
+                session.Send(ScMsgId.ScQuestStateUpdate, new ScQuestStateUpdate()
+                {
+                    QuestId = "e0m0_q#3",
+                    QuestState = (int)QuestState.Completed,
+                });
+                session.Send(ScMsgId.ScQuestStateUpdate, new ScQuestStateUpdate()
+                {
+                    QuestId = "e0m0_q#4",
+                    QuestState = (int)QuestState.Processing,
+                });
+            }
+            if (req.EventName == "#4c76ec3c")
+            {
+                session.Send(ScMsgId.ScQuestStateUpdate, new ScQuestStateUpdate()
+                {
+                    QuestId = "e0m0_q#4",
+                    QuestState = (int)QuestState.Completed,
+                });
+                session.Send(ScMsgId.ScQuestStateUpdate, new ScQuestStateUpdate()
+                {
+                    QuestId = "e0m0_q#5",
+                    QuestState = (int)QuestState.Processing,
+                });
+            }
             ScSceneUpdateLevelScriptProperty update1 = new()
             {
                 SceneNumId = req.SceneNumId,
@@ -67,7 +121,7 @@ namespace Campofinale.Packets.Cs
                 
             };
             
-            session.Send(ScMsgId.ScSceneLevelScriptEventTrigger, rsp);
+            session.Send(ScMsgId.ScSceneLevelScriptEventTrigger, rsp,packet.csHead.UpSeqid);
 
         }
     }
