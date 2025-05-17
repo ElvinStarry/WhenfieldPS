@@ -95,6 +95,33 @@ namespace Campofinale.Packets.Cs
                     QuestState = (int)QuestState.Processing,
                 });
             }
+            if (req.EventName == "#251df3ad")
+            {
+                session.Send(ScMsgId.ScQuestStateUpdate, new ScQuestStateUpdate()
+                {
+                    QuestId = "e0m0_q#5",
+                    QuestState = (int)QuestState.Completed,
+                });
+                session.Send(ScMsgId.ScQuestStateUpdate, new ScQuestStateUpdate()
+                {
+                    QuestId = "e0m0_q#6",
+                    QuestState = (int)QuestState.Processing,
+                });
+            }
+            if (req.EventName == "#e6ac322b")
+            {
+                session.Send(ScMsgId.ScQuestStateUpdate, new ScQuestStateUpdate()
+                {
+                    QuestId = "e0m0_q#6",
+                    QuestState = (int)QuestState.Completed,
+                });
+                session.Send(ScMsgId.ScQuestStateUpdate, new ScQuestStateUpdate()
+                {
+                    QuestId = "e0m0_q#7",
+                    QuestState = (int)QuestState.Processing,
+                });
+            }
+
             ScSceneUpdateLevelScriptProperty update1 = new()
             {
                 SceneNumId = req.SceneNumId,

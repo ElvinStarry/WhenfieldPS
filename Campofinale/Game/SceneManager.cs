@@ -358,7 +358,7 @@ namespace Campofinale.Game
             });
             GetEntityExcludingChar().ForEach(e =>
             {
-                GetOwner().Send(new PacketScObjectEnterView(GetOwner(), new List<Entity>() { e}));
+               // GetOwner().Send(new PacketScObjectEnterView(GetOwner(), new List<Entity>() { e}));
 
             });
             UpdateShowEntities();
@@ -369,7 +369,7 @@ namespace Campofinale.Game
         {
             en.spawned = true;
             List<Entity> toSpawn = new List<Entity>();
-            toSpawn.Add(en);
+            if(en.belongLevelScriptId != 0)
             if (spawnedCheck)
             {
                 foreach (Entity e in GetEntityExcludingChar().FindAll(e => e.belongLevelScriptId == en.belongLevelScriptId && e.spawned == false))
@@ -387,17 +387,18 @@ namespace Campofinale.Game
 
                 }
             }
+            toSpawn.Add(en);
             toSpawn.ForEach(e =>
             {
-                //GetOwner().Send(new PacketScObjectEnterView(GetOwner(), new List<Entity>() { e}));
+                GetOwner().Send(new PacketScObjectEnterView(GetOwner(), new List<Entity>() { e}));
             });
-            UpdateShowEntities();
+            
         }
         public void UpdateShowEntities()
         {
             foreach(Entity en in GetEntityExcludingChar())
             {
-                if (en.Position.Distance(GetOwner().position) < 250)
+                if (en.Position.Distance(GetOwner().position) < 100)
                 {
                     if (!en.spawned)
                     {

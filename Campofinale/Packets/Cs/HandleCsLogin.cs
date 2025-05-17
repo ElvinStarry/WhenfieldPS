@@ -133,8 +133,8 @@ namespace Campofinale.Packets.Cs
             m.TrackMissionId = "";
             
             
-           // session.Send(ScMsgId.ScSyncAllMission, m);
-            session.Send(ScMsgId.ScSyncAllMission, new ScSyncAllMission()
+            session.Send(ScMsgId.ScSyncAllMission, m);
+            /*ession.Send(ScMsgId.ScSyncAllMission, new ScSyncAllMission()
             {
                 NewMissionTags =
                 {
@@ -220,9 +220,36 @@ namespace Campofinale.Packets.Cs
                         {
 
                         }
+                    } },
+                    {"e0m0_q#6", new Quest()
+                    {
+                        QuestId="e0m0_q#6",
+                        QuestState=(int)QuestState.Available,
+                        QuestObjectives =
+                        {
+
+                        }
+                    } },
+                    {"e0m0_q#7", new Quest()
+                    {
+                        QuestId="e0m0_q#7",
+                        QuestState=(int)QuestState.Available,
+                        QuestObjectives =
+                        {
+
+                        }
+                    } },
+                    {"e0m0_q#8", new Quest()
+                    {
+                        QuestId="e0m0_q#8",
+                        QuestState=(int)QuestState.Available,
+                        QuestObjectives =
+                        {
+
+                        }
                     } }
                 }
-            });
+            });*/
             
             session.Send(new PacketScGachaSync(session));
             ScSettlementSyncAll settlements = new ScSettlementSyncAll()

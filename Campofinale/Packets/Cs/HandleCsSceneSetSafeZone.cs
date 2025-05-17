@@ -12,7 +12,12 @@ namespace Campofinale.Packets.Cs
         public static void Handle(Player session, CsMsgId cmdId, Packet packet)
         {
             CsSceneSetSafeZone req = packet.DecodeBody<CsSceneSetSafeZone>();
-
+            ScSceneSetSafeZone rsp = new()
+            {
+                Id = req.Id,
+                InZone = req.InZone,
+            };
+            session.Send(ScMsgId.ScSceneSetSafeZone, rsp);
             if (req.InZone)
             {
                 var entity = session.sceneManager.GetEntity(req.Id) as EntityInteractive;
