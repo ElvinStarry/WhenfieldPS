@@ -20,6 +20,7 @@ namespace Campofinale.Resource
     //TODO Move all tables to separated class
     public class ResourceManager
     {
+        public static Dictionary<string, LevelScriptEvent> levelScriptsEvents = new(); //
         public static Dictionary<string, SceneAreaTable> sceneAreaTable = new();
         public static StrIdNumTable strIdNumTable = new StrIdNumTable();//
         public static Dictionary<string, CharacterTable> characterTable = new(); //
@@ -67,7 +68,7 @@ namespace Campofinale.Resource
         public static Dictionary<int, ItemTypeTable> itemTypeTable = new(); //
         public static Dictionary<string, SNSChatTable> snsChatTable = new();//
         public static Dictionary<string, GiftItemTable> giftItemTable = new();
-        public static Dictionary<string, MissionDataTable> missionDataTable = new();
+        public static List<MissionDataTable> missionDataTable = new();
 
         public static InteractiveTable interactiveTable = new(); //
         public static List<LevelScene> levelDatas = new();

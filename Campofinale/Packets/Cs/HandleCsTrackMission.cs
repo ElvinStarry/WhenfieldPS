@@ -9,7 +9,7 @@ namespace Campofinale.Packets.Cs
         public static void Handle(Player session, CsMsgId msgId, Packet packet)
         {
             CsTrackMission req = packet.DecodeBody<CsTrackMission>();
-
+            session.missionSystem.curMission = req.MissionId;
             ScTrackMissionChange rsp = new()
             {
                 MissionId = req.MissionId

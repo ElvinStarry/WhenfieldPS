@@ -54,7 +54,7 @@ namespace Campofinale.Game.Entities
                     
                     Type = (int)5,
                 },
-
+                
                 //Meta =dependencyGroupId,
                 BattleInfo = new()
                 {

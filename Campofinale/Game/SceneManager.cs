@@ -335,6 +335,7 @@ namespace Campofinale.Game
             lv_scene.levelData.enemies.ForEach(en =>
             {
                 if(GetOwner().noSpawnAnymore.Contains(en.levelLogicId) && sceneNumId != 87) return;
+                if (en.defaultHide) return;
                 EntityMonster entity = new(en.entityDataIdKey,en.level,ownerId,en.position,en.rotation, sceneNumId, en.levelLogicId)
                 {
                     type=en.entityType,
@@ -345,7 +346,7 @@ namespace Campofinale.Game
             });
             lv_scene.levelData.npcs.ForEach(en =>
             {
-                
+                if (en.defaultHide) return;
                 if (en.npcGroupId.Contains("chr")) return;
                 EntityNpc entity = new(en.entityDataIdKey,ownerId,en.position,en.rotation, sceneNumId, en.levelLogicId)
                 {
@@ -425,6 +426,23 @@ namespace Campofinale.Game
         public Player GetOwner()
         {
             return Server.clients.Find(c => c.roleId == ownerId);
+        }
+
+        public void SpawnEnemy(ulong v)
+        {
+            LevelScene lv_scene = ResourceManager.GetLevelData(sceneNumId);
+            LevelEnemyData en = lv_scene.levelData.enemies.Find(e=>e.levelLogicId == v);
+            if(en!=null)
+            {
+                EntityMonster entity = new(en.entityDataIdKey, en.level, ownerId, en.position, en.rotation, sceneNumId, en.levelLogicId)
+                {
+                    type = en.entityType,
+                    belongLevelScriptId = en.belongLevelScriptId,
+                    levelLogicId = en.levelLogicId
+                };
+                entities.Add(entity);
+                SpawnEntity(entity);
+            }
         }
     }
 }

@@ -132,7 +132,8 @@ namespace Campofinale.Packets.Cs
             ScSyncAllMission m = Newtonsoft.Json.JsonConvert.DeserializeObject<ScSyncAllMission>(json1);
             m.TrackMissionId = "";
             
-            
+            //Disabled the hardcoded one and enable the missionSystem one
+            //session.Send(ScMsgId.ScSyncAllMission, session.missionSystem.ToProto());
             session.Send(ScMsgId.ScSyncAllMission, m);
             /*ession.Send(ScMsgId.ScSyncAllMission, new ScSyncAllMission()
             {
@@ -250,7 +251,7 @@ namespace Campofinale.Packets.Cs
                     } }
                 }
             });*/
-            
+
             session.Send(new PacketScGachaSync(session));
             ScSettlementSyncAll settlements = new ScSettlementSyncAll()
             {

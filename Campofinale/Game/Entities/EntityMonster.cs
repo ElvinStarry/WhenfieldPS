@@ -83,6 +83,7 @@ namespace Campofinale.Game.Entities
 
                     Type =(int) ObjectTypeIndex.Enemy, 
                 },
+                
                 Attrs =
                 {
                     GetAttributes()

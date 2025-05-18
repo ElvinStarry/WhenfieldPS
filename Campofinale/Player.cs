@@ -13,7 +13,7 @@ using Campofinale.Game.Gacha;
 using Campofinale.Game.Spaceship;
 using Campofinale.Game.Dungeons;
 using Campofinale.Game.Factory;
-using Campofinale.Game.Mission;
+using Campofinale.Game.MissionSys;
 using Pastel;
 using System.Drawing;
 
@@ -175,6 +175,7 @@ namespace Campofinale
             {
                 Initialize(); //only if no account found
             }
+            missionSystem.Load();   
             sceneManager.Load();
             factoryManager.Load();
             return (data != null);
@@ -267,68 +268,6 @@ namespace Campofinale
         }
         public void UnlockImportantSystems()
         {
-            /*unlockedSystems.Add((int)UnlockSystemType.Watch);
-            unlockedSystems.Add((int)UnlockSystemType.Weapon);
-            unlockedSystems.Add((int)UnlockSystemType.Equip);
-            unlockedSystems.Add((int)UnlockSystemType.EquipEnhance);
-            unlockedSystems.Add((int)UnlockSystemType.NormalAttack);
-            unlockedSystems.Add((int)UnlockSystemType.NormalSkill);
-            unlockedSystems.Add((int)UnlockSystemType.UltimateSkill);
-            unlockedSystems.Add((int)UnlockSystemType.TeamSkill);
-            unlockedSystems.Add((int)UnlockSystemType.ComboSkill);
-            unlockedSystems.Add((int)UnlockSystemType.TeamSwitch);
-            unlockedSystems.Add((int)UnlockSystemType.Dash);
-            unlockedSystems.Add((int)UnlockSystemType.Jump);
-            unlockedSystems.Add((int)UnlockSystemType.Friend);
-            unlockedSystems.Add((int)UnlockSystemType.SNS);
-            unlockedSystems.Add((int)UnlockSystemType.Settlement);
-            unlockedSystems.Add((int)UnlockSystemType.Map);
-
-            unlockedSystems.Add((int)UnlockSystemType.FacTechTree);
-            unlockedSystems.Add((int)UnlockSystemType.FacZone);
-            unlockedSystems.Add((int)UnlockSystemType.FacSplitter);
-            unlockedSystems.Add((int)UnlockSystemType.FacConveyor);
-            unlockedSystems.Add((int)UnlockSystemType.FacBridge);
-            unlockedSystems.Add((int)UnlockSystemType.FacPipe);
-            unlockedSystems.Add((int)UnlockSystemType.FacBuildingPin);
-            unlockedSystems.Add((int)UnlockSystemType.FacBUS);
-            unlockedSystems.Add((int)UnlockSystemType.FacPipeConnector);
-            unlockedSystems.Add((int)UnlockSystemType.FacOverview);
-            unlockedSystems.Add((int)UnlockSystemType.FacCraftPin);
-            unlockedSystems.Add((int)UnlockSystemType.FacMerger);
-            unlockedSystems.Add((int)UnlockSystemType.FacYieldStats);
-            unlockedSystems.Add((int)UnlockSystemType.FacTransferPort);
-            unlockedSystems.Add((int)UnlockSystemType.FacHub);
-            unlockedSystems.Add((int)UnlockSystemType.FacMode);
-            unlockedSystems.Add((int)UnlockSystemType.FacSystem);
-            unlockedSystems.Add((int)UnlockSystemType.FacPipeSplitter);
-            unlockedSystems.Add((int)UnlockSystemType.FacPipeConverger);
-            unlockedSystems.Add((int)UnlockSystemType.AdventureBook);
-            unlockedSystems.Add((int)UnlockSystemType.CharUI);
-            unlockedSystems.Add((int)UnlockSystemType.EquipProduce);
-            unlockedSystems.Add((int)UnlockSystemType.EquipTech);
-            unlockedSystems.Add((int)UnlockSystemType.Gacha);
-            unlockedSystems.Add((int)UnlockSystemType.Inventory);
-            unlockedSystems.Add((int)UnlockSystemType.ItemQuickBar);
-            unlockedSystems.Add((int)UnlockSystemType.ItemSubmitRecycle);
-            unlockedSystems.Add((int)UnlockSystemType.ItemUse);
-            unlockedSystems.Add((int)UnlockSystemType.Mail);
-            unlockedSystems.Add((int)UnlockSystemType.ValuableDepot);
-            unlockedSystems.Add((int)UnlockSystemType.Wiki);
-            unlockedSystems.Add((int)UnlockSystemType.AIBark);
-            unlockedSystems.Add((int)UnlockSystemType.AdventureExpAndLv);
-            unlockedSystems.Add((int)UnlockSystemType.CharTeam);
-            
-            
-            unlockedSystems.Add((int)UnlockSystemType.SpaceshipSystem);
-            unlockedSystems.Add((int)UnlockSystemType.SpaceshipControlCenter);
-            
-            unlockedSystems.Add((int)UnlockSystemType.PRTS);
-            unlockedSystems.Add((int)UnlockSystemType.Dungeon);
-            unlockedSystems.Add((int)UnlockSystemType.RacingDungeon);
-            unlockedSystems.Add((int)UnlockSystemType.CheckIn);
-            unlockedSystems.Add((int)UnlockSystemType.SubmitEther);*/
-            
             foreach(UnlockSystemType type in Enum.GetValues(typeof(UnlockSystemType)))
             {
                 unlockedSystems.Add((int)type);
@@ -668,6 +607,34 @@ namespace Campofinale
             {
                 return "";
             }
+        }
+
+        public RoleBaseInfo GetRoleBaseInfo()
+        {
+            long curtimestamp = DateTime.UtcNow.ToUnixTimestampMilliseconds();
+            try
+            {
+                return new RoleBaseInfo()
+                {
+                    LeaderCharId = teams[teamIndex].leader,
+                    LeaderPosition = position.ToProto(),
+                    LeaderRotation = rotation.ToProto(),
+                    ServerTs = (ulong)curtimestamp,
+                    SceneName = ResourceManager.levelDatas.Find(l => l.idNum == curSceneNumId).mapIdStr
+                };
+            }
+            catch (Exception e)
+            {
+
+                return new RoleBaseInfo()
+                {
+                    LeaderCharId = teams[teamIndex].leader,
+                    LeaderPosition = position.ToProto(),
+                    LeaderRotation = rotation.ToProto(),
+                    ServerTs = (ulong)curtimestamp
+                };
+            }
+            
         }
     }
 }

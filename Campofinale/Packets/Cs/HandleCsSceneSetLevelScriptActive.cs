@@ -3,6 +3,8 @@ using Campofinale.Game.Entities;
 using Campofinale.Network;
 using Campofinale.Protocol;
 using Campofinale.Resource;
+using Campofinale.Resource.Table;
+using Pastel;
 
 namespace Campofinale.Packets.Cs
 {
@@ -12,14 +14,19 @@ namespace Campofinale.Packets.Cs
         public static void Handle(Player session, CsMsgId cmdId, Packet packet)
         {
             CsSceneSetLevelScriptActive req = packet.DecodeBody<CsSceneSetLevelScriptActive>();
-
-            ScSceneLevelScriptStateNotify rsp = new ScSceneLevelScriptStateNotify()
+            if (req.IsActive)
             {
-                SceneNumId = req.SceneNumId,
-                ScriptId = req.ScriptId,
-                State = 3
-            };
-            session.Send(ScMsgId.ScSceneLevelScriptStateNotify, rsp);
+
+                ScSceneLevelScriptStateNotify rsp = new ScSceneLevelScriptStateNotify()
+                {
+                    SceneNumId = req.SceneNumId,
+                    ScriptId = req.ScriptId,
+
+                    State = 3
+                };
+                session.Send(ScMsgId.ScSceneLevelScriptStateNotify, rsp);
+            }
+            
 
         }
 
@@ -27,23 +34,63 @@ namespace Campofinale.Packets.Cs
         public static void HandleCsSceneSetLevelScriptStart(Player session, CsMsgId cmdId, Packet packet)
         {
             CsSceneSetLevelScriptStart req = packet.DecodeBody<CsSceneSetLevelScriptStart>();
-            ScSceneLevelScriptStateNotify rsp = new ScSceneLevelScriptStateNotify()
+            if (req.IsStart)
             {
-                SceneNumId = req.SceneNumId,
-                ScriptId = req.ScriptId,
-                State = 4
-            };
-            session.Send(ScMsgId.ScSceneLevelScriptStateNotify, rsp);
+                ScSceneLevelScriptStateNotify rsp = new ScSceneLevelScriptStateNotify()
+                {
+                    SceneNumId = req.SceneNumId,
+                    ScriptId = req.ScriptId,
+
+                    State = 4
+                };
+                session.Send(ScMsgId.ScSceneLevelScriptStateNotify, rsp);
+            }
+           
 
         }
         
-            [Server.Handler(CsMsgId.CsSceneLevelScriptEventTrigger)]
+        public static void ExecuteEventAction(Player player, ScriptAction action)
+        {
+            switch (action.action)
+            {
+                case ScriptActionType.CompleteQuest:
+                    player.missionSystem.CompleteQuest(action.valueStr[0]);
+                    break;
+                case ScriptActionType.ProcessQuest:
+                    player.missionSystem.ProcessQuest(action.valueStr[0]);
+                    break;
+                case ScriptActionType.SpawnEnemy:
+                    player.sceneManager.GetCurScene().SpawnEnemy(action.valueUlong[0]);
+                    break;
+                default:
+                    Logger.PrintWarn("Script Action not implemented");
+                    break;
+            }
+        }
+        [Server.Handler(CsMsgId.CsSceneLevelScriptEventTrigger)]
         public static void HandleCsSceneLevelScriptEventTrigger(Player session, CsMsgId cmdId, Packet packet)
         {
             
             CsSceneLevelScriptEventTrigger req = packet.DecodeBody<CsSceneLevelScriptEventTrigger>();
             Logger.Print(req.Properties.ToString());
-            if(req.EventName== "#8777e316")
+
+            if (ResourceManager.levelScriptsEvents.TryGetValue(req.EventName, out LevelScriptEvent levelScriptEvent))
+            {
+                Logger.Print($"Event {req.EventName.Pastel(ConsoleColor.Yellow)} Executed.");
+                Logger.Print($"{levelScriptEvent.comment}");
+                levelScriptEvent.actions.ForEach(a =>
+                {
+                    ExecuteEventAction(session, a);
+                });
+            }
+            else
+            {
+                Logger.PrintWarn($"Event {req.EventName.Pastel(ConsoleColor.White)} is NOT implemented. INFO: [");
+                Logger.PrintWarn($" Scene: {req.SceneNumId.ToString().Pastel(ConsoleColor.White)}, Pos: {session.position.ToProto().ToString()} ");
+                Logger.PrintWarn($" ScriptID: {req.ScriptId.ToString().Pastel(ConsoleColor.White)} ");
+                Logger.PrintWarn($"]");
+            }
+            /*if(req.EventName== "#8777e316")
             {
                 session.Send(ScMsgId.ScQuestStateUpdate, new ScQuestStateUpdate()
                 {
@@ -120,26 +167,28 @@ namespace Campofinale.Packets.Cs
                     QuestId = "e0m0_q#7",
                     QuestState = (int)QuestState.Processing,
                 });
-            }
+            }*/
 
             ScSceneUpdateLevelScriptProperty update1 = new()
             {
                 SceneNumId = req.SceneNumId,
                 ScriptId = req.ScriptId,
-
+               
             };
             session.Send(ScMsgId.ScSceneUpdateLevelScriptProperty, update1);
             ScSceneTriggerClientLevelScriptEvent trigger = new()
             {
                 EventName = req.EventName,
                 SceneNumId = req.SceneNumId,
-                ScriptId = req.ScriptId
+                ScriptId = req.ScriptId,
+                
             };
             session.Send(ScMsgId.ScSceneTriggerClientLevelScriptEvent, trigger);
             ScSceneUpdateLevelScriptProperty update2 = new()
             {
                 SceneNumId = req.SceneNumId,
                 ScriptId = req.ScriptId,
+                
 
             };
             session.Send(ScMsgId.ScSceneUpdateLevelScriptProperty, update2);
