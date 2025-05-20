@@ -42,9 +42,7 @@ namespace Campofinale.Http
         public static async Task cn_res_version(HttpContext ctx)
         {
 
-            string resp = "{\"version\": \"2089329-32\", \"kickFlag\": true}";
-
-
+            string resp = "{\"version\": \"2089329-32\", \"kickFlag\": false}";
             ctx.Response.StatusCode = 200;
             //ctx.Response.ContentLength = resp.Length;
             ctx.Response.ContentType = "application/json";
@@ -67,7 +65,7 @@ namespace Campofinale.Http
         public static async Task cn_android_res_version(HttpContext ctx)
         {
 
-            string resp = "{\"version\": \"2332867-572\", \"kickFlag\": true}";
+            string resp = "{\"version\": \"2361763-612\", \"kickFlag\": false}";
 
 
             ctx.Response.StatusCode = 200;

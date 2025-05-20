@@ -1,4 +1,5 @@
-﻿using Campofinale.Game.Factory.Components;
+﻿using Campofinale.Game.Entities;
+using Campofinale.Game.Factory.Components;
 using Campofinale.Packets.Sc;
 using Campofinale.Protocol;
 using Campofinale.Resource;
@@ -127,8 +128,12 @@ namespace Campofinale.Game.Factory
             GetOwner().Send(new PacketScFactorySyncChapter(GetOwner(), chapterId));
             edit.Nodes.Add(node.ToProto());
             Logger.Print(Newtonsoft.Json.JsonConvert.SerializeObject(edit, Newtonsoft.Json.Formatting.Indented));
+            EntityInteractive e = new(place.TemplateId, GetOwner().roleId, new Vector3f(place.Position), new Vector3f(place.Direction), GetOwner().sceneManager.GetCurScene().sceneNumId, node.guid);
+            GetOwner().sceneManager.GetCurScene().entities.Add(e);
+            GetOwner().sceneManager.GetCurScene().SpawnEntity(e);
             GetOwner().Send(ScMsgId.ScFactoryModifyChapterNodes, edit);
             GetOwner().Send(new PacketScFactoryOpRet(GetOwner(), node.nodeId,FactoryOpType.Place),seq);
+            
         }
 
         public FactoryChapter(string chapterId,ulong ownerId)
@@ -260,6 +265,7 @@ namespace Campofinale.Game.Factory
                 TemplateId=templateId,
                 StableId= GetStableId(),
                 IsDeactive= deactive,
+                
                 Power = new()
                 {
                     InPower= InPower(),
@@ -272,7 +278,7 @@ namespace Campofinale.Game.Factory
                     Position = position.ToProtoScd(),
                     Direction=direction.ToProtoScd(),
                     MapId=mapId,
-
+                    
                     
                 }
             };
@@ -283,7 +289,7 @@ namespace Campofinale.Game.Factory
                 node.Transform.WorldRotation = direction.ToProto();
                 node.InteractiveObject = new()
                 {
-                   
+                   ObjectId=guid,
                 };
                 node.Flag = 0;
                 node.InstKey = "";
