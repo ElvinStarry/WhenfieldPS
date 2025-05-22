@@ -29,7 +29,7 @@ namespace Campofinale.Http
         [StaticRoute(HttpServerLite.HttpMethod.GET, "/api/remote_config/get_remote_config/3/prod-cbt/default/default/network_config")]
         public static async Task network_config_cn(HttpContext ctx)
         {
-            string resp = "{\"asset\":\"https://beyond.hg-cdn.com/asset/\",\"hgage\":\"\",\"sdkenv\":\"2\",\"u8root\":\"https://u8.gryphline.com/u8\",\"appcode\":4,\"channel\":\"prod\",\"netlogid\":\"GFz8RRMDN45w\",\"gameclose\":false,\"netlogurl\":\"http://native-log-collect.gryphline.com:32000/\",\"accounturl\":\"https://binding-api-account-prod.gryphline.com\",\"launcherurl\":\"https://launcher.gryphline.com\"}";
+            string resp = "{\"asset\":\"https://beyond.hycdn.cn/asset/\",\"hgage\":\"\",\"sdkenv\":\"2\",\"u8root\":\"https://u8.gryphline.com/u8\",\"appcode\":4,\"channel\":\"prod\",\"netlogid\":\"GFz8RRMDN45w\",\"gameclose\":false,\"netlogurl\":\"http://native-log-collect.gryphline.com:32000/\",\"accounturl\":\"https://binding-api-account-prod.gryphline.com\",\"launcherurl\":\"https://launcher.gryphline.com\"}";
 
             ctx.Response.StatusCode = 200;
             ctx.Response.ContentLength = resp.Length;
@@ -65,7 +65,7 @@ namespace Campofinale.Http
         public static async Task cn_android_res_version(HttpContext ctx)
         {
 
-            string resp = "{\"version\": \"2361763-612\", \"kickFlag\": false}";
+            string resp = "{\"version\": \"2377591-182\", \"kickFlag\": false}";
 
 
             ctx.Response.StatusCode = 200;
@@ -77,7 +77,18 @@ namespace Campofinale.Http
         [StaticRoute(HttpServerLite.HttpMethod.GET, "/api/remote_config/get_remote_config/3/prod-cbt/default/Android/game_config")]
         public static async Task game_config_cn_android(HttpContext ctx)
         {
-            string resp = "{\"mockLogin\": false, \"selectSrv\": false, \"enableHotUpdate\": true, \"enableEntitySpawnLog\": false}";
+            string resp = "{\"mockLogin\": false, \"selectSrv\": false, \"enableHotUpdate\": true, \"enableNpcOptimize\": false, \"enableEntitySpawnLog\": false}";
+
+            ctx.Response.StatusCode = 200;
+            ctx.Response.ContentLength = resp.Length;
+            ctx.Response.ContentType = "application/json";
+
+            await ctx.Response.SendAsync(resp);
+        }
+        [StaticRoute(HttpServerLite.HttpMethod.GET, "/api/game/get_latest_game_info")]
+        public static async Task get_latest_game_info(HttpContext ctx)
+        {
+            string resp = "{\"version\":\"0.5.5\",\"action\":0,\"update_type\":0,\"update_info\":{\"package\":null,\"patch\":null,\"custom_info\":\"\",\"source_package\":null},\"client_version\":\"\"}";
 
             ctx.Response.StatusCode = 200;
             ctx.Response.ContentLength = resp.Length;
