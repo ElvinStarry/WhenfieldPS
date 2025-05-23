@@ -109,11 +109,20 @@ namespace Campofinale
                     
                     if (clientSocket.Connected)
                     {
-                        Player client = new Player(clientSocket);
-                        clients.Add(client);
-                        client.receivorThread.Start();
+                        Logger.Print("Connected new client: " + clients.Count()+1);
+                        try
+                        {
+                            Player client = new Player(clientSocket);
+                            clients.Add(client);
+                            client.receivorThread.Start();
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.PrintError($" {e.Message}");
+                        }
+                        
 
-                        Logger.Print("Connected new client: " + clients.Count());
+                        
                     }
 
 
