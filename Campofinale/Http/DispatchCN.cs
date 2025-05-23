@@ -29,7 +29,7 @@ namespace Campofinale.Http
         [StaticRoute(HttpServerLite.HttpMethod.GET, "/api/remote_config/get_remote_config/3/prod-cbt/default/default/network_config")]
         public static async Task network_config_cn(HttpContext ctx)
         {
-            string resp = "{\"asset\":\"https://beyond.hycdn.cn/asset/\",\"hgage\":\"\",\"sdkenv\":\"2\",\"u8root\":\"https://u8.gryphline.com/u8\",\"appcode\":4,\"channel\":\"prod\",\"netlogid\":\"GFz8RRMDN45w\",\"gameclose\":false,\"netlogurl\":\"http://native-log-collect.gryphline.com:32000/\",\"accounturl\":\"https://binding-api-account-prod.gryphline.com\",\"launcherurl\":\"https://launcher.gryphline.com\"}";
+            string resp = "{  \"asset\": \"https://beyond.hycdn.cn/asset/\",  \"hgage\": \"https://web.hycdn.cn/endfield/protocol/cadpa-age.txt\",  \"sdkenv\": \"2\",  \"u8root\": \"https://as.hypergryph.com/u8\",  \"appcode\": 4,  \"channel\": \"prod\",  \"netlogid\": \"56RqF5G2gU9j\",  \"gameclose\": false,  \"netlogurl\": \"http://native-log-collect.hypergryph.com:32000\",  \"accounturl\": \"https://binding-api-account-prod.hypergryph.com\",  \"launcherurl\": \"https://launcher.hypergryph.com\"}";
 
             ctx.Response.StatusCode = 200;
             ctx.Response.ContentLength = resp.Length;
@@ -85,16 +85,6 @@ namespace Campofinale.Http
 
             await ctx.Response.SendAsync(resp);
         }
-        [StaticRoute(HttpServerLite.HttpMethod.GET, "/api/game/get_latest_game_info")]
-        public static async Task get_latest_game_info(HttpContext ctx)
-        {
-            string resp = "{\"version\":\"0.5.5\",\"action\":0,\"update_type\":0,\"update_info\":{\"package\":null,\"patch\":null,\"custom_info\":\"\",\"source_package\":null},\"client_version\":\"\"}";
-
-            ctx.Response.StatusCode = 200;
-            ctx.Response.ContentLength = resp.Length;
-            ctx.Response.ContentType = "application/json";
-
-            await ctx.Response.SendAsync(resp);
-        }
+       
     }
 }

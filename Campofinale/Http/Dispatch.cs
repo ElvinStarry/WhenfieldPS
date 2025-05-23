@@ -74,11 +74,24 @@ namespace Campofinale.Http
 
             await ctx.Response.SendAsync(resp);
         }
+        //WINDOWS
         [StaticRoute(HttpServerLite.HttpMethod.GET, "/api/game/get_latest")]
         public static async Task get_latest(HttpContext ctx)
         {
             string requestVersion = ctx.Request.Query.Elements["version"];
             string resp = "{\"action\":0,\"version\":\"" + GameConstants.GAME_VERSION + "\",\"request_version\":\"" + requestVersion + "\",\"pkg\":{\"packs\":[],\"total_size\":\"0\",\"file_path\":\"" + GameConstants.GAME_VERSION_ASSET_URL + "\",\"url\":\"\",\"md5\":\"\",\"package_size\":\"0\",\"file_id\":\"0\",\"sub_channel\":\"\"},\"patch\":null}";
+
+            ctx.Response.StatusCode = 200;
+            ctx.Response.ContentLength = resp.Length;
+            ctx.Response.ContentType = "application/json";
+
+            await ctx.Response.SendAsync(resp);
+        }
+        //ANDROID
+        [StaticRoute(HttpServerLite.HttpMethod.GET, "/api/game/get_latest_game_info")]
+        public static async Task get_latest_game_info(HttpContext ctx)
+        {
+            string resp = "{\"version\":\""+ GameConstants.GAME_VERSION_ANDROID + "\",\"action\":0,\"update_type\":0,\"update_info\":{\"package\":null,\"patch\":null,\"custom_info\":\"\",\"source_package\":null},\"client_version\":\"\"}";
 
             ctx.Response.StatusCode = 200;
             ctx.Response.ContentLength = resp.Length;
@@ -128,7 +141,26 @@ namespace Campofinale.Http
         [StaticRoute(HttpServerLite.HttpMethod.GET, "/app/v1/config")]
         public static async Task config_check(HttpContext ctx)
         {
+            string appCode = ctx.Request.Query.Elements["appCode"];
+
+
             string resp = "{\"data\":{\"agreementUrl\":{\"register\":\"https://user.gryphline.com/{language}/protocol/plain/terms_of_service\",\"privacy\":\"https://user.gryphline.com/{language}/protocol/plain/privacy_policy\",\"unbind\":\"https://user.gryphline.com/{language}/protocol/plain/endfield/privacy_policy\",\"account\":\"https://user.gryphline.com/{language}/protocol/plain/terms_of_service\",\"game\":\"https://user.gryphline.com/{language}/protocol/plain/endfield/privacy_policy\"},\"app\":{\"googleAndroidClientId\":\"\",\"googleIosClientId\":\"\",\"enableAutoLogin\":true,\"enablePayment\":true,\"enableGuestRegister\":false,\"needShowName\":true,\"displayName\":{\"en-us\":\"Arknights: Endfield\",\"ja-jp\":\"アークナイツ：エンドフィールド\",\"ko-kr\":\"명일방주：엔드필드\",\"zh-cn\":\"明日方舟：终末地\",\"zh-tw\":\"明日方舟：終末地\"},\"unbindAgreement\":[],\"unbindLimitedDays\":30,\"unbindCoolDownDays\":14,\"customerServiceUrl\":\"https://gryphline.helpshift.com/hc/{language}/4-arknights-endfield\",\"enableUnbindGrant\":false},\"customerServiceUrl\":\"https://gryphline.helpshift.com/hc/{language}/4-arknights-endfield\",\"thirdPartyRedirectUrl\":\"https://web-api.gryphline.com/callback/thirdPartyAuth.html\",\"scanUrl\":{\"login\":\"yj://scan_login\"},\"loginChannels\":[],\"userCenterUrl\":\"https://user.gryphline.com/pcSdk/userInfo?language={language}\"},\"msg\":\"OK\",\"status\":0,\"type\":\"A\"}";
+
+            if(appCode == "a65356244d22261b")
+            {
+                resp = "{  \"data\": {    \"antiAddiction\": {      \"minorPeriodEnd\": 21,      \"minorPeriodStart\": 20    },    \"payment\": [      {        \"key\": \"alipay\",        \"recommend\": true      },      {        \"key\": \"wechat\",        \"recommend\": false      },      {        \"key\": \"pcredit\",        \"recommend\": false      }    ],    \"customerServiceUrl\": \"https://chat.hypergryph.com/chat/h5/v2/index.html?sysnum=889ee281e3564ddf883942fe85764d44&channelid=2\",    \"cancelDeactivateUrl\": \"https://user-stable.hypergryph.com/cancellation\",    \"agreementUrl\": {      \"game\": \"https://hg-protocol-static-web-stable.hypergryph.net/protocol/plain/ak/index\",      \"unbind\": \"https://hg-protocol-static-web-stable.hypergryph.net/protocol/plain/ak/cancellation\",      \"gameService\": \"https://hg-protocol-static-web-stable.hypergryph.net/protocol/plain/ak/service\",      \"account\": \"https://user.hypergryph.com/protocol/plain/index\",      \"privacy\": \"https://user.hypergryph.com/protocol/plain/privacy\",      \"register\": \"https://user.hypergryph.com/protocol/plain/registration\",      \"updateOverview\": \"https://user.hypergryph.com/protocol/plain/overview_of_changes\",      \"childrenPrivacy\": \"https://user.hypergryph.com/protocol/plain/children_privacy\"    },    \"app\": {      \"enablePayment\": true,      \"enableAutoLogin\": true,      \"enableAuthenticate\": true,      \"enableAntiAddiction\": true,      \"enableUnbindGrant\": true,      \"wechatAppId\": \"wxeea7cc50e03edb28\",      \"alipayAppId\": \"2021004129658342\",      \"oneLoginAppId\": \"496b284079be97612a46266a9fdbfbd7\",      \"enablePaidApp\": false,      \"appName\": \"明日方舟终末地\",      \"appAmount\": 600,      \"needShowName\": true,      \"customerServiceUrl\": \"https://web-biz-platform-cs-center-stable.hypergryph.net/hg/?hg_token={hg_token}&source_from=sdk\",      \"needAntiAddictionAlert\": true,      \"enableScanLogin\": false,      \"deviceCheckMode\": 0,      \"enableGiftCode\": false    },    \"scanUrl\": {      \"login\": \"hypergryph://scan_login\"    },    \"userCenterUrl\": \"https://user-center-account-stable.hypergryph.net/pcSdk/userInfo\"  },  \"msg\": \"OK\",  \"status\": 0,  \"type\": \"A\"}";
+            }
+
+            ctx.Response.StatusCode = 200;
+            //ctx.Response.ContentLength = resp.Length;
+            ctx.Response.ContentType = "application/json";
+
+            await ctx.Response.SendAsync(resp);
+        }
+        [StaticRoute(HttpServerLite.HttpMethod.GET, "/general/v1/server_time")]
+        public static async Task server_time(HttpContext ctx)
+        {
+            string resp = "{\"data\":{\"serverTime\":1748021408,\"isHoliday\":true},\"msg\":\"OK\",\"status\":0,\"type\":\"A\"}";
 
 
 

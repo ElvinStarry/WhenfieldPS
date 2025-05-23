@@ -48,7 +48,7 @@ namespace Campofinale
             public delegate void HandlerDelegate(Player sender, string command, string[] args, Player target);
         }
         public static List<Player> clients = new List<Player>();
-        public static string ServerVersion = "1.1.2-dev";
+        public static string ServerVersion = "1.1.5-dev";
         public static bool Initialized = false;
         public static bool showLogs = true;
         public static bool showWarningLogs = true;
@@ -83,7 +83,7 @@ namespace Campofinale
             showLogs = config.logOptions.packets;
             showWarningLogs = config.logOptions.packetWarnings;
             showBodyLogs = config.logOptions.packetBodies;
-            Logger.Print($"Starting server version {ServerVersion} with supported client version {GameConstants.GAME_VERSION}");
+            Logger.Print($"Starting server version {ServerVersion} with supported client version: WINDOWS-{GameConstants.GAME_VERSION} and MOBILE-{GameConstants.GAME_VERSION_ANDROID}");
             Logger.Print($"Logs are {(showLogs ? "enabled" : "disabled")}");
             Logger.Print($"Warning logs are {(showWarningLogs ? "enabled" : "disabled")}");
             Logger.Print($"Packet body logs are {(showBodyLogs ? "enabled" : "disabled")}");

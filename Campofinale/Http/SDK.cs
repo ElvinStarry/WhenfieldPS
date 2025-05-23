@@ -72,8 +72,12 @@ namespace Campofinale.Http
             await ctx.Response.SendAsync(resp);
 
         }
-        
-        
+
+        [StaticRoute(HttpServerLite.HttpMethod.GET, "/batch_event")]
+        public static async Task batch_event(HttpContext ctx)
+        {
+            await ctx.Response.SendAsync("OK");
+        }
         [StaticRoute(HttpServerLite.HttpMethod.GET, "/user/info/v1/basic")]
         public static async Task account_info_get(HttpContext ctx)
         {
@@ -82,7 +86,10 @@ namespace Campofinale.Http
             string resp = "{\"data\":{\"hgId\":\"1799321925\",\"email\":\"dispatch@endfield.ps\",\"realEmail\":\"dispatch@endfield.ps\",\"isLatestUserAgreement\":true,\"nickName\":\"Campofinale\"},\"msg\":\"OK\",\"status\":0,\"type\":1}";
             if (account != null)
             {
-                resp = "{\"data\":{\"idCardNum\": 110102200610048887,\"hgId\":\"" + account.id + "\",\"email\":\"" + account.username +Server.config.dispatchServer.emailFormat +"\",\"realEmail\":\"" + account.username + Server.config.dispatchServer.emailFormat + "\",\"isLatestUserAgreement\":true,\"nickName\":\"" + account.username + "\",\"name\":\"AAAA\"},\"msg\":\"OK\",\"status\":0,\"type\":1}";
+                /*
+                 * {"data":{"hgId":"1326618825955","phone":"153****5243","email":null,"identityNum":"5002**********1619","identityName":"金*","isMinor":false,"isLatestUserAgreement":true},"msg":"OK","status":0,"type":"A"}
+                 */
+                resp = "{\"data\":{\"phone\":\"153****5243\", \"identityNum\": \"5002**********1619\",\"identityName\":\"金*\",\"isMinor\":false,\"hgId\":\"" + account.id + "\",\"email\":\"" + account.username +Server.config.dispatchServer.emailFormat +"\",\"realEmail\":\"" + account.username + Server.config.dispatchServer.emailFormat + "\",\"isLatestUserAgreement\":true,\"nickName\":\"" + account.username + "\"},\"msg\":\"OK\",\"status\":0,\"type\":\"A\"}";
             }
             else
             {
@@ -132,6 +139,7 @@ namespace Campofinale.Http
             string resp = "{\"msg\": \"Error\",  \"status\": 2,  \"type\": \"A\"}";
             if (account != null)
             {
+                
                 resp = "{\"data\": {  \"uid\": \"" + account.id + "\",  \"code\": \"" + account.grantToken + "\"  },  \"msg\": \"OK\",  \"status\": 0,  \"type\": \"A\"}";
             }
 
