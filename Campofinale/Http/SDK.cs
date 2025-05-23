@@ -140,7 +140,7 @@ namespace Campofinale.Http
             if (account != null)
             {
                 
-                resp = "{\"data\": {  \"uid\": \"" + account.id + "\",  \"code\": \"" + account.grantToken + "\"  },  \"msg\": \"OK\",  \"status\": 0,  \"type\": \"A\"}";
+                resp = "{\"data\": { \"token\": \"" + account.token + "\", \"uid\": \"" + account.id + "\",  \"code\": \"" + account.grantToken + "\"  },  \"msg\": \"OK\",  \"status\": 0,  \"type\": \"A\"}";
             }
 
             ctx.Response.StatusCode = 200;

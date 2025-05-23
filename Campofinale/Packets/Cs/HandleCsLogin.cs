@@ -57,7 +57,7 @@ namespace Campofinale.Packets.Cs
            // rsp.ServerPublicKey = ByteString.CopyFrom(encryptedEncKey);
        
             CSChaCha20 cipher = new CSChaCha20(encKey, serverEncrypNonce, 1);
-            if (req.ClientVersion == GameConstants.GAME_VERSION)
+            if (req.ClientVersion == GameConstants.GAME_VERSION || req.ClientVersion == GameConstants.GAME_VERSION_ANDROID)
             {
                 if (account == null)
                 {
