@@ -75,6 +75,12 @@ namespace Campofinale.Game.MissionSys
         }
         public void Load()
         {
+            
+            if (ResourceManager.missionDataTable.Count < 1)
+            {
+                //Disabling if no missions
+                return;
+            }
             //TODO Saving and first initialization
             AddMission("e0m0",MissionState.Processing);
         }
