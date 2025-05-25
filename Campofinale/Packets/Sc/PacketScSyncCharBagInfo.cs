@@ -10,6 +10,7 @@ namespace Campofinale.Packets.Sc
 
             ScSyncCharBagInfo proto = new()
             {
+                
                 ScopeName=1,
                 
                 CharInfo =

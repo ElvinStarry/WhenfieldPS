@@ -52,7 +52,7 @@ namespace Campofinale.Http
         [StaticRoute(HttpServerLite.HttpMethod.GET, "/api/remote_config/get_remote_config/3/prod-cbt/default/Windows/game_config")]
         public static async Task game_config_cn_windows(HttpContext ctx)
         {
-            string resp = "{\"mockLogin\": false, \"selectSrv\": false, \"enableHotUpdate\": true, \"enableEntitySpawnLog\": false}";
+            string resp = "{\"mockLogin\": false, \"selectSrv\": false, \"enableHotUpdate\": true, \"enableEntitySpawnLog\": false, \"enableCBT2AccessForbidden\": false}";
 
             ctx.Response.StatusCode = 200;
             ctx.Response.ContentLength = resp.Length;
@@ -77,7 +77,7 @@ namespace Campofinale.Http
         [StaticRoute(HttpServerLite.HttpMethod.GET, "/api/remote_config/get_remote_config/3/prod-cbt/default/Android/game_config")]
         public static async Task game_config_cn_android(HttpContext ctx)
         {
-            string resp = "{\"mockLogin\": false, \"selectSrv\": false, \"enableHotUpdate\": true, \"enableNpcOptimize\": false, \"enableEntitySpawnLog\": false}";
+            string resp = "{\"mockLogin\": false, \"selectSrv\": false, \"enableHotUpdate\": true, \"enableNpcOptimize\": false, \"enableEntitySpawnLog\": false, \"enableCBT2AccessForbidden\": false}";
 
             ctx.Response.StatusCode = 200;
             ctx.Response.ContentLength = resp.Length;
