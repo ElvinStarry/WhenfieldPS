@@ -53,15 +53,10 @@ namespace Campofinale
         public static bool showLogs = true;
         public static bool showWarningLogs = true;
         public static bool showBodyLogs = false;
-        public static Dispatch dispatch;
-        public static ResourceManager resourceManager;
-        public static ConfigFile config;
+        public static Dispatch? dispatch;
+        public static ConfigFile? config;
         public static List<CsMsgId> csMessageToHide = new() { CsMsgId.CsMoveObjectMove, CsMsgId.CsBattleOp,CsMsgId.CsPing };
         public static List<ScMsgId> scMessageToHide = new() { ScMsgId.ScMoveObjectMove, ScMsgId.ScPing };
-        public static ResourceManager GetResources()
-        {
-            return resourceManager;
-        }
         public void Start(ConfigFile config)
         {
             {
