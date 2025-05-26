@@ -80,7 +80,7 @@ namespace Campofinale.Game.Entities
                     SceneNumId = sceneNumId,
                     Position = Position.ToProto(),
                     Rotation = Rotation.ToProto(),
-
+                    
                     Type =(int) ObjectTypeIndex.Enemy, 
                 },
                 

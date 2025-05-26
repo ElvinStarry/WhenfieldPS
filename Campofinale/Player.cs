@@ -170,12 +170,13 @@ namespace Campofinale
                 }
                 bitsetManager.Load(data.bitsets);
                 savedSaveZone = data.savedSafeZone;
+                if(Server.config.serverOptions.missionsEnabled) missionSystem.Load();
             }
             else
             {
                 Initialize(); //only if no account found
             }
-            missionSystem.Load();   
+               
             sceneManager.Load();
             factoryManager.Load();
             return (data != null);
@@ -202,39 +203,80 @@ namespace Campofinale
         {
             return chars.Find(c => c.id==templateId);
         }
+        /// <summary>
+        /// Add a character with template id if not present in the chars list *Added in 1.1.6*
+        /// </summary>
+        /// <param name="id"></param>
+        public void AddCharacter(string id, bool notify = false)
+        {
+            Character chara = GetCharacter(id);
+            if (chara == null)
+            {
+                Character c = new Character(roleId, id, 1);
+                chars.Add(c);
+                if (notify)
+                {
+                    Send(new PacketScCharBagAddChar(this,c));
+                }
+            }
+        }
+        /// <summary>
+        /// Remove a character using template id *Added in 1.1.6*
+        /// </summary>
+        /// <param name="id"></param>
+        public void RemoveCharacter(string id)
+        {
+            Character chara = GetCharacter(id);
+            if (chara == null)
+            {
+                return;
+            }
+            chars.Remove(chara);
+            Send(new PacketScCharBagDelChar(this,chara));
+        }
+        public void ReplaceCharacter(string id, string newId)
+        {
+            Character chara = GetCharacter(id);
+            if (chara == null)
+            {
+                return;
+            }
+            chara.id = newId;
+            Send(new PacketScSyncCharBagInfo(this));
+        }
         public void Initialize()
         {
-            if (Server.config.serverOptions.defaultCharacters.giveAllCharacters)
+            if (Server.config.serverOptions.missionsEnabled)
             {
-                foreach (var item in ResourceManager.characterTable)
-                {
-                    chars.Add(new Character(roleId, item.Key, Server.config.serverOptions.defaultCharacters.defaultLevel));
-                }
+                chars.Add(new Character(roleId, "chr_0002_endminm", 1));
+                missionSystem.AddMission("e0m0", MissionState.Processing);
             }
             else
             {
-                foreach (var item in Server.config.serverOptions.defaultCharacters.characters)
+                foreach (var item in ResourceManager.characterTable)
                 {
-                    chars.Add(new Character(roleId, item, Server.config.serverOptions.defaultCharacters.defaultLevel));
+                    chars.Add(new Character(roleId, item.Key, 1));
+                }
+                UnlockImportantSystems();
+            }
+            if (Server.config.serverOptions.giveAllItems)
+            {
+                foreach (var item in itemTable)
+                {
+                    if (item.Value.GetStorage() != ItemStorageSpace.BagAndFactoryDepot)
+                    {
+                        if (item.Value.maxStackCount == -1)
+                        {
+                            inventoryManager.items.Add(new Item(roleId, item.Value.id, 10000000));
+                        }
+                        else
+                        {
+                            inventoryManager.items.Add(new Item(roleId, item.Value.id, item.Value.maxStackCount));
+                        }
+                    }
                 }
             }
             
-            foreach(var item in itemTable)
-            {
-                if(item.Value.GetStorage()!= ItemStorageSpace.BagAndFactoryDepot)
-                {
-                    if (item.Value.maxStackCount == -1)
-                    {
-                        inventoryManager.items.Add(new Item(roleId, item.Value.id, 10000000));
-                    }
-                    else
-                    {
-                        inventoryManager.items.Add(new Item(roleId, item.Value.id, item.Value.maxStackCount));
-                    }
-                }
-                
-                
-            }
             teams.Add(new Team()
             {
                 leader = chars[0].guid,
@@ -262,8 +304,8 @@ namespace Campofinale
                 }
 
             });*/
+            
 
-            UnlockImportantSystems();
             spaceshipManager.Load();
         }
         public void UnlockImportantSystems()
@@ -511,6 +553,7 @@ namespace Campofinale
             DatabaseManager.db.SavePlayerData(this);
             inventoryManager.Save();
             spaceshipManager.Save();
+            if(Server.config.serverOptions.missionsEnabled) missionSystem.Save();
             SaveCharacters();
             SaveMails();
             
@@ -635,6 +678,18 @@ namespace Campofinale
                 };
             }
             
+        }
+        /// <summary>
+        /// Unlock a system
+        /// </summary>
+        /// <param name="none"></param>
+        public void UnlockSystem(UnlockSystemType t)
+        {
+            unlockedSystems.Add((int)t);
+            Send(ScMsgId.ScUnlockSystem, new ScUnlockSystem()
+            {
+                UnlockSystemType = (int)t
+            });
         }
     }
 }

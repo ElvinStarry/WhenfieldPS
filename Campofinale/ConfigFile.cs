@@ -12,19 +12,28 @@
     {
         public int defaultSceneNumId = 87;
         public int maxPlayers = 20;
-        public CharactersOptions defaultCharacters = new();
+        /// <summary>
+        /// Experimental, Mission System is still a work in progress.
+        /// </summary>
+        public bool missionsEnabled = false;
+        public bool giveAllItems = false;
+        /// <summary>
+        /// Not yet implemented
+        /// </summary>
+        public bool useEncryption = false;
+        //public CharactersOptions defaultCharacters = new();
         public ServerOptions()
         {
         }
 
-        public class CharactersOptions
+        /*public class CharactersOptions
         {
             public int defaultLevel = 1;
             public bool giveAllCharacters = true;
             public List<string> characters = new List<string>(); //used if giveAllCharacters is false
 
             public CharactersOptions() { }
-        }
+        }*/
        /* public struct WelcomeMail
         {
         }*/

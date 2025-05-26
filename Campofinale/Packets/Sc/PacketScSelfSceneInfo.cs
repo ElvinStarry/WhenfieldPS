@@ -60,6 +60,7 @@ namespace Campofinale.Packets.Sc
             });
 
             //Levelscripts here?
+            if(infoReason!= SelfInfoReasonType.SlrChangeTeam)
             ResourceManager.GetLevelData(session.curSceneNumId).levelData.levelScripts.ForEach(l =>
             {
                 LevelScriptInfo script = new LevelScriptInfo()

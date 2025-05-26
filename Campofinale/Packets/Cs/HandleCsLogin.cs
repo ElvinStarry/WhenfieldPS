@@ -1,6 +1,7 @@
 ﻿using BeyondTools.VFS.Crypto;
 using Campofinale.Database;
 using Campofinale.Game;
+using Campofinale.Game.Character;
 using Campofinale.Network;
 using Campofinale.Packets.Sc;
 using Campofinale.Protocol;
@@ -16,11 +17,42 @@ namespace Campofinale.Packets.Cs
         public static void HandleCsSetGender(Player session, CsMsgId cmdId, Packet packet)
         {
             CsSetGender req = packet.DecodeBody<CsSetGender>();
+            if(session.chars.Count < 2)
+            {
+                if (req.Gender == Gender.GenMale)
+                {
+                    session.AddCharacter("chr_0002_endminm", true);
+                    session.RemoveCharacter("chr_0003_endminf");
+                }
+                else
+                {
+                    session.AddCharacter("chr_0003_endminf", true);
+                    session.RemoveCharacter("chr_0002_endminm");
+                }
+                session.teamIndex = 0;
+                session.teams[0].leader = session.chars[0].guid;
+                session.teams[0].members = new() { session.chars[0].guid };
+                ScCharBagSetTeam setTeam = new()
+                {
+                    CharTeam = { session.teams[0].members },
+                    LeaderId = session.teams[0].leader,
+                    ScopeName = 1,
+                    TeamIndex = 0,
+                    TeamType = CharBagTeamType.Main,
+                };
+                
+                session.Send(ScMsgId.ScCharBagSetTeam, setTeam);
+                session.Send(new PacketScCharBagSetCurrTeamIndex(session));
+                
+                session.Send(new PacketScSelfSceneInfo(session,SelfInfoReasonType.SlrChangeTeam));
+            }
+            
             ScSetGender rsp = new()
             {
                 Gender = req.Gender,
             };
             session.gender = rsp.Gender;
+            
             session.Send(ScMsgId.ScSetGender, rsp);
             
         }
@@ -95,29 +127,7 @@ namespace Campofinale.Packets.Cs
                 return;
             }
             session.Send(new PacketScSyncBaseData(session));
-            ScItemBagCommonSync common = new()
-            {
-                LostAndFound = new()
-                {
-                    InstList =
-                    {
-                        new ScdItemGrid()
-                        {
-                            GridIndex=0,
-                            Count=1,
-                            Id="item_port_power_pole_2",
-                            Inst = new()
-                            {
-                                InstId=300000000000,
-                                
-                            },
-                            
-                        }
-                    }
-                },
-                
-            };
-            session.Send(ScMsgId.ScItemBagCommonSync, common);
+           
             session.Send(new PacketScItemBagScopeSync(session, ItemValuableDepotType.Weapon));
             session.Send(new PacketScItemBagScopeSync(session, ItemValuableDepotType.WeaponGem));
             session.Send(new PacketScItemBagScopeSync(session, ItemValuableDepotType.Equip));
@@ -126,132 +136,7 @@ namespace Campofinale.Packets.Cs
             session.Send(new PacketScItemBagScopeSync(session, ItemValuableDepotType.SpecialItem));
             session.Send(new PacketScSyncAllMail(session));
             session.Send(new PacketScSceneCollectionSync(session));
-            string json1 = File.ReadAllText("44_ScSyncAllMission.json");
-           
-            
-            ScSyncAllMission m = Newtonsoft.Json.JsonConvert.DeserializeObject<ScSyncAllMission>(json1);
-            m.TrackMissionId = "";
-            
-            //Disabled the hardcoded one and enable the missionSystem one
-            //session.Send(ScMsgId.ScSyncAllMission, session.missionSystem.ToProto());
-            session.Send(ScMsgId.ScSyncAllMission, m);
-            /*ession.Send(ScMsgId.ScSyncAllMission, new ScSyncAllMission()
-            {
-                NewMissionTags =
-                {
-                    
-                },
-                
-                Missions =
-                {
-                    {"e0m0", new Mission()
-                    {
-                        MissionId="e0m0",
-                        MissionState=(int)MissionState.Processing,
-                        SucceedId=-1,
-                        Properties =
-                        {
-                            {1,new DynamicParameter()
-                            {
-                                RealType=1,
-                                ValueType=1,
-                                ValueBoolList =
-                                {
-                                    false
-                                }
-                            } }
-                        }
-                    } }
-                },
-                TrackMissionId = "e0m0",
-                
-                CurQuests =
-                {
-                    
-                    {"e0m0_q#1", new Quest()
-                    {
-                        QuestId="e0m0_q#1",
-                        QuestState=(int)QuestState.Processing,
-                        QuestObjectives =
-                        {
-                            new QuestObjective()
-                            {
-                                ConditionId="f6415b84",
-                                
-                                IsComplete=false
-                            }
-                        }
-                    } },
-                    {"e0m0_q#2", new Quest()
-                    {
-                        QuestId="e0m0_q#2",
-                        QuestState=(int)QuestState.Available,
-                        QuestObjectives =
-                        {
-                           new QuestObjective()
-                           {
-                               ConditionId="81736ca7",
-                               IsComplete=false,
-                           }
-                        }
-                    } },
-                    {"e0m0_q#3", new Quest()
-                    {
-                        QuestId="e0m0_q#3",
-                        QuestState=(int)QuestState.Available,
-                        QuestObjectives =
-                        {
- 
-                        }
-                    } },
-                    {"e0m0_q#4", new Quest()
-                    {
-                        QuestId="e0m0_q#4",
-                        QuestState=(int)QuestState.Available,
-                        QuestObjectives =
-                        {
-
-                        }
-                    } },
-                    {"e0m0_q#5", new Quest()
-                    {
-                        QuestId="e0m0_q#5",
-                        QuestState=(int)QuestState.Available,
-                        QuestObjectives =
-                        {
-
-                        }
-                    } },
-                    {"e0m0_q#6", new Quest()
-                    {
-                        QuestId="e0m0_q#6",
-                        QuestState=(int)QuestState.Available,
-                        QuestObjectives =
-                        {
-
-                        }
-                    } },
-                    {"e0m0_q#7", new Quest()
-                    {
-                        QuestId="e0m0_q#7",
-                        QuestState=(int)QuestState.Available,
-                        QuestObjectives =
-                        {
-
-                        }
-                    } },
-                    {"e0m0_q#8", new Quest()
-                    {
-                        QuestId="e0m0_q#8",
-                        QuestState=(int)QuestState.Available,
-                        QuestObjectives =
-                        {
-
-                        }
-                    } }
-                }
-            });*/
-
+            session.Send(new PacketScSyncAllMission(session));
             session.Send(new PacketScGachaSync(session));
             ScSettlementSyncAll settlements = new ScSettlementSyncAll()
             {

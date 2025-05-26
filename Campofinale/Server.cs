@@ -174,7 +174,6 @@ namespace Campofinale
             dispatch = new Dispatch();
             dispatch.Start();
         }
-        public static CsMsgId[] hideLog = [];
 
         public static string ColoredText(string text, string color)
         {

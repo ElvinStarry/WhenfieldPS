@@ -20,17 +20,14 @@ namespace Campofinale.Packets.Cs
                 {
 
                 }
-                else
+                ScSceneTriggerClientInteractiveEvent tr = new()
                 {
-                    ScSceneTriggerClientInteractiveEvent tr = new()
-                    {
-                        EventName = req.EventName,
-                        Id = req.Id,
-                        SceneNumId = req.SceneNumId,
-                        
-                    };
-                    session.Send(ScMsgId.ScSceneTriggerClientInteractiveEvent, tr);
-                }
+                    EventName = req.EventName,
+                    Id = req.Id,
+                    SceneNumId = req.SceneNumId,
+
+                };
+                session.Send(ScMsgId.ScSceneTriggerClientInteractiveEvent, tr);
             }
             
         }

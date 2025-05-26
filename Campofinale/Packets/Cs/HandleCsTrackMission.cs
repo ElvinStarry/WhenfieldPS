@@ -10,11 +10,12 @@ namespace Campofinale.Packets.Cs
         {
             CsTrackMission req = packet.DecodeBody<CsTrackMission>();
             session.missionSystem.curMission = req.MissionId;
+            
             ScTrackMissionChange rsp = new()
             {
                 MissionId = req.MissionId
             };
-            session.Send(ScMsgId.ScTrackMissionChange, rsp);
+            session.Send(ScMsgId.ScTrackMissionChange, rsp,packet.csHead.UpSeqid);
         }
     }
 }

@@ -42,7 +42,7 @@ namespace Campofinale.Game.Entities
             {
                 CommonInfo = new()
                 {
-                    Hp = 100,
+                    Hp = 1,
                     
                     Id = guid,
                     Templateid = templateId,

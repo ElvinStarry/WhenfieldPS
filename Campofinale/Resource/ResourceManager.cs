@@ -480,6 +480,8 @@ namespace Campofinale.Resource
             public List<string> levelDataPaths;
             [JsonIgnore]
             public LevelData levelData;
+
+            //public List<LevelData> levelDataList;
             public class LevelData
             {
                 public string sceneId="";
@@ -754,6 +756,13 @@ namespace Campofinale.Resource
             {
                 float dx = x - other.x;
                 float dy = y - other.y;
+                float dz = z - other.z;
+                return MathF.Sqrt(dx * dx + dy * dy + dz * dz);
+            }
+            public float DistanceXZ(Vector3f other)
+            {
+                float dx = x - other.x;
+                float dy = 0;
                 float dz = z - other.z;
                 return MathF.Sqrt(dx * dx + dy * dy + dz * dz);
             }

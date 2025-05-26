@@ -16,7 +16,7 @@ namespace Campofinale.Packets.Cs
             {
                 session.bitsetManager.AddValue((BitsetType)req.Type, (int)item);
             }
-            session.Send(new PacketScBitsetAdd(session,req.Type,req.Value.ToList()));    
+            session.Send(new PacketScBitsetAdd(session,req.Type,req.Value.ToList()),packet.csHead.UpSeqid);    
 
         }
        

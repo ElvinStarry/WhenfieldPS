@@ -19,6 +19,13 @@ namespace Campofinale.Game.MissionSys
         }
         public ScSyncAllMission ToProto()
         {
+            if (!Server.config.serverOptions.missionsEnabled)
+            {
+                string json1 = File.ReadAllText("44_ScSyncAllMission.json");
+                ScSyncAllMission m = Newtonsoft.Json.JsonConvert.DeserializeObject<ScSyncAllMission>(json1);
+                m.TrackMissionId = "";
+                return m;
+            }
             ScSyncAllMission sync = new ScSyncAllMission();
             sync.TrackMissionId = curMission;
             missions.ForEach(m =>
@@ -71,18 +78,23 @@ namespace Campofinale.Game.MissionSys
         }
         public void Save()
         {
-
+            DatabaseManager.db.UpsertMissionData(new MissionData()
+            {
+                roleId=owner.roleId,
+                curMission=curMission,
+                missions=missions,
+                quests=quests,
+            });
         }
         public void Load()
         {
-            
-            if (ResourceManager.missionDataTable.Count < 1)
+            MissionData data= DatabaseManager.db.LoadMissionData(owner.roleId);
+            if (data != null)
             {
-                //Disabling if no missions
-                return;
+                curMission = data.curMission;
+                missions = data.missions;
+                quests = data.quests;
             }
-            //TODO Saving and first initialization
-            AddMission("e0m0",MissionState.Processing);
         }
         public void AddMission(string id,MissionState state = MissionState.Available, bool notify=false)
         {

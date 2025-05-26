@@ -19,7 +19,7 @@ namespace Campofinale.Packets.Sc
                 SceneNumId = sceneNumId,
                 
             };
-
+            
             SetData(ScMsgId.ScEnterSceneNotify, proto);
         }
 

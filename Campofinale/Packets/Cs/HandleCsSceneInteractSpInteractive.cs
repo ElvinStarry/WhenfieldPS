@@ -30,6 +30,7 @@ namespace Campofinale.Packets.Cs
                 ScSceneInteractSpInteractive rsp = new()
                 {
                     ObjId = req.ObjId,
+                    
                 };
                 session.Send(ScMsgId.ScSceneInteractSpInteractive, rsp);
             }

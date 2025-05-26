@@ -11,9 +11,6 @@ class Program
     private static void StartServer(string[] args)
     {
         Console.Title = "Initializing...";
-
-        //bool disableLogs = args.Length > 0 && args[0].ToLower() == "nologs";
-
         ConfigFile config = new ConfigFile();
         if (File.Exists("server_config.json"))
         {
@@ -27,7 +24,7 @@ class Program
         }).Start();
         AppDomain.CurrentDomain.ProcessExit += (_, _) =>
         {
-            Console.WriteLine("Shutting down...");
+            Logger.Print("Shutting down...");
             
             Server.Shutdown();
         };

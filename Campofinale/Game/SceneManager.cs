@@ -215,7 +215,6 @@ namespace Campofinale.Game
         {
             return scenes.Find(s=>s.sceneNumId == sceneNumId).guid;
         }
-        //TODO Save and get
         public void Load()
         {
             foreach (var level in ResourceManager.levelDatas)
@@ -335,19 +334,20 @@ namespace Campofinale.Game
             lv_scene.levelData.enemies.ForEach(en =>
             {
                 if(GetOwner().noSpawnAnymore.Contains(en.levelLogicId) && sceneNumId != 87) return;
-                if (en.defaultHide) return;
+                
                 EntityMonster entity = new(en.entityDataIdKey,en.level,ownerId,en.position,en.rotation, sceneNumId, en.levelLogicId)
                 {
                     type=en.entityType,
                     belongLevelScriptId=en.belongLevelScriptId,
-                    levelLogicId = en.levelLogicId
+                    levelLogicId = en.levelLogicId,
+                    
                 };
                 entities.Add(entity);
             });
             lv_scene.levelData.npcs.ForEach(en =>
             {
-                if (en.defaultHide) return;
-                if (en.npcGroupId.Contains("chr")) return;
+                
+                if (en.npcGroupId.Contains("chr") && sceneNumId== 99) return;
                 EntityNpc entity = new(en.entityDataIdKey,ownerId,en.position,en.rotation, sceneNumId, en.levelLogicId)
                 {
                     belongLevelScriptId = en.belongLevelScriptId,
@@ -359,8 +359,19 @@ namespace Campofinale.Game
             });
             GetEntityExcludingChar().ForEach(e =>
             {
-               // GetOwner().Send(new PacketScObjectEnterView(GetOwner(), new List<Entity>() { e}));
+                if(e is EntityInteractive)
+                {
+                  //  e.spawned = true;
+                  //  GetOwner().Send(new PacketScObjectEnterView(GetOwner(), new List<Entity>() { e }));
+                }
+                
 
+            });
+            GetEntityExcludingChar().FindAll(e=> e is not EntityInteractive).ForEach(e =>
+            {
+                
+               // e.spawned = true;
+              //  GetOwner().Send(new PacketScObjectEnterView(GetOwner(), new List<Entity>() { e }));
             });
             UpdateShowEntities();
            
@@ -370,10 +381,16 @@ namespace Campofinale.Game
         {
             en.spawned = true;
             List<Entity> toSpawn = new List<Entity>();
-            if(en.belongLevelScriptId != 0)
+            toSpawn.Add(en);
+            foreach (Entity e in GetEntityExcludingChar().FindAll(e => e.belongLevelScriptId == en.belongLevelScriptId && e.spawned == false))
+            {
+                e.spawned = true;
+                toSpawn.Add(e);
+            }
+            /*if(en.belongLevelScriptId != 0)
             if (spawnedCheck)
             {
-                foreach (Entity e in GetEntityExcludingChar().FindAll(e => e.belongLevelScriptId == en.belongLevelScriptId && e.spawned == false))
+                foreach (Entity e in GetEntityExcludingChar().FindAll(e => e.belongLevelScriptId == en.belongLevelScriptId && e.spawned == false && e.Position.Distance(GetOwner().position) < 100))
                 {
                     e.spawned = true;
                     toSpawn.Add(e);
@@ -387,8 +404,8 @@ namespace Campofinale.Game
                     toSpawn.Add(e);
 
                 }
-            }
-            toSpawn.Add(en);
+            }*/
+            
             toSpawn.ForEach(e =>
             {
                 GetOwner().Send(new PacketScObjectEnterView(GetOwner(), new List<Entity>() { e}));
@@ -397,9 +414,12 @@ namespace Campofinale.Game
         }
         public void UpdateShowEntities()
         {
+
             foreach(Entity en in GetEntityExcludingChar())
             {
-                if (en.Position.Distance(GetOwner().position) < 100)
+                float minDis = en is EntityInteractive ? 180 : 50;
+                //todo new system
+                if (en.Position.DistanceXZ(GetOwner().position) < minDis)
                 {
                     if (!en.spawned)
                     {

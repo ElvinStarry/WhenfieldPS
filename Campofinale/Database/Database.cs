@@ -2,6 +2,7 @@
 using Campofinale.Game.Character;
 using Campofinale.Game.Gacha;
 using Campofinale.Game.Inventory;
+using Campofinale.Game.MissionSys;
 using Campofinale.Game.Spaceship;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
@@ -38,6 +39,14 @@ namespace Campofinale.Database
         public Gender gender = Gender.GenFemale;
         public Dictionary<int, Item> bag = new();
     }
+    public class MissionData
+    {
+        [BsonId]
+        public ulong roleId;
+        public List<GameMission> missions = new();
+        public List<GameQuest> quests = new();
+        public string curMission = "e0m0";
+    }
     public class Account
     {
         public string id;
@@ -64,11 +73,16 @@ namespace Campofinale.Database
         public Database(string connectionString, string dbName)
         {
             var client = new MongoClient(connectionString);
+            
             _database = client.GetDatabase(dbName);
         }
         public List<Mail> LoadMails(ulong roleId)
         {
             return _database.GetCollection<Mail>("mails").Find(c => c.owner == roleId).ToList();
+        }
+        public MissionData LoadMissionData(ulong roleId)
+        {
+            return _database.GetCollection<MissionData>("missionsData").Find(c => c.roleId == roleId).FirstOrDefault();
         }
         public List<Character> LoadCharacters(ulong roleId)
         {
@@ -173,6 +187,19 @@ namespace Campofinale.Database
             collection.ReplaceOne(
                 filter,
                 player,
+                new ReplaceOptions { IsUpsert = true }
+            );
+        }
+        public void UpsertMissionData(MissionData data)
+        {
+            var collection = _database.GetCollection<MissionData>("missionsData");
+
+            var filter =
+                Builders<MissionData>.Filter.Eq(p => p.roleId, data.roleId);
+
+            collection.ReplaceOne(
+                filter,
+                data,
                 new ReplaceOptions { IsUpsert = true }
             );
         }
