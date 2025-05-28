@@ -26,6 +26,8 @@ namespace Campofinale.Resource.Table
         ProcessQuest = 2,
         SpawnEnemy = 3,
         UnlockSystem = 4,
-
+        EnterScene = 5,
+        AddMission = 6,
+        CompleteMission = 7,
     }
 }

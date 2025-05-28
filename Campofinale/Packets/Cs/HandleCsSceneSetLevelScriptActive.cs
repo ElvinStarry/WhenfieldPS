@@ -25,7 +25,13 @@ namespace Campofinale.Packets.Cs
 
                     State = 3
                 };
+
+                if (!session.sceneManager.GetCurScene().activeScripts.Contains(req.ScriptId))
+                {
+                    session.sceneManager.GetCurScene().activeScripts.Add(req.ScriptId);
+                }
                 session.Send(ScMsgId.ScSceneLevelScriptStateNotify, rsp);
+                
             }
             
 
@@ -45,7 +51,7 @@ namespace Campofinale.Packets.Cs
                     
                     State = 4
                 };
-                
+               
                 session.Send(ScMsgId.ScSceneLevelScriptStateNotify, rsp,packet.csHead.UpSeqid);
             }
            
@@ -68,6 +74,15 @@ namespace Campofinale.Packets.Cs
                 case ScriptActionType.UnlockSystem:
                     UnlockSystemType type = (UnlockSystemType)Enum.Parse(typeof(UnlockSystemType), action.valueStr[0]);
                     player.UnlockSystem(type);
+                    break;
+                case ScriptActionType.EnterScene:
+                    player.EnterScene((int)action.valueUlong[0]);
+                    break;
+                case ScriptActionType.AddMission:
+                    player.missionSystem.AddMission(action.valueStr[0]);
+                    break;
+                case ScriptActionType.CompleteMission:
+                    //player.missionSystem.C(action.valueStr[0]);
                     break;
                 default:
                     Logger.PrintWarn("Script Action not implemented");

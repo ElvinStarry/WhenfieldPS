@@ -21,6 +21,7 @@ namespace Campofinale.Game.Entities
         public List<ParamKeyValue> properties=new();
         public int sceneNumId;
         public bool spawned = false;
+        public bool defaultHide = false;
         public Entity()
         {
 

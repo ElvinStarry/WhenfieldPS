@@ -14,6 +14,7 @@ namespace Campofinale.Game.Entities
         {
 
         }
+        
         public EntityInteractive(string templateId, ulong worldOwner, Vector3f pos, Vector3f rot, int scene, ulong g=0)
         {
             if (g == 0)
@@ -86,6 +87,7 @@ namespace Campofinale.Game.Entities
                     (bool, int) index = GetPropertyIndex(prop.key, proto.Properties.Keys.Count > 0 ? proto.Properties.Keys.Max() : 0);
                     if (p != null && index.Item1)
                     {
+                        if(!proto.Properties.ContainsKey(index.Item2))
                         proto.Properties.Add(index.Item2, p);
                        
                     }

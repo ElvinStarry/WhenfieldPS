@@ -253,6 +253,8 @@ namespace Campofinale.Game
         public List<Entity> entities = new();
         [BsonIgnore, JsonIgnore]
         public bool alreadyLoaded = false;
+        [BsonIgnore, JsonIgnore]
+        public List<ulong> activeScripts = new();
         public int GetCollection(string id)
         {
             if (collections.ContainsKey(id))
@@ -379,53 +381,35 @@ namespace Campofinale.Game
         }
         public void SpawnEntity(Entity en,bool spawnedCheck=true)
         {
+            if (!activeScripts.Contains(en.belongLevelScriptId) && en.defaultHide && en.belongLevelScriptId != 0)
+            {
+                return;
+            }
             en.spawned = true;
-            List<Entity> toSpawn = new List<Entity>();
-            toSpawn.Add(en);
-            foreach (Entity e in GetEntityExcludingChar().FindAll(e => e.belongLevelScriptId == en.belongLevelScriptId && e.spawned == false))
+            ParamKeyValue targetList=en.properties.Find(p => p.key == "target_list");
+            if(targetList!=null)
+            foreach (Entity e in GetEntityExcludingChar().FindAll(e=>e.spawned == false && targetList.value.valueArray.Any(v=>v.valueBit64== (long)e.levelLogicId)))
             {
-                e.spawned = true;
-                toSpawn.Add(e);
+                SpawnEntity(e);
             }
-            /*if(en.belongLevelScriptId != 0)
-            if (spawnedCheck)
-            {
-                foreach (Entity e in GetEntityExcludingChar().FindAll(e => e.belongLevelScriptId == en.belongLevelScriptId && e.spawned == false && e.Position.Distance(GetOwner().position) < 100))
-                {
-                    e.spawned = true;
-                    toSpawn.Add(e);
-                }
-            }
-            else
-            {
-                foreach (Entity e in GetEntityExcludingChar().FindAll(e => e.belongLevelScriptId == en.belongLevelScriptId && e != en))
-                {
-                    e.spawned = true;
-                    toSpawn.Add(e);
-
-                }
-            }*/
             
-            toSpawn.ForEach(e =>
-            {
-                GetOwner().Send(new PacketScObjectEnterView(GetOwner(), new List<Entity>() { e}));
-            });
-            
+            GetOwner().Send(new PacketScObjectEnterView(GetOwner(), new List<Entity>() { en}));
         }
         public void UpdateShowEntities()
         {
 
             foreach(Entity en in GetEntityExcludingChar())
             {
-                float minDis = en is EntityInteractive ? 180 : 50;
+                float minDis = 100;
+                
                 //todo new system
                 if (en.Position.DistanceXZ(GetOwner().position) < minDis)
                 {
                     if (!en.spawned)
                     {
                         SpawnEntity(en);
-                        
-                        
+
+
                     }
                 }
                 else
