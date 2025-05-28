@@ -26,12 +26,14 @@ namespace Campofinale.Packets.Cs
                     State = 3
                 };
 
+               
+                session.Send(ScMsgId.ScSceneLevelScriptStateNotify, rsp);
                 if (!session.sceneManager.GetCurScene().activeScripts.Contains(req.ScriptId))
                 {
                     session.sceneManager.GetCurScene().activeScripts.Add(req.ScriptId);
+                    session.sceneManager.GetCurScene().UpdateShowEntities();
                 }
-                session.Send(ScMsgId.ScSceneLevelScriptStateNotify, rsp);
-                
+
             }
             
 

@@ -127,7 +127,10 @@ namespace Campofinale.Packets.Cs
                 return;
             }
             session.Send(new PacketScSyncBaseData(session));
-           
+            session.Send(ScMsgId.ScSceneClientIdInfo, new ScSceneClientIdInfo()
+            {
+               
+            });
             session.Send(new PacketScItemBagScopeSync(session, ItemValuableDepotType.Weapon));
             session.Send(new PacketScItemBagScopeSync(session, ItemValuableDepotType.WeaponGem));
             session.Send(new PacketScItemBagScopeSync(session, ItemValuableDepotType.Equip));

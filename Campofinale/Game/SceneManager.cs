@@ -279,6 +279,7 @@ namespace Campofinale.Game
         {
             return entities.FindAll(c => c is not EntityCharacter);
         }
+
         public void Unload()
         {
             List<ulong> guids = new();
@@ -375,6 +376,7 @@ namespace Campofinale.Game
                // e.spawned = true;
               //  GetOwner().Send(new PacketScObjectEnterView(GetOwner(), new List<Entity>() { e }));
             });
+            
             UpdateShowEntities();
            
 
@@ -393,38 +395,50 @@ namespace Campofinale.Game
                 SpawnEntity(e);
             }
             
-            GetOwner().Send(new PacketScObjectEnterView(GetOwner(), new List<Entity>() { en}));
+            GetOwner().Send(new PacketScObjectEnterView(GetOwner(), new List<Entity>() { en }));
         }
         public void UpdateShowEntities()
         {
-
-            foreach(Entity en in GetEntityExcludingChar())
+            List<Entity> toSpawn = new();
+            foreach(Entity e in GetEntityExcludingChar())
             {
-                float minDis = 100;
+                if(e.spawned==false && (activeScripts.Contains(e.belongLevelScriptId) || e.belongLevelScriptId==0))
+                {
+                    toSpawn.Add(e);
+                    e.spawned= true;
+                }
                 
-                //todo new system
-                if (en.Position.DistanceXZ(GetOwner().position) < minDis)
-                {
-                    if (!en.spawned)
-                    {
-                        SpawnEntity(en);
-
-
-                    }
-                }
-                else
-                {
-                   
-                    /*if (en.spawned)
-                    {
-                        
-                        en.spawned = false;
-                        GetOwner().Send(new PacketScObjectLeaveView(GetOwner(), new List<ulong>() { en.guid }));
-                        en.Position=en.BornPos;
-                        en.Rotation = en.Rotation;
-                    }*/
-                }
             }
+            if(toSpawn.Count > 0)
+            GetOwner().Send(new PacketScObjectEnterView(GetOwner(), toSpawn));
+            
+            /* foreach(Entity en in GetEntityExcludingChar())
+             {
+                 float minDis = 100;
+
+                 //todo new system
+                 if (en.Position.DistanceXZ(GetOwner().position) < minDis)
+                 {
+                     if (!en.spawned)
+                     {
+                         SpawnEntity(en);
+
+
+                     }
+                 }
+                 else
+                 {
+
+                     /*if (en.spawned)
+                     {
+
+                         en.spawned = false;
+                         GetOwner().Send(new PacketScObjectLeaveView(GetOwner(), new List<ulong>() { en.guid }));
+                         en.Position=en.BornPos;
+                         en.Rotation = en.Rotation;
+                     }
+                 }
+             }*/
         }
 
         public Player GetOwner()
