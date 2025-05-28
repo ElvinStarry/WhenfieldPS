@@ -5,6 +5,7 @@ using Campofinale.Protocol;
 using Campofinale.Resource;
 using Campofinale.Resource.Table;
 using Pastel;
+using System.Net.Sockets;
 using static Campofinale.Resource.ResourceManager.LevelScene.LevelData;
 
 namespace Campofinale.Packets.Cs
@@ -26,13 +27,17 @@ namespace Campofinale.Packets.Cs
                     State = 3
                 };
 
-               
-                session.Send(ScMsgId.ScSceneLevelScriptStateNotify, rsp);
                 if (!session.sceneManager.GetCurScene().activeScripts.Contains(req.ScriptId))
                 {
                     session.sceneManager.GetCurScene().activeScripts.Add(req.ScriptId);
                     session.sceneManager.GetCurScene().UpdateShowEntities();
                 }
+                session.Send(ScMsgId.ScSceneLevelScriptStateNotify, rsp);
+
+
+            }
+            else
+            {
 
             }
             
@@ -50,17 +55,29 @@ namespace Campofinale.Packets.Cs
                 {
                     SceneNumId = req.SceneNumId,
                     ScriptId = req.ScriptId,
-                    
+
                     State = 4
                 };
-               
-                session.Send(ScMsgId.ScSceneLevelScriptStateNotify, rsp,packet.csHead.UpSeqid);
-            }
-           
 
+                session.Send(ScMsgId.ScSceneLevelScriptStateNotify, rsp, packet.csHead.UpSeqid);
+            }
+            else
+            {
+                ScSceneLevelScriptStateNotify rsp = new ScSceneLevelScriptStateNotify()
+                {
+                    SceneNumId = req.SceneNumId,
+                    ScriptId = req.ScriptId,
+
+                    State = 4
+                };
+
+                session.Send(ScMsgId.ScSceneLevelScriptStateNotify, rsp, packet.csHead.UpSeqid);
+            }
+            
+            
         }
         
-        public static void ExecuteEventAction(Player player, ScriptAction action)
+        public static void ExecuteEventAction(Player player, ScriptAction action, CsSceneLevelScriptEventTrigger req)
         {
             switch (action.action)
             {
@@ -71,7 +88,17 @@ namespace Campofinale.Packets.Cs
                     player.missionSystem.ProcessQuest(action.valueStr[0]);
                     break;
                 case ScriptActionType.SpawnEnemy:
-                    player.sceneManager.GetCurScene().SpawnEnemy(action.valueUlong[0]);
+                    foreach (ulong id in action.valueUlong)
+                    {
+                        player.sceneManager.GetCurScene().SpawnEnemy(id);
+                    }
+                    
+                    break;
+                case ScriptActionType.SpawnEnemyByScriptId:
+                    foreach(ulong id in action.valueUlong)
+                    {
+                        player.sceneManager.GetCurScene().SpawnEnemyByScriptId(id);
+                    }
                     break;
                 case ScriptActionType.UnlockSystem:
                     UnlockSystemType type = (UnlockSystemType)Enum.Parse(typeof(UnlockSystemType), action.valueStr[0]);
@@ -82,6 +109,19 @@ namespace Campofinale.Packets.Cs
                     break;
                 case ScriptActionType.AddMission:
                     player.missionSystem.AddMission(action.valueStr[0]);
+                    break;
+                case ScriptActionType.CallClientEvent:
+                    foreach(string id in action.valueStr)
+                    {
+                        ScSceneTriggerClientLevelScriptEvent trigger = new()
+                        {
+                            EventName = id,
+                            SceneNumId = req.SceneNumId,
+                            ScriptId = req.ScriptId,
+                        };
+
+                        player.Send(ScMsgId.ScSceneTriggerClientLevelScriptEvent, trigger);
+                    }
                     break;
                 case ScriptActionType.CompleteMission:
                     //player.missionSystem.C(action.valueStr[0]);
@@ -104,7 +144,7 @@ namespace Campofinale.Packets.Cs
                 Logger.Print($"{levelScriptEvent.comment}");
                 levelScriptEvent.actions.ForEach(a =>
                 {
-                    ExecuteEventAction(session, a);
+                    ExecuteEventAction(session, a,req);
                 });
             }
             else
@@ -130,15 +170,8 @@ namespace Campofinale.Packets.Cs
                 }
             }
             session.Send(ScMsgId.ScSceneUpdateLevelScriptProperty, update1);
-            /*ScSceneTriggerClientLevelScriptEvent trigger = new()
-            {
-                EventName = req.EventName,
-                SceneNumId = req.SceneNumId,
-                ScriptId = req.ScriptId,
-                
-            };
-            session.Send(ScMsgId.ScSceneTriggerClientLevelScriptEvent, trigger);
-            ScSceneUpdateLevelScriptProperty update2 = new()
+            
+            /*ScSceneUpdateLevelScriptProperty update2 = new()
             {
                 SceneNumId = req.SceneNumId,
                 ScriptId = req.ScriptId,

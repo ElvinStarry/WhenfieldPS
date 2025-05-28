@@ -29,5 +29,7 @@ namespace Campofinale.Resource.Table
         EnterScene = 5,
         AddMission = 6,
         CompleteMission = 7,
+        SpawnEnemyByScriptId = 8,
+        CallClientEvent = 9
     }
 }

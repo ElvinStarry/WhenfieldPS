@@ -29,6 +29,7 @@ namespace Campofinale.Packets.Cs
                     session.AddCharacter("chr_0003_endminf", true);
                     session.RemoveCharacter("chr_0002_endminm");
                 }
+                
                 session.teamIndex = 0;
                 session.teams[0].leader = session.chars[0].guid;
                 session.teams[0].members = new() { session.chars[0].guid };
@@ -129,7 +130,8 @@ namespace Campofinale.Packets.Cs
             session.Send(new PacketScSyncBaseData(session));
             session.Send(ScMsgId.ScSceneClientIdInfo, new ScSceneClientIdInfo()
             {
-               
+              RoleIdx=6,
+              LastMaxIdx=session.random.v
             });
             session.Send(new PacketScItemBagScopeSync(session, ItemValuableDepotType.Weapon));
             session.Send(new PacketScItemBagScopeSync(session, ItemValuableDepotType.WeaponGem));

@@ -297,7 +297,7 @@ namespace Campofinale.Game
         public void Load()
         {
             if (info().isSeamless && alreadyLoaded) return;
-            alreadyLoaded = true;
+            //alreadyLoaded = true;
             Unload();
             LevelScene lv_scene = ResourceManager.GetLevelData(sceneNumId);
            
@@ -345,6 +345,7 @@ namespace Campofinale.Game
                     levelLogicId = en.levelLogicId,
                     
                 };
+                entity.defaultHide=en.defaultHide;
                 entities.Add(entity);
             });
             lv_scene.levelData.npcs.ForEach(en =>
@@ -381,6 +382,7 @@ namespace Campofinale.Game
            
 
         }
+        
         public void SpawnEntity(Entity en,bool spawnedCheck=true)
         {
             if (!activeScripts.Contains(en.belongLevelScriptId) && en.defaultHide && en.belongLevelScriptId != 0)
@@ -404,8 +406,12 @@ namespace Campofinale.Game
             {
                 if(e.spawned==false && (activeScripts.Contains(e.belongLevelScriptId) || e.belongLevelScriptId==0))
                 {
-                    toSpawn.Add(e);
-                    e.spawned= true;
+                    if (!e.defaultHide)
+                    {
+                        toSpawn.Add(e);
+                        e.spawned = true;
+                    }
+                    
                 }
                 
             }
@@ -445,7 +451,14 @@ namespace Campofinale.Game
         {
             return Server.clients.Find(c => c.roleId == ownerId);
         }
-
+        public void SpawnEnemyByScriptId(ulong id)
+        {
+            GetEntityExcludingChar().FindAll(e => e.belongLevelScriptId == id).ForEach(e =>
+            {
+                e.spawned = true;
+            });
+            GetOwner().Send(new PacketScObjectEnterView(GetOwner(), GetEntityExcludingChar().FindAll(e => e.belongLevelScriptId == id)));
+        }
         public void SpawnEnemy(ulong v)
         {
             LevelScene lv_scene = ResourceManager.GetLevelData(sceneNumId);
@@ -462,5 +475,7 @@ namespace Campofinale.Game
                 SpawnEntity(entity);
             }
         }
+
+        
     }
 }
