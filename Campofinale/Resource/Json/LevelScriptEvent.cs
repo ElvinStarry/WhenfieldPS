@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Campofinale.Resource.Table
+namespace Campofinale.Resource.Json
 {
-    [TableCfgType("Json/LevelScriptEvents.json", LoadPriority.LOW)]
-    public class LevelScriptEvent : TableCfgResource
+    public class LevelScriptEvent
     {
         public string eventName;
         public string comment;
@@ -30,6 +29,10 @@ namespace Campofinale.Resource.Table
         AddMission = 6,
         CompleteMission = 7,
         SpawnEnemyByScriptId = 8,
-        CallClientEvent = 9
+        CallClientEvent = 9,
+        StartScript = 10,
+        ChangeScriptPropertyBool = 11,
+        StartSpawner = 12,
+        AddCharacter = 13
     }
 }

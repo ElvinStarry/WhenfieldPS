@@ -14,16 +14,7 @@ namespace Campofinale.Packets.Cs
 
             session.teams[req.TeamIndex].leader=req.LeaderId;
             session.teams[req.TeamIndex].members= req.CharTeam.ToList();
-            ScCharBagSetTeam team = new()
-            {
-                CharTeam = { req.CharTeam },
-                LeaderId = req.LeaderId,
-                ScopeName = 1,
-                TeamIndex = req.TeamIndex,
-                TeamType = CharBagTeamType.Main,
-            };
-            
-            session.Send(ScMsgId.ScCharBagSetTeam,team);
+            session.Send(new PacketScCharBagSetTeam(session,session.teams[req.TeamIndex], req.TeamIndex));
             session.Send(new PacketScSelfSceneInfo(session, Resource.SelfInfoReasonType.SlrChangeTeam));
         }
        

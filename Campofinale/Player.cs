@@ -207,18 +207,37 @@ namespace Campofinale
         /// Add a character with template id if not present in the chars list *Added in 1.1.6*
         /// </summary>
         /// <param name="id"></param>
-        public void AddCharacter(string id, bool notify = false)
+        public Character AddCharacter(string id, bool notify = false)
         {
             Character chara = GetCharacter(id);
             if (chara == null)
             {
-                Character c = new Character(roleId, id, 1);
-                chars.Add(c);
+                chara = new Character(roleId, id, 1);
+                chars.Add(chara);
                 if (notify)
                 {
-                    Send(new PacketScCharBagAddChar(this,c));
+                    Send(new PacketScCharBagAddChar(this,chara));
                 }
             }
+            return chara;
+        }
+        /// <summary>
+        /// Add a character with template id and level if not present in the chars list *Added in 1.1.6*
+        /// </summary>
+        /// <param name="id"></param>
+        public Character AddCharacter(string id, int level, bool notify = false)
+        {
+            Character chara = GetCharacter(id);
+            if (chara == null)
+            {
+                chara = new Character(roleId, id, level);
+                chars.Add(chara);
+                if (notify)
+                {
+                    Send(new PacketScCharBagAddChar(this, chara));
+                }
+            }
+            return chara;
         }
         /// <summary>
         /// Remove a character using template id *Added in 1.1.6*
@@ -690,6 +709,18 @@ namespace Campofinale
             {
                 UnlockSystemType = (int)t
             });
+        }
+
+        public void AddToTeam(int index, ulong guid)
+        {
+            if (teams[index].members.Count < 4)
+            {
+                teams[index].members.Add(guid);
+                Send(new PacketScCharBagSetTeam(this, teams[index], index));
+                if(index==this.teamIndex)
+                Send(new PacketScSelfSceneInfo(this, Resource.SelfInfoReasonType.SlrChangeTeam));
+            }
+                
         }
     }
 }

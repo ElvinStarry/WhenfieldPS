@@ -104,6 +104,7 @@ namespace Campofinale.Game.MissionSys
                 missions.Add(new GameMission(id, state));
                 if (notify)
                 {
+                    
                     ScMissionStateUpdate s = new()
                     {
                         MissionId = data.missionId,
@@ -229,6 +230,38 @@ namespace Campofinale.Game.MissionSys
                 owner.Send(ScMsgId.ScQuestObjectivesUpdate, upd);
                 owner.Send(ScMsgId.ScQuestStateUpdate, update);
                 quests.Remove(quest);
+            }
+        }
+
+        public void TrackMission(string v)
+        {
+            curMission = v;
+            owner.Send(ScMsgId.ScTrackMissionChange, new ScTrackMissionChange()
+            {
+                MissionId = curMission,
+            });
+        }
+
+        public void CompleteMission(string v)
+        {
+            if(curMission == v)
+            {
+                TrackMission("");
+            }
+            GameMission mission = missions.Find(m => m.missionId == v);
+            MissionDataTable data = ResourceManager.missionDataTable.Find(m => m.missionId == v);
+            if (mission != null && data != null)
+            {
+                mission.state=MissionState.Completed;
+                ScMissionStateUpdate s = new()
+                {
+                    MissionId = mission.missionId,
+                    MissionState = (int)mission.state,
+                    SucceedId = -1,
+
+                };
+                owner.Send(ScMsgId.ScMissionStateUpdate, s);
+                //TODO rewards
             }
         }
     }

@@ -1,4 +1,6 @@
-﻿using Campofinale.Resource.Table;
+﻿using Campofinale.Resource.Dynamic;
+using Campofinale.Resource.Json;
+using Campofinale.Resource.Table;
 using Newtonsoft.Json;
 using static Campofinale.Resource.ResourceManager.LevelScene;
 
@@ -72,8 +74,8 @@ namespace Campofinale.Resource
 
         public static InteractiveTable interactiveTable = new(); //
         public static List<LevelScene> levelDatas = new();
-        public static List<InteractiveData> interactiveData = new();    
-
+        public static List<InteractiveData> interactiveData = new();
+        public static List<SpawnerConfig> spawnerConfigs = new();
         public static int GetSceneNumIdFromLevelData(string name)
         {
             if (levelDatas.Find(a => a.id == name) == null) return 0;
@@ -102,6 +104,7 @@ namespace Campofinale.Resource
         public static void Init()
         {
             Logger.Print("Loading TableCfg resources");
+            // TODO: move all tables to the folder
             sceneAreaTable=JsonConvert.DeserializeObject<Dictionary<string, SceneAreaTable>>(ReadJsonFile("TableCfg/SceneAreaTable.json"));
             strIdNumTable = JsonConvert.DeserializeObject<StrIdNumTable>(ReadJsonFile("TableCfg/StrIdNumTable.json"));
             characterTable = JsonConvert.DeserializeObject<Dictionary<string, CharacterTable>>(ReadJsonFile("TableCfg/CharacterTable.json"));
@@ -146,6 +149,8 @@ namespace Campofinale.Resource
             interactiveTable = JsonConvert.DeserializeObject<InteractiveTable>(ReadJsonFile("Json/Interactive/InteractiveTable.json"));
             LoadInteractiveData();
             LoadLevelDatas();
+            LoadScriptsEvent();
+            LoadSpawners();
             ResourceLoader.LoadTableCfg();
            
             if (missingResources)
@@ -232,6 +237,43 @@ namespace Campofinale.Resource
                 Logger.PrintError($"Error occured when loading InteractiveData: " + e.Message);
             }
            
+        }
+        public static void LoadScriptsEvent()
+        {
+            Logger.Print("Loading ScriptsEvents");
+            string directoryPath = @"Json/ScriptEvents";
+            string[] jsonFiles = Directory.GetFiles(directoryPath, "*.json", SearchOption.AllDirectories);
+            foreach (string json in jsonFiles)
+            {
+                Dictionary<string,LevelScriptEvent> events = JsonConvert.DeserializeObject<Dictionary<string, LevelScriptEvent>>(ReadJsonFile(json));
+                foreach(KeyValuePair<string,LevelScriptEvent> e in events)
+                {
+                    if (levelScriptsEvents.ContainsKey(e.Key))
+                    {
+                        Logger.PrintWarn($"{e.Key} already added, skipping the one in {json}");
+                    }
+                    else
+                    {
+                        levelScriptsEvents.Add(e.Key,e.Value);
+                    }
+                    
+                }
+                
+            }
+            Logger.Print($"Loaded {levelScriptsEvents.Count} ScriptsEvents");
+        }
+        public static void LoadSpawners()
+        {
+            Logger.Print("Loading Spawners");
+            string directoryPath = @"DynamicAssets\gamedata\spawnerconfig";
+            string[] jsonFiles = Directory.GetFiles(directoryPath, "*.json", SearchOption.AllDirectories);
+            foreach (string json in jsonFiles)
+            {
+                SpawnerConfig spawner = JsonConvert.DeserializeObject<SpawnerConfig>(ReadJsonFile(json));
+                spawnerConfigs.Add(spawner);
+
+            }
+            Logger.Print($"Loaded {spawnerConfigs.Count} Spawners");
         }
         public static void LoadLevelDatas()
         {
@@ -512,8 +554,9 @@ namespace Campofinale.Resource
                 public class LevelScriptData
                 {
                     public ulong scriptId;
-                    public List<ParamKeyValue> properties;
-                    public Dictionary<int, string> propertyIdToKeyMap;
+                    public List<ParamKeyValue> properties = new();
+                    public Dictionary<int, string> propertyIdToKeyMap = new();
+                    public ScriptActionMap actionMap = new();
 
 
                     public int GetPropertyId(string key, List<int> toExclude)
@@ -526,6 +569,28 @@ namespace Campofinale.Resource
                             }
                         }
                         return 0;
+                    }
+
+                    public class ScriptActionMap
+                    {
+                        public ActionDataMap dataMap = new();
+                        
+
+                        public class ScriptHeader
+                        {
+                            public string _uid = "";
+
+                            public EventKey _eventKey = new();
+
+                            public class EventKey
+                            {
+                                public string constValue ="";
+                            }
+                        }
+                        public class ActionDataMap
+                        {
+                            public List<ScriptHeader> headerList = new();
+                        }
                     }
                 }
                 public class LevelFactoryRegionData

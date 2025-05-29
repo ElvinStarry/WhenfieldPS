@@ -1,5 +1,6 @@
 ﻿using Campofinale.Game.Entities;
 using Campofinale.Game.Inventory;
+using Campofinale.Game.Spawners;
 using Campofinale.Packets.Sc;
 using Campofinale.Resource;
 using MongoDB.Bson.Serialization.Attributes;
@@ -255,6 +256,8 @@ namespace Campofinale.Game
         public bool alreadyLoaded = false;
         [BsonIgnore, JsonIgnore]
         public List<ulong> activeScripts = new();
+        [BsonIgnore, JsonIgnore]
+        public List<GameSpawner> gameSpawners = new();
         public int GetCollection(string id)
         {
             if (collections.ContainsKey(id))
@@ -359,6 +362,7 @@ namespace Campofinale.Game
                     type = en.entityType,
                     
                 };
+                entity.defaultHide = en.defaultHide;
                 entities.Add(entity);
             });
             GetEntityExcludingChar().ForEach(e =>
@@ -401,6 +405,15 @@ namespace Campofinale.Game
         }
         public void UpdateShowEntities()
         {
+            for (int i = 0; i < gameSpawners.Count; i++)
+            {
+                GameSpawner spawner = gameSpawners[i];
+                if(spawner != null)
+                {
+                    spawner.Update(GetOwner());
+                }
+            }
+            
             List<Entity> toSpawn = new();
             foreach(Entity e in GetEntityExcludingChar())
             {

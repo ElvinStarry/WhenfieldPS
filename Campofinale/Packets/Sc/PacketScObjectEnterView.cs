@@ -16,7 +16,8 @@ namespace Campofinale.Packets.Sc
                     SummonList =
                     {
                       
-                    }
+                    },
+                    
                 },
                 
                 HasExtraObject = entities.Count > 1

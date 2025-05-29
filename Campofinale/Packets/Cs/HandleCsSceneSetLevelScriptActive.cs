@@ -3,7 +3,7 @@ using Campofinale.Game.Entities;
 using Campofinale.Network;
 using Campofinale.Protocol;
 using Campofinale.Resource;
-using Campofinale.Resource.Table;
+using Campofinale.Resource.Json;
 using Pastel;
 using System.Net.Sockets;
 using static Campofinale.Resource.ResourceManager.LevelScene.LevelData;
@@ -38,7 +38,20 @@ namespace Campofinale.Packets.Cs
             }
             else
             {
+               /* ScSceneLevelScriptStateNotify rsp = new ScSceneLevelScriptStateNotify()
+                {
+                    SceneNumId = req.SceneNumId,
+                    ScriptId = req.ScriptId,
 
+                    State = 3
+                };
+
+                if (!session.sceneManager.GetCurScene().activeScripts.Contains(req.ScriptId))
+                {
+                    session.sceneManager.GetCurScene().activeScripts.Add(req.ScriptId);
+                    session.sceneManager.GetCurScene().UpdateShowEntities();
+                }
+                session.Send(ScMsgId.ScSceneLevelScriptStateNotify, rsp);*/
             }
             
 
@@ -59,20 +72,9 @@ namespace Campofinale.Packets.Cs
                     State = 4
                 };
 
-                session.Send(ScMsgId.ScSceneLevelScriptStateNotify, rsp, packet.csHead.UpSeqid);
+                session.Send(ScMsgId.ScSceneLevelScriptStateNotify, rsp);
             }
-            else
-            {
-                ScSceneLevelScriptStateNotify rsp = new ScSceneLevelScriptStateNotify()
-                {
-                    SceneNumId = req.SceneNumId,
-                    ScriptId = req.ScriptId,
-
-                    State = 4
-                };
-
-                session.Send(ScMsgId.ScSceneLevelScriptStateNotify, rsp, packet.csHead.UpSeqid);
-            }
+            
             
             
         }
@@ -107,24 +109,97 @@ namespace Campofinale.Packets.Cs
                 case ScriptActionType.EnterScene:
                     player.EnterScene((int)action.valueUlong[0]);
                     break;
+                case ScriptActionType.CompleteMission:
+                    player.missionSystem.CompleteMission(action.valueStr[0]);
+                    break;
                 case ScriptActionType.AddMission:
-                    player.missionSystem.AddMission(action.valueStr[0]);
+                    player.missionSystem.AddMission(action.valueStr[0],MissionState.Processing,true);
+                    if(action.valueUlong.Length > 0)
+                    {
+                        
+                        player.missionSystem.TrackMission(action.valueStr[0]);
+                    }
+                    break;
+                case ScriptActionType.StartSpawner:
+
+                    player.sceneManager.GetCurScene().gameSpawners.Add(new Game.Spawners.GameSpawner()
+                    {
+                        configId = action.valueStr[0],
+                        scene= player.sceneManager.GetCurScene()
+                    });
+                    break;
+                case ScriptActionType.AddCharacter:
+                    Character chara =player.AddCharacter(action.valueStr[0],(int) action.valueUlong[0],true);
+                    player.AddToTeam(player.teamIndex, chara.guid);
+                    break;
+                case ScriptActionType.ChangeScriptPropertyBool:
+                    int i = 0;
+                    ScSceneUpdateLevelScriptProperty update1 = new()
+                    {
+                        SceneNumId = req.SceneNumId,
+                        ScriptId = req.ScriptId,
+                        
+                    };
+                    foreach (string keyId in action.valueStr)
+                    {
+                        long val = (long)action.valueUlong[i];
+                       
+                        LevelScriptData levelscript = ResourceManager.GetLevelData(player.curSceneNumId).levelData.levelScripts.Find(l => l.scriptId == req.ScriptId);
+                        if (levelscript != null)
+                        {
+                            int key = levelscript.GetPropertyId(keyId, new List<int>());
+                            ParamKeyValue v = new()
+                            {
+                                key = keyId,
+                                value = new ParamKeyValue.ParamValue()
+                                {
+                                    type = ParamRealType.Bool,
+                                    valueArray = new[]
+                                    {
+                                        new ParamKeyValue.ParamValueAtom()
+                                        {
+                                            valueBit64=val,
+                                            
+                                        }
+                                    }
+                                }
+                            };
+                            update1.Properties.Add(key, v.ToProto());
+                        }
+                        
+                        i++;
+                        
+                    }
+                    player.Send(ScMsgId.ScSceneUpdateLevelScriptProperty, update1);
+                    break;
+                case ScriptActionType.StartScript:
+                    foreach (ulong id in action.valueUlong)
+                    {
+                        
+                        ScSceneLevelScriptStateNotify rsp = new ScSceneLevelScriptStateNotify()
+                        {
+                            SceneNumId = req.SceneNumId,
+                            ScriptId = id,
+
+                            State = 4
+                        };
+
+                        player.Send(ScMsgId.ScSceneLevelScriptStateNotify, rsp);
+                    }
                     break;
                 case ScriptActionType.CallClientEvent:
                     foreach(string id in action.valueStr)
                     {
+                        LevelScriptData levelscript = ResourceManager.GetLevelData(player.curSceneNumId).levelData.levelScripts.Find(l => l.actionMap.dataMap.headerList.Any(h=>h._eventKey.constValue==id));
                         ScSceneTriggerClientLevelScriptEvent trigger = new()
                         {
                             EventName = id,
                             SceneNumId = req.SceneNumId,
-                            ScriptId = req.ScriptId,
+                            ScriptId = levelscript== null ? req.ScriptId : levelscript.scriptId,
                         };
 
                         player.Send(ScMsgId.ScSceneTriggerClientLevelScriptEvent, trigger);
                     }
-                    break;
-                case ScriptActionType.CompleteMission:
-                    //player.missionSystem.C(action.valueStr[0]);
                     break;
                 default:
                     Logger.PrintWarn("Script Action not implemented");
