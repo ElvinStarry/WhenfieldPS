@@ -12,11 +12,17 @@ namespace Campofinale.Resource.Dynamic
     {
         public string configId;
         public Dictionary<string, SpawnerWave> waveMap = new();
+        public List<EnemyLibraryData> enemyLibrary = new();
 
-
-
+        
         public SpawnerConfig() { }
+        public class EnemyLibraryData
+        {
+            public string key;
+            public string enemyId;
+            public int enemyLevel;
 
+        }
         public class SpawnerWave
         {
             public int waveId;

@@ -7,6 +7,7 @@ namespace Campofinale.Game.Entities
     public class EntityMonster : Entity
     {
         public string templateId;
+        public ulong originId;
         public EntityMonster()
         {
 
@@ -83,7 +84,7 @@ namespace Campofinale.Game.Entities
                     
                     Type =(int) ObjectTypeIndex.Enemy, 
                 },
-                
+                OriginId= originId,
                 Attrs =
                 {
                     GetAttributes()

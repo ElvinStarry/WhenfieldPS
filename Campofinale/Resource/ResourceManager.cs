@@ -534,6 +534,7 @@ namespace Campofinale.Resource
                 public List<LevelScriptData> levelScripts = new();
                 public List<WorldWayPointSets> worldWayPointSets = new();
                 public List<LevelFactoryRegionData> factoryRegions = new();
+                public List<LevelSpawnerData> spawners = new();
                 public void Merge(LevelData other)
                 {
                     this.sceneId = other.sceneId;
@@ -544,12 +545,19 @@ namespace Campofinale.Resource
                     this.levelScripts.AddRange(other.levelScripts);
                     this.worldWayPointSets.AddRange(other.worldWayPointSets);
                     this.factoryRegions.AddRange(other.factoryRegions);
+                    this.spawners.AddRange(other.spawners);
                 }
                 
                 public class WorldWayPointSets
                 {
                     public int id;
                     public Dictionary<string, int> pointIdToIndex = new();
+                }
+                public class LevelSpawnerData
+                {
+                    public ulong spawnerId;
+                    public string configId;
+                    public ulong belongLevelScriptId;
                 }
                 public class LevelScriptData
                 {

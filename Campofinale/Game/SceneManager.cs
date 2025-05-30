@@ -3,10 +3,14 @@ using Campofinale.Game.Inventory;
 using Campofinale.Game.Spawners;
 using Campofinale.Packets.Sc;
 using Campofinale.Resource;
+using Campofinale.Resource.Dynamic;
 using MongoDB.Bson.Serialization.Attributes;
+using System.Numerics;
 using System.Text.Json.Serialization;
+using static Campofinale.Resource.Dynamic.SpawnerConfig;
 using static Campofinale.Resource.ResourceManager;
 using static Campofinale.Resource.ResourceManager.LevelScene.LevelData;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace Campofinale.Game
 {
@@ -256,8 +260,6 @@ namespace Campofinale.Game
         public bool alreadyLoaded = false;
         [BsonIgnore, JsonIgnore]
         public List<ulong> activeScripts = new();
-        [BsonIgnore, JsonIgnore]
-        public List<GameSpawner> gameSpawners = new();
         public int GetCollection(string id)
         {
             if (collections.ContainsKey(id))
@@ -354,7 +356,7 @@ namespace Campofinale.Game
             lv_scene.levelData.npcs.ForEach(en =>
             {
                 
-                if (en.npcGroupId.Contains("chr") && sceneNumId== 99) return;
+                if (en.npcGroupId.Contains("chr")) return;
                 EntityNpc entity = new(en.entityDataIdKey,ownerId,en.position,en.rotation, sceneNumId, en.levelLogicId)
                 {
                     belongLevelScriptId = en.belongLevelScriptId,
@@ -365,22 +367,7 @@ namespace Campofinale.Game
                 entity.defaultHide = en.defaultHide;
                 entities.Add(entity);
             });
-            GetEntityExcludingChar().ForEach(e =>
-            {
-                if(e is EntityInteractive)
-                {
-                  //  e.spawned = true;
-                  //  GetOwner().Send(new PacketScObjectEnterView(GetOwner(), new List<Entity>() { e }));
-                }
-                
-
-            });
-            GetEntityExcludingChar().FindAll(e=> e is not EntityInteractive).ForEach(e =>
-            {
-                
-               // e.spawned = true;
-              //  GetOwner().Send(new PacketScObjectEnterView(GetOwner(), new List<Entity>() { e }));
-            });
+            
             
             UpdateShowEntities();
            
@@ -389,31 +376,13 @@ namespace Campofinale.Game
         
         public void SpawnEntity(Entity en,bool spawnedCheck=true)
         {
-            if (!activeScripts.Contains(en.belongLevelScriptId) && en.defaultHide && en.belongLevelScriptId != 0)
-            {
-                return;
-            }
-            en.spawned = true;
-            ParamKeyValue targetList=en.properties.Find(p => p.key == "target_list");
-            if(targetList!=null)
-            foreach (Entity e in GetEntityExcludingChar().FindAll(e=>e.spawned == false && targetList.value.valueArray.Any(v=>v.valueBit64== (long)e.levelLogicId)))
-            {
-                SpawnEntity(e);
-            }
             
+            en.spawned = true;
+           
             GetOwner().Send(new PacketScObjectEnterView(GetOwner(), new List<Entity>() { en }));
         }
         public void UpdateShowEntities()
         {
-            for (int i = 0; i < gameSpawners.Count; i++)
-            {
-                GameSpawner spawner = gameSpawners[i];
-                if(spawner != null)
-                {
-                    spawner.Update(GetOwner());
-                }
-            }
-            
             List<Entity> toSpawn = new();
             foreach(Entity e in GetEntityExcludingChar())
             {
@@ -489,6 +458,34 @@ namespace Campofinale.Game
             }
         }
 
-        
+        public void SpawnWaveEnemy(ulong spawnerId, int waveId)
+        {
+            LevelSpawnerData data=info().levelData.spawners.Find(s => s.spawnerId == spawnerId);
+            if (data!=null)
+            {
+                SpawnerConfig config = spawnerConfigs.Find(s => s.configId == data.configId);
+                if (config != null)
+                {
+                    foreach(var group in config.waveMap[$"{waveId}"].groupMap.Values)
+                    {
+                        foreach (var act in group.actionMap.Values)
+                        {
+                            EnemyLibraryData enemyData = config.enemyLibrary.Find(e=>e.key==act.libraryKey);
+                            if (enemyData != null)
+                            {
+                                entities.Add(new EntityMonster(enemyData.enemyId, enemyData.enemyLevel, ownerId, act.position, act.rotation, sceneNumId)
+                                {
+                                    
+                                    defaultHide = false,
+                                    spawned = false,
+                                    belongLevelScriptId = data.belongLevelScriptId
+                                });
+                            }
+                            
+                        }
+                    }
+                }
+            }
+        }
     }
 }

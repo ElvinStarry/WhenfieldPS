@@ -71,7 +71,7 @@ namespace Campofinale.Packets.Cs
 
                     State = 4
                 };
-
+                
                 session.Send(ScMsgId.ScSceneLevelScriptStateNotify, rsp);
             }
             
@@ -122,11 +122,13 @@ namespace Campofinale.Packets.Cs
                     break;
                 case ScriptActionType.StartSpawner:
 
-                    player.sceneManager.GetCurScene().gameSpawners.Add(new Game.Spawners.GameSpawner()
+                    ScSceneMonsterSpawnerStart start = new()
                     {
-                        configId = action.valueStr[0],
-                        scene= player.sceneManager.GetCurScene()
-                    });
+                        SceneNumId = player.curSceneNumId,
+                        SpawnerId = action.valueUlong[0],
+
+                    };
+                    player.Send(ScMsgId.ScSceneMonsterSpawnerStart,start);
                     break;
                 case ScriptActionType.AddCharacter:
                     Character chara =player.AddCharacter(action.valueStr[0],(int) action.valueUlong[0],true);
