@@ -1,6 +1,5 @@
 ﻿using Campofinale.Game.Entities;
 using Campofinale.Game.Inventory;
-using Campofinale.Game.Spawners;
 using Campofinale.Packets.Sc;
 using Campofinale.Resource;
 using Campofinale.Resource.Dynamic;
@@ -10,6 +9,7 @@ using System.Text.Json.Serialization;
 using static Campofinale.Resource.Dynamic.SpawnerConfig;
 using static Campofinale.Resource.ResourceManager;
 using static Campofinale.Resource.ResourceManager.LevelScene.LevelData;
+using static Campofinale.Resource.ResourceManager.LevelScene.LevelData.ParamKeyValue;
 using static System.Formats.Asn1.AsnWriter;
 
 namespace Campofinale.Game
@@ -247,7 +247,12 @@ namespace Campofinale.Game
             }
         }
     }
-
+    public class LevelScript
+    {
+        public ulong scriptId;
+        public int state; 
+        public Dictionary<string, ScriptProperty> properties = new();
+    }
     public class Scene
     {
         public ulong ownerId;
@@ -260,6 +265,7 @@ namespace Campofinale.Game
         public bool alreadyLoaded = false;
         [BsonIgnore, JsonIgnore]
         public List<ulong> activeScripts = new();
+        public List<LevelScript> scripts = new();
         public int GetCollection(string id)
         {
             if (collections.ContainsKey(id))
@@ -381,12 +387,24 @@ namespace Campofinale.Game
            
             GetOwner().Send(new PacketScObjectEnterView(GetOwner(), new List<Entity>() { en }));
         }
+        public bool GetActiveScript(ulong id)
+        {
+            LevelScript script = scripts.Find(s => s.scriptId == id);
+            if (script != null)
+            {
+                return script.state > 2;
+            }
+            else
+            {
+                return true;
+            }
+        }
         public void UpdateShowEntities()
         {
             List<Entity> toSpawn = new();
             foreach(Entity e in GetEntityExcludingChar())
             {
-                if(e.spawned==false && (activeScripts.Contains(e.belongLevelScriptId) || e.belongLevelScriptId==0))
+                if(e.spawned==false && (GetActiveScript(e.belongLevelScriptId) || e.belongLevelScriptId==0))
                 {
                     if (!e.defaultHide)
                     {

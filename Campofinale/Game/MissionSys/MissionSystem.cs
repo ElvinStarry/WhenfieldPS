@@ -30,6 +30,7 @@ namespace Campofinale.Game.MissionSys
             sync.TrackMissionId = curMission;
             missions.ForEach(m =>
             {
+                if(!sync.Missions.ContainsKey(m.missionId))
                 sync.Missions.Add(m.missionId, new Mission()
                 {
                     MissionId = m.missionId,

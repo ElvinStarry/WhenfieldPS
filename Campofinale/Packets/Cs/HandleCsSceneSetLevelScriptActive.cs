@@ -18,21 +18,27 @@ namespace Campofinale.Packets.Cs
             CsSceneSetLevelScriptActive req = packet.DecodeBody<CsSceneSetLevelScriptActive>();
             if (req.IsActive)
             {
-
-                ScSceneLevelScriptStateNotify rsp = new ScSceneLevelScriptStateNotify()
+                
+                var sceneScript = session.sceneManager.GetCurScene().scripts.Find(s => s.scriptId == req.ScriptId);
+                if (sceneScript != null)
                 {
-                    SceneNumId = req.SceneNumId,
-                    ScriptId = req.ScriptId,
+                    sceneScript.state = 3;
+                    ScSceneLevelScriptStateNotify rsp = new ScSceneLevelScriptStateNotify()
+                    {
+                        SceneNumId = req.SceneNumId,
+                        ScriptId = req.ScriptId,
 
-                    State = 3
-                };
+                        State = sceneScript.state
+                    };
 
-                if (!session.sceneManager.GetCurScene().activeScripts.Contains(req.ScriptId))
-                {
-                    session.sceneManager.GetCurScene().activeScripts.Add(req.ScriptId);
-                    session.sceneManager.GetCurScene().UpdateShowEntities();
+                    if (!session.sceneManager.GetCurScene().activeScripts.Contains(req.ScriptId))
+                    {
+                        session.sceneManager.GetCurScene().activeScripts.Add(req.ScriptId);
+                        session.sceneManager.GetCurScene().UpdateShowEntities();
+                    }
+                    session.Send(ScMsgId.ScSceneLevelScriptStateNotify, rsp);
                 }
-                session.Send(ScMsgId.ScSceneLevelScriptStateNotify, rsp);
+                
 
 
             }
@@ -64,15 +70,21 @@ namespace Campofinale.Packets.Cs
             
             if (req.IsStart)
             {
-                ScSceneLevelScriptStateNotify rsp = new ScSceneLevelScriptStateNotify()
+                var sceneScript = session.sceneManager.GetCurScene().scripts.Find(s => s.scriptId == req.ScriptId);
+                if (sceneScript != null)
                 {
-                    SceneNumId = req.SceneNumId,
-                    ScriptId = req.ScriptId,
+                    sceneScript.state = 4;
+                    ScSceneLevelScriptStateNotify rsp = new ScSceneLevelScriptStateNotify()
+                    {
+                        SceneNumId = req.SceneNumId,
+                        ScriptId = req.ScriptId,
 
-                    State = 4
-                };
+                        State = sceneScript.state
+                    };
+
+                    session.Send(ScMsgId.ScSceneLevelScriptStateNotify, rsp);
+                }
                 
-                session.Send(ScMsgId.ScSceneLevelScriptStateNotify, rsp);
             }
             
             
@@ -239,10 +251,14 @@ namespace Campofinale.Packets.Cs
                
             };
             LevelScriptData levelscript= ResourceManager.GetLevelData(session.curSceneNumId).levelData.levelScripts.Find(l=>l.scriptId == req.ScriptId);
-            if (levelscript != null) {
+            var sceneScript = session.sceneManager.GetCurScene().scripts.Find(s => s.scriptId == req.ScriptId);
+            
+            if (levelscript != null && sceneScript != null) {
                 foreach (var item in req.Properties)
                 {
                     int key = levelscript.GetPropertyId(item.Key, new List<int>());
+
+                    sceneScript.properties[item.Key] = new ScriptProperty(item.Value);
                     update1.Properties.Add(key, item.Value);
                 }
             }

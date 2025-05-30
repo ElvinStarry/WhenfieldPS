@@ -663,6 +663,42 @@ namespace Campofinale.Resource
                     public List<ParamKeyValue> properties;
                     public Dictionary<InteractiveComponentType, List<ParamKeyValue>> componentProperties = new();
                 }
+                public class ScriptProperty
+                {
+                    public int RealType;
+                    public int ValueType;
+                    public List<string> ValueStringList = new();
+                    public List<float> ValueFloatList = new();
+                    public List<long> ValueIntList = new();
+                    public List<bool> ValueBoolList = new();
+
+                    public ScriptProperty()
+                    {
+
+                    }
+                    public ScriptProperty(DynamicParameter p)
+                    {
+                        this.RealType = p.RealType;
+                        this.ValueType = p.ValueType;
+                        this.ValueBoolList.AddRange(p.ValueBoolList.ToList());
+                        this.ValueFloatList.AddRange(p.ValueFloatList.ToList());
+                        this.ValueIntList.AddRange(p.ValueIntList.ToList());
+                        this.ValueStringList.AddRange(p.ValueStringList.ToList());
+                    }
+                    public DynamicParameter ToProto()
+                    {
+                        return new DynamicParameter()
+                        {
+                            RealType = RealType,
+                            ValueType = ValueType,
+                            ValueStringList = { ValueStringList },
+                            ValueBoolList = { ValueBoolList },
+                            ValueFloatList = { ValueFloatList },
+                            ValueIntList = { ValueIntList },
+
+                        };
+                    }
+                }
                 public class ParamKeyValue
                 {
                     public string key;
@@ -751,6 +787,98 @@ namespace Campofinale.Resource
                         }
                         
                         return param;
+                    }
+                    
+                    public ScriptProperty ToScriptProperty()
+                    {
+                        ScriptProperty param = new()
+                        {
+                            RealType = (int)value.type,
+                            ValueType = (int)value.type,
+
+                        };
+                        foreach (var val in value.valueArray)
+                        {
+                            switch (value.type)
+                            {
+                                case ParamRealType.LangKey:
+                                    param.ValueStringList.Add(val.valueString);
+                                    param.ValueType = (int)ParamValueType.String;
+                                    break;
+                                case ParamRealType.LangKeyList:
+                                    param.ValueStringList.Add(val.valueString);
+                                    param.ValueType = (int)ParamValueType.StringList;
+                                    break;
+                                case ParamRealType.String:
+                                    param.ValueStringList.Add(val.valueString);
+                                    param.ValueType = (int)ParamValueType.String;
+                                    break;
+                                case ParamRealType.StringList:
+                                    param.ValueStringList.Add(val.valueString);
+                                    param.ValueType = (int)ParamValueType.StringList;
+                                    break;
+                                case ParamRealType.Vector3:
+                                    param.ValueFloatList.Add(val.ToFloat());
+                                    param.ValueType = (int)ParamValueType.FloatList;
+                                    break;
+                                case ParamRealType.Float:
+                                    param.ValueFloatList.Add(val.ToFloat());
+                                    param.ValueType = (int)ParamValueType.Float;
+                                    break;
+                                case ParamRealType.FloatList:
+                                    param.ValueFloatList.Add(val.ToFloat());
+                                    param.ValueType = (int)ParamValueType.FloatList;
+                                    break;
+                                case ParamRealType.Int:
+                                    param.ValueIntList.Add(val.valueBit64);
+                                    param.ValueType = (int)ParamValueType.Int;
+                                    break;
+                                case ParamRealType.IntList:
+                                    param.ValueIntList.Add(val.valueBit64);
+                                    param.ValueType = (int)ParamValueType.IntList;
+                                    break;
+                                case ParamRealType.Bool:
+                                    param.ValueBoolList.Add(val.valueBit64 == 1);
+                                    param.ValueType = (int)ParamValueType.Bool;
+                                    break;
+                                case ParamRealType.Vector3List:
+                                    param.ValueFloatList.Add(val.ToFloat());
+                                    param.ValueType = (int)ParamValueType.FloatList;
+                                    break;
+                                case ParamRealType.BoolList:
+                                    param.ValueBoolList.Add(val.valueBit64 == 1);
+                                    param.ValueType = (int)ParamValueType.BoolList;
+                                    break;
+                                case ParamRealType.EntityPtr:
+                                    param.ValueIntList.Add(val.valueBit64);
+                                    param.ValueType = (int)ParamValueType.Int;
+                                    break;
+                                case ParamRealType.EntityPtrList:
+                                    param.ValueIntList.Add(val.valueBit64);
+                                    param.ValueType = (int)ParamValueType.Int;
+                                    break;
+                                case ParamRealType.UInt64:
+                                    param.ValueIntList.Add(val.valueBit64);
+                                    param.ValueType = (int)ParamValueType.Int;
+                                    break;
+                                case ParamRealType.WaterVolumePtr:
+                                    param.ValueIntList.Add(val.valueBit64);
+                                    param.ValueType = (int)ParamValueType.Int;
+                                    break;
+                                default:
+                                    return null;
+                                    break;
+                            }
+                        }
+
+                        return param;
+                    }
+                    public void Update(DynamicParameter value)
+                    {
+                        foreach (var item in value.ValueBoolList)
+                        {
+                            
+                        }
                     }
 
                     public class ParamValue

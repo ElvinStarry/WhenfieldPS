@@ -70,13 +70,29 @@ namespace Campofinale.Packets.Sc
                     State = 2,
                     
                 };
+                var sceneScript=session.sceneManager.GetCurScene().scripts.Find(s => s.scriptId == l.scriptId);
+                if (sceneScript == null)
+                {
+                    sceneScript = new()
+                    {
+                        scriptId = l.scriptId,
+                        
+                        state = 2
+                    };
+                    l.properties.ForEach(p =>
+                    {
+                        sceneScript.properties.Add(p.key,p.ToScriptProperty());
+                    });
+                    
+                    session.sceneManager.GetCurScene().scripts.Add(sceneScript);
+                }
                 int i = 0;
-                foreach (var item in l.properties)
+                foreach (var item in sceneScript.properties)
                 {
                    
-                    DynamicParameter p=item.ToProto();
+                    DynamicParameter p=item.Value.ToProto();
                     if (p != null)
-                    script.Properties.Add(l.GetPropertyId(item.key,script.Properties.Keys.ToList()), p);
+                    script.Properties.Add(l.GetPropertyId(item.Key,script.Properties.Keys.ToList()), p);
                 }
                 sceneInfo.LevelScripts.Add(script);
             });
