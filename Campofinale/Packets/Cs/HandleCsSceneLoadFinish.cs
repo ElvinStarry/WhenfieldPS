@@ -18,11 +18,7 @@ namespace Campofinale.Packets.Cs
             session.sceneManager.LoadCurrentTeamEntities();
             session.sceneManager.LoadCurrent();
             session.LoadFinish = true;
-            session.Send(ScMsgId.ScSceneClientIdInfo, new ScSceneClientIdInfo()
-            {
-                RoleIdx = (uint)session.roleId,
-                LastMaxIdx = session.random.usedGuids.Max()
-            });
+            
             if (session.curSceneNumId == 98)
             {
                 session.Send(new PacketScSyncGameMode(session, "spaceship"));

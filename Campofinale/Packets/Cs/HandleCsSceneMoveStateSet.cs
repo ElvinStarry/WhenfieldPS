@@ -10,7 +10,6 @@ namespace Campofinale.Packets.Cs
         public static void Handle(Player session, CsMsgId cmdId, Packet packet)
         {
             CsSceneMoveStateSet req = packet.DecodeBody<CsSceneMoveStateSet>();
-            
             //req.
 
         }

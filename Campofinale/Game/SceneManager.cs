@@ -265,6 +265,7 @@ namespace Campofinale.Game
         public bool alreadyLoaded = false;
         [BsonIgnore, JsonIgnore]
         public List<ulong> activeScripts = new();
+
         public List<LevelScript> scripts = new();
         public int GetCollection(string id)
         {
@@ -294,7 +295,7 @@ namespace Campofinale.Game
         public void Unload()
         {
             List<ulong> guids = new();
-            foreach(Entity e in entities)
+            foreach(Entity e in GetEntityExcludingChar().FindAll(e => e.spawned))
             {
                 guids.Add(e.guid);
             }
@@ -307,8 +308,6 @@ namespace Campofinale.Game
         }
         public void Load()
         {
-            if (info().isSeamless && alreadyLoaded) return;
-            //alreadyLoaded = true;
             Unload();
             LevelScene lv_scene = ResourceManager.GetLevelData(sceneNumId);
            
@@ -362,7 +361,7 @@ namespace Campofinale.Game
             lv_scene.levelData.npcs.ForEach(en =>
             {
                 
-                if (en.npcGroupId.Contains("chr")) return;
+                if (en.npcGroupId.Contains("chr") && sceneNumId == 98) return;
                 EntityNpc entity = new(en.entityDataIdKey,ownerId,en.position,en.rotation, sceneNumId, en.levelLogicId)
                 {
                     belongLevelScriptId = en.belongLevelScriptId,
@@ -373,11 +372,11 @@ namespace Campofinale.Game
                 entity.defaultHide = en.defaultHide;
                 entities.Add(entity);
             });
-            
-            
-            UpdateShowEntities();
-           
 
+
+
+
+            UpdateShowEntities();
         }
         
         public void SpawnEntity(Entity en,bool spawnedCheck=true)
@@ -399,10 +398,12 @@ namespace Campofinale.Game
                 return true;
             }
         }
-        public void UpdateShowEntities()
+        //Bug on scene 101: spawning entities in this way make the game break if you try to load another scene from scene 101
+        public async void UpdateShowEntities()
         {
+
             List<Entity> toSpawn = new();
-            foreach(Entity e in GetEntityExcludingChar())
+            foreach(Entity e in GetEntityExcludingChar().FindAll(e=>e.spawned==false))
             {
                 if(e.spawned==false && (GetActiveScript(e.belongLevelScriptId) || e.belongLevelScriptId==0))
                 {
@@ -415,9 +416,17 @@ namespace Campofinale.Game
                 }
                 
             }
-            if(toSpawn.Count > 0)
-            GetOwner().Send(new PacketScObjectEnterView(GetOwner(), toSpawn));
-            
+            if (toSpawn.Count > 0)
+            {
+                for (int i = 0; i < toSpawn.Count; i += 5)
+                {
+                    int chunkSize = Math.Min(5, toSpawn.Count - i);
+                    var chunk = toSpawn.GetRange(i, chunkSize);
+                    
+                    GetOwner().Send(new PacketScObjectEnterView(GetOwner(), chunk));
+                }
+            }
+
             /* foreach(Entity en in GetEntityExcludingChar())
              {
                  float minDis = 100;

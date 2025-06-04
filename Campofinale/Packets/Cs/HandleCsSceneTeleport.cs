@@ -14,6 +14,15 @@ namespace Campofinale.Packets.Cs
             if (session.curSceneNumId != req.SceneNumId)
             {
                 session.EnterScene(req.SceneNumId, new Resource.ResourceManager.Vector3f(req.Position), new Resource.ResourceManager.Vector3f(req.Rotation));
+               /* ScSceneTeleport t = new()
+                {
+                    TeleportReason = req.TeleportReason,
+                    PassThroughData = req.PassThroughData,
+                    Position = req.Position,
+                    Rotation = req.Rotation,
+                    SceneNumId = req.SceneNumId,
+                };
+                session.Send(ScMsgId.ScSceneTeleport, t);*/
             }
             else
             {

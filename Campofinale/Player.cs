@@ -436,7 +436,7 @@ namespace Campofinale
         {
             Send(Packet.EncodePacket((int)id, mes, seq, totalPackCount, currentPackIndex));
         }
-        public void Send(Packet packet)
+        public async void Send(Packet packet)
         {
             byte[] datas = packet.set_body.ToByteArray();
             int maxChunkSize = 65535;
@@ -463,11 +463,11 @@ namespace Campofinale
                 Send(Packet.EncodePacket(packet.cmdId, data, seqNext, (uint)chunks.Count, (uint)i));
             }
         }
-        public void Send(byte[] data)
+        public async void Send(byte[] data)
         {
             try
             {
-                socket.Send(data);
+                await socket.SendAsync(data);
             }
             catch (Exception e)
             {
