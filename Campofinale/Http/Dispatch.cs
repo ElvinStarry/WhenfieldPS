@@ -241,7 +241,32 @@ namespace Campofinale.Http
             await ctx.Response.SendAsync(resp);
         }
 
-        
+        //ANDROID
+        [StaticRoute(HttpServerLite.HttpMethod.GET, "/api/remote_config/get_remote_config/1003/prod-cbt/default/Android/res_version")]
+        public static async Task os_android_res_version(HttpContext ctx)
+        {
+
+            string resp = "{\"version\": \"2413221-312\", \"kickFlag\": false}";
+
+
+            ctx.Response.StatusCode = 200;
+            //ctx.Response.ContentLength = resp.Length;
+            ctx.Response.ContentType = "application/json";
+
+            await ctx.Response.SendAsync(resp);
+        }
+        [StaticRoute(HttpServerLite.HttpMethod.GET, "/api/remote_config/get_remote_config/1003/prod-cbt/default/Android/game_config")]
+        public static async Task game_config_os_android(HttpContext ctx)
+        {
+            string resp = "{\"mockLogin\": false, \"selectSrv\": false, \"enableHotUpdate\": true, \"enableNpcOptimize\": false, \"enableEntitySpawnLog\": false, \"enableCBT2AccessForbidden\": false, \"enableMobileFullScreenWaterMark\": false}";
+
+            ctx.Response.StatusCode = 200;
+            ctx.Response.ContentLength = resp.Length;
+            ctx.Response.ContentType = "application/json";
+
+            await ctx.Response.SendAsync(resp);
+        }
+
         public static async Task data(HttpContext ctx)
         {
             string fileId = ctx.Request.Url.Elements.LastOrDefault();

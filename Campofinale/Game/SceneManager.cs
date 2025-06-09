@@ -4,13 +4,10 @@ using Campofinale.Packets.Sc;
 using Campofinale.Resource;
 using Campofinale.Resource.Dynamic;
 using MongoDB.Bson.Serialization.Attributes;
-using System.Numerics;
 using System.Text.Json.Serialization;
 using static Campofinale.Resource.Dynamic.SpawnerConfig;
 using static Campofinale.Resource.ResourceManager;
 using static Campofinale.Resource.ResourceManager.LevelScene.LevelData;
-using static Campofinale.Resource.ResourceManager.LevelScene.LevelData.ParamKeyValue;
-using static System.Formats.Asn1.AsnWriter;
 
 namespace Campofinale.Game
 {
