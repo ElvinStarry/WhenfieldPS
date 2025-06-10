@@ -54,6 +54,7 @@ namespace Campofinale.Resource
         public static Dictionary<string, GachaWeaponPoolTable> gachaWeaponPoolTable = new();
         //
         public static Dictionary<string, EnemyTable> enemyTable = new();
+        public static Dictionary<string, WikiEnemyDropTable> wikiEnemyDropTable = new();
         public static Dictionary<string, EquipTable> equipTable = new();
         public static Dictionary<string, EquipSuitTable> equipSuitTable = new();
         public static Dictionary<string, SpaceShipCharBehaviourTable> spaceShipCharBehaviourTable = new();
@@ -107,7 +108,6 @@ namespace Campofinale.Resource
             // TODO: move all tables to the folder
             sceneAreaTable=JsonConvert.DeserializeObject<Dictionary<string, SceneAreaTable>>(ReadJsonFile("TableCfg/SceneAreaTable.json"));
             strIdNumTable = JsonConvert.DeserializeObject<StrIdNumTable>(ReadJsonFile("TableCfg/StrIdNumTable.json"));
-            characterTable = JsonConvert.DeserializeObject<Dictionary<string, CharacterTable>>(ReadJsonFile("TableCfg/CharacterTable.json"));
             systemJumpTable = JsonConvert.DeserializeObject<Dictionary<string, SystemJumpTable>>(ReadJsonFile("TableCfg/SystemJumpTable.json"));
             settlementBasicDataTable = JsonConvert.DeserializeObject<Dictionary<string, SettlementBasicDataTable>>(ReadJsonFile("TableCfg/SettlementBasicDataTable.json"));
             blocMissionTable = JsonConvert.DeserializeObject<Dictionary<string, BlocMissionTable>>(ReadJsonFile("TableCfg/BlocMissionTable.json"));
@@ -138,15 +138,12 @@ namespace Campofinale.Resource
             spaceshipRoomInsTable = JsonConvert.DeserializeObject<Dictionary<string, SpaceshipRoomInsTable>>(ReadJsonFile("TableCfg/SpaceshipRoomInsTable.json"));
             dungeonTable = JsonConvert.DeserializeObject<Dictionary<string, DungeonTable>>(ReadJsonFile("TableCfg/DungeonTable.json"));
             equipSuitTable = JsonConvert.DeserializeObject<Dictionary<string, EquipSuitTable>>(ReadJsonFile("TableCfg/EquipSuitTable.json"));
-            levelGradeTable = JsonConvert.DeserializeObject<Dictionary<string, LevelGradeTable>>(ReadJsonFile("TableCfg/LevelGradeTable.json"));
             levelShortIdTable = JsonConvert.DeserializeObject<Dictionary<string, LevelShortIdTable>>(ReadJsonFile("DynamicAssets/gamedata/gameplayconfig/jsoncfg/LevelShortIdTable.json"));
             rewardTable = JsonConvert.DeserializeObject<Dictionary<string, RewardTable>>(ReadJsonFile("TableCfg/RewardTable.json"));
             adventureTaskTable = JsonConvert.DeserializeObject<Dictionary<string, AdventureTaskTable>>(ReadJsonFile("TableCfg/AdventureTaskTable.json"));
             factoryBuildingTable = JsonConvert.DeserializeObject<Dictionary<string, FactoryBuildingTable>>(ReadJsonFile("TableCfg/FactoryBuildingTable.json"));
             facSTTNodeTable = JsonConvert.DeserializeObject<Dictionary<string, FacSTTNodeTable>>(ReadJsonFile("TableCfg/FacSTTNodeTable.json"));
             facSTTLayerTable = JsonConvert.DeserializeObject<Dictionary<string, FacSTTLayerTable>>(ReadJsonFile("TableCfg/FacSTTLayerTable.json"));
-            itemTypeTable = JsonConvert.DeserializeObject<Dictionary<int, ItemTypeTable>>(ReadJsonFile("TableCfg/ItemTypeTable.json"));
-            interactiveTable = JsonConvert.DeserializeObject<InteractiveTable>(ReadJsonFile("Json/Interactive/InteractiveTable.json"));
             LoadInteractiveData();
             LoadLevelDatas();
             LoadScriptsEvent();
@@ -155,7 +152,7 @@ namespace Campofinale.Resource
            
             if (missingResources)
             {
-                Logger.PrintWarn("Missing some resources. The gameserver will probably crash.");
+                Logger.PrintWarn("Some Resources are Missing. The Game server may not work properly.");
             }
         }
         public static List<int> GetAllShortIds()
@@ -242,38 +239,55 @@ namespace Campofinale.Resource
         {
             Logger.Print("Loading ScriptsEvents");
             string directoryPath = @"Json/ScriptEvents";
-            string[] jsonFiles = Directory.GetFiles(directoryPath, "*.json", SearchOption.AllDirectories);
-            foreach (string json in jsonFiles)
+            try
             {
-                Dictionary<string,LevelScriptEvent> events = JsonConvert.DeserializeObject<Dictionary<string, LevelScriptEvent>>(ReadJsonFile(json));
-                foreach(KeyValuePair<string,LevelScriptEvent> e in events)
+                string[] jsonFiles = Directory.GetFiles(directoryPath, "*.json", SearchOption.AllDirectories);
+                foreach (string json in jsonFiles)
                 {
-                    if (levelScriptsEvents.ContainsKey(e.Key))
+                    Dictionary<string, LevelScriptEvent> events = JsonConvert.DeserializeObject<Dictionary<string, LevelScriptEvent>>(ReadJsonFile(json));
+                    foreach (KeyValuePair<string, LevelScriptEvent> e in events)
                     {
-                        Logger.PrintWarn($"{e.Key} already added, skipping the one in {json}");
+                        if (levelScriptsEvents.ContainsKey(e.Key))
+                        {
+                            Logger.PrintWarn($"{e.Key} already added, skipping the one in {json}");
+                        }
+                        else
+                        {
+                            levelScriptsEvents.Add(e.Key, e.Value);
+                        }
+
                     }
-                    else
-                    {
-                        levelScriptsEvents.Add(e.Key,e.Value);
-                    }
-                    
+
                 }
-                
+                Logger.Print($"Loaded {levelScriptsEvents.Count} ScriptsEvents");
             }
-            Logger.Print($"Loaded {levelScriptsEvents.Count} ScriptsEvents");
+            catch (Exception e)
+            {
+                Logger.PrintWarn($"No ScriptsEvents folder found in Json.");
+            }
+
+            
         }
         public static void LoadSpawners()
         {
             Logger.Print("Loading Spawners");
             string directoryPath = @"DynamicAssets\gamedata\spawnerconfig";
-            string[] jsonFiles = Directory.GetFiles(directoryPath, "*.json", SearchOption.AllDirectories);
-            foreach (string json in jsonFiles)
+            try
             {
-                SpawnerConfig spawner = JsonConvert.DeserializeObject<SpawnerConfig>(ReadJsonFile(json));
-                spawnerConfigs.Add(spawner);
+                string[] jsonFiles = Directory.GetFiles(directoryPath, "*.json", SearchOption.AllDirectories);
+                foreach (string json in jsonFiles)
+                {
+                    SpawnerConfig spawner = JsonConvert.DeserializeObject<SpawnerConfig>(ReadJsonFile(json));
+                    spawnerConfigs.Add(spawner);
 
+                }
+                Logger.Print($"Loaded {spawnerConfigs.Count} Spawners");
             }
-            Logger.Print($"Loaded {spawnerConfigs.Count} Spawners");
+            catch (Exception e)
+            {
+                Logger.PrintError($"Error occured when loading SpawnerConfigs: " + e.Message);
+            }
+            
         }
         public static void LoadLevelDatas()
         {
@@ -302,7 +316,7 @@ namespace Campofinale.Resource
                     catch (Exception ex)
                     {
                         //Logger.PrintError(ex.Message);
-                        Logger.PrintWarn("Missing levelData natural spawns file for scene " + data.mapIdStr + " path: " + path);
+                        Logger.PrintWarn("Missing LevelData natural spawns file for scene " + data.mapIdStr + " path: " + path);
                         
                     }
                 }

@@ -10,9 +10,7 @@ namespace Campofinale.Packets.Cs
         public static void Handle(Player session, CsMsgId cmdId, Packet packet)
         {
             CsSceneSetLastSafeZone req = packet.DecodeBody<CsSceneSetLastSafeZone>();
-            
-            
-           
+
         }
        
     }

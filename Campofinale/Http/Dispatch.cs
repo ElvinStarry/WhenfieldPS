@@ -122,7 +122,19 @@ namespace Campofinale.Http
 
             await ctx.Response.SendAsync(resp);
         }
-        
+        [StaticRoute(HttpServerLite.HttpMethod.GET, "/api/remote_config/get_remote_config/1003/prod-cbt/default/Windows/res_version")]
+        public static async Task os_windows_res_version(HttpContext ctx)
+        {
+
+            string resp = "{\"version\": \"2089329-32\", \"kickFlag\": true}";
+
+
+            ctx.Response.StatusCode = 200;
+            //ctx.Response.ContentLength = resp.Length;
+            ctx.Response.ContentType = "application/json";
+
+            await ctx.Response.SendAsync(resp);
+        }
         [StaticRoute(HttpServerLite.HttpMethod.GET, "/api/gameBulletin/version")]
         public static async Task Version(HttpContext ctx)
         {

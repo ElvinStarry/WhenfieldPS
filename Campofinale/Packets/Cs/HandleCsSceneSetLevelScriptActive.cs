@@ -44,20 +44,21 @@ namespace Campofinale.Packets.Cs
             }
             else
             {
-               /* ScSceneLevelScriptStateNotify rsp = new ScSceneLevelScriptStateNotify()
+                var sceneScript = session.sceneManager.GetCurScene().scripts.Find(s => s.scriptId == req.ScriptId);
+                if (sceneScript != null)
                 {
-                    SceneNumId = req.SceneNumId,
-                    ScriptId = req.ScriptId,
+                    sceneScript.state = 2;
+                    ScSceneLevelScriptStateNotify rsp = new ScSceneLevelScriptStateNotify()
+                    {
+                        SceneNumId = req.SceneNumId,
+                        ScriptId = req.ScriptId,
 
-                    State = 3
-                };
+                        State = sceneScript.state
+                    };
 
-                if (!session.sceneManager.GetCurScene().activeScripts.Contains(req.ScriptId))
-                {
-                    session.sceneManager.GetCurScene().activeScripts.Add(req.ScriptId);
                     session.sceneManager.GetCurScene().UpdateShowEntities();
+                    session.Send(ScMsgId.ScSceneLevelScriptStateNotify, rsp);
                 }
-                session.Send(ScMsgId.ScSceneLevelScriptStateNotify, rsp);*/
             }
             
 
@@ -84,7 +85,24 @@ namespace Campofinale.Packets.Cs
 
                     session.Send(ScMsgId.ScSceneLevelScriptStateNotify, rsp);
                 }
-                
+
+            }
+            else
+            {
+                var sceneScript = session.sceneManager.GetCurScene().scripts.Find(s => s.scriptId == req.ScriptId);
+                if (sceneScript != null)
+                {
+                    sceneScript.state = 3;
+                    ScSceneLevelScriptStateNotify rsp = new ScSceneLevelScriptStateNotify()
+                    {
+                        SceneNumId = req.SceneNumId,
+                        ScriptId = req.ScriptId,
+
+                        State = sceneScript.state
+                    };
+
+                    session.Send(ScMsgId.ScSceneLevelScriptStateNotify, rsp);
+                }
             }
             
             

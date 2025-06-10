@@ -1,6 +1,6 @@
 ﻿namespace Campofinale.Resource
 {
-    public enum MissionState : int// TypeDefIndex: 33630
+    public enum MissionState
     {
         None = 0,
         Available = 1,
@@ -16,6 +16,14 @@
         Processing = 2,
         Completed = 3,
         Failed = 4,
+    }
+    public enum LevelScriptState 
+    {
+        None = 0,
+        Disabled = 1,
+        Enabled = 2,
+        Active = 3,
+        Running = 4
     }
     public enum InteractiveComponentType
     {

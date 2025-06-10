@@ -81,8 +81,8 @@ namespace Campofinale
         //Data
         public string accountId = "";
         public string nickname = "Endministrator";
-        public ulong roleId= 1;
-        public Gender gender=Gender.GenFemale;
+        public ulong roleId = 1;
+        public Gender gender = Gender.GenFemale;
         public uint level = 20;
         public uint xp = 0;
         //
@@ -99,7 +99,7 @@ namespace Campofinale
         public FactoryManager factoryManager;
         public MissionSystem missionSystem;
         public int teamIndex = 0;
-        public List<Team> teams= new List<Team>();
+        public List<Team> teams = new List<Team>();
         public List<Mail> mails = new List<Mail>();
         public List<int> unlockedSystems = new();
         public List<ulong> noSpawnAnymore = new();

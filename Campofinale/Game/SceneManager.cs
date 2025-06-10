@@ -90,42 +90,39 @@ namespace Campofinale.Game
 
             if (scene != null)
             {
-                if(GetEntity(guid) is EntityMonster)
+                Entity entity = GetEntity(guid);
+                if (entity != null)
                 {
-                    EntityMonster monster = (EntityMonster)GetEntity(guid);
-                    CreateDrop(monster.Position, new RewardTable.ItemBundle()
+                    entity.OnDie();
+                    if (killClient)
                     {
-                        id = "item_gem_rarity_3",
-                        count=1
-                    });
-                    LevelScene lv_scene = ResourceManager.GetLevelData(GetEntity(guid).sceneNumId);
-                    LevelEnemyData d = lv_scene.levelData.enemies.Find(l => l.levelLogicId == monster.guid);
-                    if (d != null)
-                    {
-                        if (!d.respawnable)
+                        ScSceneDestroyEntity destroy = new()
                         {
-                            player.noSpawnAnymore.Add(monster.guid);
+                            Id = guid,
+                            Reason = reason,
+                            SceneNumId = GetEntity(guid).sceneNumId,
+                        };
+                        player.Send(Protocol.ScMsgId.ScSceneDestroyEntity, destroy);
+                        
+                    }
+                    if (entity is EntityMonster monster)
+                    {
+                        LevelScene lv_scene = ResourceManager.GetLevelData(entity.sceneNumId);
+                        LevelEnemyData d = lv_scene.levelData.enemies.Find(l => l.levelLogicId == monster.guid);
+                        if (d != null)
+                        {
+                            if (!d.respawnable)
+                            {
+                                player.noSpawnAnymore.Add(monster.guid);
+                            }
                         }
                     }
-                }
-                if (killClient)
-                {
-                    ScSceneDestroyEntity destroy = new()
+                    if (scenes.Find(s => s.sceneNumId == entity.sceneNumId) != null)
                     {
-                        Id = guid,
-                        Reason = reason,
-                        SceneNumId = GetEntity(guid).sceneNumId,
-                    };
-                    player.Send(Protocol.ScMsgId.ScSceneDestroyEntity, destroy);
-                }
-                if (GetEntity(guid) != null)
-                {
-                    if(scenes.Find(s => s.sceneNumId == GetEntity(guid).sceneNumId) != null)
-                    {
-                        scenes.Find(s => s.sceneNumId == GetEntity(guid).sceneNumId).entities.Remove(GetEntity(guid));
+                        scenes.Find(s => s.sceneNumId == entity.sceneNumId).entities.Remove(entity);
                     }
+                    
                 }
-                
                 
             }
         }
@@ -400,8 +397,11 @@ namespace Campofinale.Game
         {
 
             List<Entity> toSpawn = new();
-            foreach(Entity e in GetEntityExcludingChar().FindAll(e=>e.spawned==false))
+            List<Entity> toCheck = GetEntityExcludingChar().FindAll(e => e.spawned == false);
+            toCheck.Sort((a, b) => a.Position.Distance(GetOwner().position).CompareTo(b.Position.Distance(GetOwner().position)));
+            foreach (Entity e in toCheck)
             {
+                
                 if(e.spawned==false && (GetActiveScript(e.belongLevelScriptId) || e.belongLevelScriptId==0))
                 {
                     if (!e.defaultHide)

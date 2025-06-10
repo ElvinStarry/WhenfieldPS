@@ -11,6 +11,7 @@ using static Campofinale.Resource.ResourceManager;
 using Google.Protobuf.Collections;
 using Campofinale.Packets.Sc;
 using Campofinale.Protocol;
+using CsvHelper.Configuration.Attributes;
 
 namespace Campofinale.Game.Inventory
 {
@@ -101,7 +102,7 @@ namespace Campofinale.Game.Inventory
                                     GemId = guid,
                                     TemplateId= ResourceManager.GetItemTemplateId(id),
                                     WeaponId= GetOwner().inventoryManager.items.Find(i=>i.attachGemId==guid)!=null ? GetOwner().inventoryManager.items.Find(i => i.attachGemId == guid).guid: 0,
-                                
+                                    
                                 },
                                 IsLock = locked
                             }

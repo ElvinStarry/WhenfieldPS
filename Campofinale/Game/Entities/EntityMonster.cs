@@ -1,5 +1,7 @@
 ﻿using Campofinale.Protocol;
 using Campofinale.Resource;
+using Campofinale.Resource.Table;
+using System.Threading;
 using static Campofinale.Resource.ResourceManager;
 
 namespace Campofinale.Game.Entities
@@ -96,6 +98,23 @@ namespace Campofinale.Game.Entities
                 
             };
             return proto;
+        }
+        public override void OnDie()
+        {
+            if (!wikiEnemyDropTable.ContainsKey(templateId)) return;
+            WikiEnemyDropTable table = wikiEnemyDropTable[templateId];
+            if (table!=null)
+            {
+                table.dropItemIds.ForEach(id =>
+                {
+                    GetOwner().sceneManager.CreateDrop(Position, new RewardTable.ItemBundle()
+                    {
+                        id = id,
+                        count = 1
+                    });
+                });
+            }
+            
         }
         public override void Damage(double dmg)
         {

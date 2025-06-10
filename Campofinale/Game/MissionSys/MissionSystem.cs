@@ -266,33 +266,6 @@ namespace Campofinale.Game.MissionSys
             }
         }
     }
-    public class GameQuest
-    {
-        public string questId;
-        public QuestState state;
-        public GameQuest()
-        {
-
-        }
-        public GameQuest(string id, QuestState state = QuestState.Available)
-        {
-            questId = id;
-            this.state = state;
-        }
-    }
-    public class GameMission
-    {
-        public string missionId;
-        public MissionState state;
-
-        public GameMission()
-        {
-
-        }
-        public GameMission(string id, MissionState state = MissionState.Available)
-        {
-            missionId = id;
-            this.state = state;
-        }
-    }
+    
+    
 }

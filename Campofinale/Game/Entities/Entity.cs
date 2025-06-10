@@ -1,4 +1,5 @@
 ﻿using Campofinale.Resource;
+using System.Threading;
 using static Campofinale.Resource.ResourceManager;
 using static Campofinale.Resource.ResourceManager.LevelScene.LevelData;
 
@@ -39,6 +40,10 @@ namespace Campofinale.Game.Entities
         }
 
         public virtual void Heal(double heal)
+        {
+
+        }
+        public virtual void OnDie()
         {
 
         }
