@@ -15,8 +15,8 @@ namespace Campofinale.Resource.Json
     public class ScriptAction
     {
         public ScriptActionType action;
-        public string[] valueStr;
-        public ulong[] valueUlong;
+        public string[] valueStr = new string[0];
+        public ulong[] valueUlong = new ulong[0];
     }
     public enum ScriptActionType
     {

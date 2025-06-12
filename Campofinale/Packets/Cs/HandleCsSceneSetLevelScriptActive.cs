@@ -144,6 +144,7 @@ namespace Campofinale.Packets.Cs
                     break;
                 case ScriptActionType.AddMission:
                     player.missionSystem.AddMission(action.valueStr[0],MissionState.Processing,true);
+                    if(action.valueUlong !=null)
                     if(action.valueUlong.Length > 0)
                     {
                         
