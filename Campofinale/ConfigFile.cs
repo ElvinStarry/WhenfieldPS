@@ -18,6 +18,10 @@
         public bool missionsEnabled = false;
         public bool giveAllItems = false;
         /// <summary>
+        /// Bug: on mobile some scenes doesn't want to load fine
+        /// </summary>
+        public bool disableLevelscripts = true;
+        /// <summary>
         /// Not yet implemented
         /// </summary>
         public bool useEncryption = false;

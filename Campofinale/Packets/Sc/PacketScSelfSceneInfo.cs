@@ -87,7 +87,15 @@ namespace Campofinale.Packets.Sc
                     
                     session.sceneManager.GetCurScene().scripts.Add(sceneScript);
                 }
-                script.State = sceneScript.state;
+                if (Server.config.serverOptions.disableLevelscripts)
+                {
+                    script.State = 1;
+                }
+                else
+                {
+                    script.State = sceneScript.state;
+                }
+                
                 int i = 0;
                 foreach (var item in sceneScript.properties)
                 {
