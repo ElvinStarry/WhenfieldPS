@@ -14,10 +14,7 @@ namespace Campofinale.Http
             string requestBody = ctx.Request.DataAsString;
             Console.WriteLine(requestBody);
             string resp = "{}";
-            
-
             ctx.Response.StatusCode = 200;
-            //ctx.Response.ContentLength = resp.Length;
             ctx.Response.ContentType = "application/json";
 
             await ctx.Response.SendAsync(resp);
@@ -42,7 +39,6 @@ namespace Campofinale.Http
             }
 
             ctx.Response.StatusCode = 200;
-            //ctx.Response.ContentLength = resp.Length;
             ctx.Response.ContentType = "application/json";
 
             await ctx.Response.SendAsync(resp);
@@ -66,7 +62,6 @@ namespace Campofinale.Http
             }
 
             ctx.Response.StatusCode = 200;
-            //ctx.Response.ContentLength = resp.Length;
             ctx.Response.ContentType = "application/json";
 
             await ctx.Response.SendAsync(resp);
@@ -87,7 +82,7 @@ namespace Campofinale.Http
             if (account != null)
             {
                 /*
-                 * {"data":{"hgId":"1326618825955","phone":"153****5243","email":null,"identityNum":"5002**********1619","identityName":"金*","isMinor":false,"isLatestUserAgreement":true},"msg":"OK","status":0,"type":"A"}
+                 * {"data":{"hgId":"**********","phone":"153****5243","email":null,"identityNum":"5002**********1619","identityName":"金*","isMinor":false,"isLatestUserAgreement":true},"msg":"OK","status":0,"type":"A"}
                  */
                 resp = "{\"data\":{\"phone\":\"153****5243\", \"identityNum\": \"5002**********1619\",\"identityName\":\"金*\",\"isMinor\":false,\"hgId\":\"" + account.id + "\",\"email\":\"" + account.username +Server.config.dispatchServer.emailFormat +"\",\"realEmail\":\"" + account.username + Server.config.dispatchServer.emailFormat + "\",\"isLatestUserAgreement\":true,\"nickName\":\"" + account.username + "\"},\"msg\":\"OK\",\"status\":0,\"type\":\"A\"}";
             }
@@ -100,7 +95,6 @@ namespace Campofinale.Http
 
 
             ctx.Response.StatusCode = 200;
-            //ctx.Response.ContentLength = resp.Length;
             ctx.Response.ContentType = "application/json";
 
             await ctx.Response.SendAsync(resp);
@@ -182,14 +176,7 @@ namespace Campofinale.Http
             }
 
         }
-        /*{
-            "appCode": "2fe67ec91610377d",
-            "code": "121212",
-            "email": "aaaa@a.cc",
-            "from": 0,
-            "password": "aaaaaaaaaaaaaa1"
-        }*/
-        public struct RegisterData
+        public struct RegisterFormData
         {
             public string appCode;
             public string code;
@@ -203,7 +190,7 @@ namespace Campofinale.Http
             {
                 string requestBody = ctx.Request.DataAsString;
                 Console.WriteLine(requestBody);
-                RegisterData data = Newtonsoft.Json.JsonConvert.DeserializeObject<RegisterData>(requestBody);
+                RegisterFormData data = Newtonsoft.Json.JsonConvert.DeserializeObject<RegisterFormData>(requestBody);
                 string username = data.email.Split("@")[0];
                 (string,int) msg=DatabaseManager.db.CreateAccount(username);
                 string resp = "";
@@ -266,9 +253,6 @@ namespace Campofinale.Http
             {
                 resp = File.ReadAllText("Data/GachaHistory/index_noplayerfound.html");
             }
-
-
-
 
             ctx.Response.StatusCode = 200;
 

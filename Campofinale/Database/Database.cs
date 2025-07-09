@@ -362,6 +362,11 @@ namespace Campofinale.Database
         }
         public Account GetAccountByTokenGrant(string token)
         {
+            if (Server.config.gameServer.useExternalAuthSdk)
+            {
+                //TODO get account info from external auth sdk
+                return null;
+            }
             try
             {
                 return _database.GetCollection<Account>("accounts").Find(p => p.grantToken == token).ToList().FirstOrDefault();

@@ -72,6 +72,16 @@ namespace Campofinale.Packets.Cs
                 return;
             }
             Account account = DatabaseManager.db.GetAccountByTokenGrant(req.Token);
+            if (account==null)
+            {
+                session.Send(ScMsgId.ScNtfErrorCode, new ScNtfErrorCode()
+                {
+                    Details = "Auth Error",
+                    ErrorCode = (int)CODE.ErrLoginProcessLogin,
+                });
+                session.Disconnect();
+                return;
+            }
             ScLogin rsp = new()
             {
                 IsEnc = false,

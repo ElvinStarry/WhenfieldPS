@@ -25,22 +25,10 @@
         /// Not yet implemented
         /// </summary>
         public bool useEncryption = false;
-        //public CharactersOptions defaultCharacters = new();
         public ServerOptions()
         {
         }
 
-        /*public class CharactersOptions
-        {
-            public int defaultLevel = 1;
-            public bool giveAllCharacters = true;
-            public List<string> characters = new List<string>(); //used if giveAllCharacters is false
-
-            public CharactersOptions() { }
-        }*/
-       /* public struct WelcomeMail
-        {
-        }*/
     }
     public class LogSettings
     {
@@ -59,6 +47,8 @@
         public int bindPort = 30000;
         public string accessAddress = "127.0.0.1";
         public int accessPort = 30000;
+        public bool useExternalAuthSdk = false;
+        public string externalAuthSdkUrl = "";
         public GameserverSettings()
         {
         }
