@@ -165,6 +165,7 @@ namespace Campofinale.Network
             PutUInt16(data, (ushort)body.Length, 1);
             PutByteArray(data, head.ToByteArray(), 3);
             PutByteArray(data, body, 3 + head.ToByteArray().Length);
+            if(Server.config!=null)
             if (Server.config.logOptions.packets && !Server.scMessageToHide.Contains((ScMsgId)msgId))
                 Logger.Print($"Sending Packet: {((ScMsgId)msgId).ToString().Pastel(Color.LightBlue)} Id: {msgId} with {data.Length} Bytes");
 
@@ -192,6 +193,28 @@ namespace Campofinale.Network
             }*/
             seqNext = csHead_.UpSeqid;
             return new Packet() { csHead = csHead_, finishedBody = BodyBytes,cmdId=csHead_.Msgid };
+        }
+        /// <summary>
+        /// Read the byteArray as a valid packet
+        /// </summary>
+        /// <param name="byteArray"></param>
+        /// <returns>The decoded packet</returns>
+        public static Packet Read(byte[] byteArray)
+        {
+            byte headLength = GetByte(byteArray, 0);
+            ushort bodyLength = GetUInt16(byteArray, 1);
+
+            byte[] csHeadBytes = new byte[headLength];
+            byte[] BodyBytes = new byte[bodyLength];
+            Array.Copy(byteArray, 3, csHeadBytes, 0, headLength);
+            Array.Copy(byteArray, 3 + headLength, BodyBytes, 0, bodyLength);
+            CSHead csHead_ = CSHead.Parser.ParseFrom(csHeadBytes);
+            /*if (Server.config.logOptions.packets && !Server.csMessageToHide.Contains((CsMsgId)csHead_.Msgid))
+            {
+                Logger.Print(csHead_.ToString());
+            }*/
+            seqNext = csHead_.UpSeqid;
+            return new Packet() { csHead = csHead_, finishedBody = BodyBytes, cmdId = csHead_.Msgid };
         }
     }
 }
