@@ -11,7 +11,7 @@ namespace Campofinale.Packets.Cs
         {
             CsSceneMoveStateSet req = packet.DecodeBody<CsSceneMoveStateSet>();
             //req.
-
+            
         }
        
     }

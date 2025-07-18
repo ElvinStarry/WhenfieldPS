@@ -4,10 +4,12 @@ using Campofinale.Packets.Sc;
 using Campofinale.Resource;
 using Campofinale.Resource.Dynamic;
 using MongoDB.Bson.Serialization.Attributes;
+using System;
 using System.Text.Json.Serialization;
 using static Campofinale.Resource.Dynamic.SpawnerConfig;
 using static Campofinale.Resource.ResourceManager;
 using static Campofinale.Resource.ResourceManager.LevelScene.LevelData;
+using static Campofinale.Resource.ResourceManager.LevelScene.LevelData.LevelFunctionAreaData;
 
 namespace Campofinale.Game
 {
@@ -235,7 +237,6 @@ namespace Campofinale.Game
             {
                 if (scene != null)
                 {
-                    scene.alreadyLoaded = false;
                     scene.Unload();
                 }
             }
@@ -256,11 +257,11 @@ namespace Campofinale.Game
         [BsonIgnore,JsonIgnore]
         public List<Entity> entities = new();
         [BsonIgnore, JsonIgnore]
-        public bool alreadyLoaded = false;
-        [BsonIgnore, JsonIgnore]
         public List<ulong> activeScripts = new();
 
         public List<LevelScript> scripts = new();
+        [BsonIgnore, JsonIgnore]
+        private LevelFunctionRangeData currentAreaRange = new();
         public int GetCollection(string id)
         {
             if (collections.ContainsKey(id))
@@ -367,17 +368,12 @@ namespace Campofinale.Game
                 entities.Add(entity);
             });
 
-
-
-
             UpdateShowEntities();
         }
         
         public void SpawnEntity(Entity en,bool spawnedCheck=true)
         {
-            
             en.spawned = true;
-           
             GetOwner().Send(new PacketScObjectEnterView(GetOwner(), new List<Entity>() { en }));
         }
         public bool GetActiveScript(ulong id)
@@ -392,10 +388,22 @@ namespace Campofinale.Game
                 return true;
             }
         }
+        
+        private void UpdateArea()
+        {
+            LevelScene lv_scene = ResourceManager.GetLevelData(sceneNumId);
+            lv_scene.levelData.functionArea.ranges.ForEach(range =>
+            {
+                if (range.IsObjectInside(GetOwner().position))
+                {
+                    currentAreaRange=range;
+                }
+            });
+        }
         //Bug on scene 101: spawning entities in this way make the game break if you try to load another scene from scene 101
         public async void UpdateShowEntities()
         {
-
+            UpdateArea();
             List<Entity> toSpawn = new();
             List<Entity> toCheck = GetEntityExcludingChar().FindAll(e => e.spawned == false);
             toCheck.Sort((a, b) => a.Position.Distance(GetOwner().position).CompareTo(b.Position.Distance(GetOwner().position)));
@@ -404,6 +412,7 @@ namespace Campofinale.Game
                 
                 if(e.spawned==false && (GetActiveScript(e.belongLevelScriptId) || e.belongLevelScriptId==0))
                 {
+                    if(currentAreaRange.IsObjectInside(e.Position))
                     if (!e.defaultHide)
                     {
                         toSpawn.Add(e);
@@ -423,34 +432,18 @@ namespace Campofinale.Game
                     GetOwner().Send(new PacketScObjectEnterView(GetOwner(), chunk));
                 }
             }
+            List<ulong> toDespawn=new();
+            foreach(Entity en in GetEntityExcludingChar().FindAll(e=> e.spawned==true))
+            {
+               if (!currentAreaRange.IsObjectInside(en.Position))
+               {
+                    toDespawn.Add(en.guid);
+                    en.spawned = false;
+               }
 
-            /* foreach(Entity en in GetEntityExcludingChar())
-             {
-                 float minDis = 100;
-
-                 //todo new system
-                 if (en.Position.DistanceXZ(GetOwner().position) < minDis)
-                 {
-                     if (!en.spawned)
-                     {
-                         SpawnEntity(en);
-
-
-                     }
-                 }
-                 else
-                 {
-
-                     /*if (en.spawned)
-                     {
-
-                         en.spawned = false;
-                         GetOwner().Send(new PacketScObjectLeaveView(GetOwner(), new List<ulong>() { en.guid }));
-                         en.Position=en.BornPos;
-                         en.Rotation = en.Rotation;
-                     }
-                 }
-             }*/
+            }
+            if(toDespawn.Count > 0)
+            GetOwner().Send(new PacketScObjectLeaveView(GetOwner(), toDespawn));
         }
 
         public Player GetOwner()

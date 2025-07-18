@@ -1,5 +1,6 @@
 ﻿using Campofinale.Network;
 using Campofinale.Protocol;
+using Campofinale.Utils;
 
 namespace Campofinale.Packets.Cs
 {
@@ -26,6 +27,9 @@ namespace Campofinale.Packets.Cs
             }
             else
             {
+                uint unixTimestamp = (uint)DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+                var generator = new SnowflakeIdGenerator(machineId: 1);
+                long id = generator.GenerateId();
                 ScSceneTeleport t = new()
                 {
                     TeleportReason = req.TeleportReason,
@@ -33,6 +37,8 @@ namespace Campofinale.Packets.Cs
                     Position = req.Position,
                     Rotation = req.Rotation,
                     SceneNumId = req.SceneNumId,
+                    ServerTime = unixTimestamp,
+                    TpUuid= (ulong)id
                 };
                 session.curSceneNumId = t.SceneNumId;
                 session.Send(ScMsgId.ScSceneTeleport, t);

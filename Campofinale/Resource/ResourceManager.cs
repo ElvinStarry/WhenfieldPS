@@ -2,6 +2,8 @@
 using Campofinale.Resource.Json;
 using Campofinale.Resource.Table;
 using Newtonsoft.Json;
+using System.Numerics;
+using System;
 using static Campofinale.Resource.ResourceManager.LevelScene;
 
 namespace Campofinale.Resource
@@ -549,6 +551,7 @@ namespace Campofinale.Resource
                 public List<WorldWayPointSets> worldWayPointSets = new();
                 public List<LevelFactoryRegionData> factoryRegions = new();
                 public List<LevelSpawnerData> spawners = new();
+                public LevelFunctionAreaData functionArea = new();
                 public void Merge(LevelData other)
                 {
                     this.sceneId = other.sceneId;
@@ -560,12 +563,33 @@ namespace Campofinale.Resource
                     this.worldWayPointSets.AddRange(other.worldWayPointSets);
                     this.factoryRegions.AddRange(other.factoryRegions);
                     this.spawners.AddRange(other.spawners);
+                    this.functionArea.ranges.AddRange(other.functionArea.ranges);
                 }
                 
                 public class WorldWayPointSets
                 {
                     public int id;
                     public Dictionary<string, int> pointIdToIndex = new();
+                }
+                
+                public class LevelFunctionAreaData
+                {
+                    public List<LevelFunctionRangeData> ranges = new();
+
+                    public class LevelFunctionRangeData
+                    {
+                        public Vector3f m_center = new();
+                        public Vector3f m_size = new();
+
+                        public bool IsObjectInside(Vector3f position)
+                        {
+                            Vector3f halfSize = m_size * 0.5f;
+
+                            return Math.Abs(position.x - m_center.x) <= halfSize.x &&
+                                   Math.Abs(position.y - m_center.y) <= halfSize.y &&
+                                   Math.Abs(position.z - m_center.z) <= halfSize.z;
+                        }
+                    }
                 }
                 public class LevelSpawnerData
                 {
@@ -949,6 +973,10 @@ namespace Campofinale.Resource
             public Vector3f()
             {
 
+            }
+            public static Vector3f operator *(Vector3f v, float scalar)
+            {
+                return new Vector3f(v.x * scalar, v.y * scalar, v.z * scalar);
             }
             public Vector3f(float x, float y, float z)
             {
