@@ -79,6 +79,7 @@ namespace Campofinale.Resource
         public static List<LevelScene> levelDatas = new();
         public static List<InteractiveData> interactiveData = new();
         public static List<SpawnerConfig> spawnerConfigs = new();
+        public static Dictionary<string,ConditionData> conditions=new();
         public static int GetSceneNumIdFromLevelData(string name)
         {
             if (levelDatas.Find(a => a.id == name) == null) return 0;
@@ -409,13 +410,13 @@ namespace Campofinale.Resource
             public int adventureBookStage;
             public string adventureTaskId;
             public string conditionId;
-            public int conditionType;
+            public ConditionType conditionType;
             public string jumpSystemId;
             public int progressToCompare;
             public string rewardId;
             public int sortId;
             public TaskDescription taskDesc;
-            public int taskType;
+            public AdventureTaskType taskType;
         }
         public class TaskDescription
         {

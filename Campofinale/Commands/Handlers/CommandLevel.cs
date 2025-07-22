@@ -2,7 +2,7 @@
 using Campofinale.Packets.Sc;
 using Campofinale.Resource;
 
-namespace Campofinale.Game.Character
+namespace Campofinale.Game.Char
 {
     public static class CharacterManager
     {

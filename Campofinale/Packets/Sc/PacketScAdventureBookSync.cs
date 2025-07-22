@@ -1,6 +1,7 @@
 using Campofinale.Network;
 using Campofinale.Protocol;
 using Campofinale.Resource;
+using static Campofinale.Game.Adventure.AdventureBookManager;
 
 namespace Campofinale.Packets.Sc
 {
@@ -8,19 +9,13 @@ namespace Campofinale.Packets.Sc
     {
         public PacketScAdventureBookSync(Player player) {
             ScAdventureBookSync proto = new ScAdventureBookSync() {
-                AdventureBookStage=1,
-                DailyActivation=100,
+                AdventureBookStage=player.adventureBookManager.data.adventureBookStage,
+                DailyActivation=player.adventureBookManager.data.dailyActivation,
+                
             };
-            foreach(var i in ResourceManager.adventureTaskTable)
+            foreach (GameAdventureTask task in player.adventureBookManager.data.tasks)
             {
-                if (i.Value.adventureBookStage == 1)                    
-                {
-                    proto.Tasks.Add(new AdventureTask()
-                    {
-                        TaskId = i.Value.adventureTaskId,
-                        State = 1
-                    });
-                }
+                proto.Tasks.Add(task.ToProto());
             }
             SetData(ScMsgId.ScAdventureBookSync, proto);
         }

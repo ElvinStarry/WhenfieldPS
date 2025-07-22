@@ -21,7 +21,8 @@ class Program
     }
     private static void FakeClientTester()
     {
-        string serverIp = "beyond-ric.gryphline.com"; 
+        //
+        string serverIp = "beyond-tyo.gryphline.com"; 
         int serverPort = 30000;
         Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 

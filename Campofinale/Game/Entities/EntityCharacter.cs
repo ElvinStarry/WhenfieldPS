@@ -98,7 +98,7 @@ namespace Campofinale.Game.Entities
             GetOwner().Send(ScMsgId.ScCharSyncStatus, state);
             GetOwner().Send(ScMsgId.ScEntityPropertyChange, prop);
         }
-        public Character.Character GetChar()
+        public Char.Character GetChar()
         {
             return GetOwner().chars.Find(c => c.guid == guid);
         }

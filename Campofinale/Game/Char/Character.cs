@@ -10,7 +10,7 @@ using static Campofinale.Resource.ResourceManager;
 using static Campofinale.Resource.ResourceManager.CharGrowthTable;
 using static Campofinale.Resource.ResourceManager.WeaponUpgradeTemplateTable;
 
-namespace Campofinale.Game.Character
+namespace Campofinale.Game.Char
 {
     public class Character
     {
@@ -459,8 +459,6 @@ namespace Campofinale.Game.Character
                 ScCharLevelUp levelUp = new()
                 {
                     CharObjID = guid,
-                    
-
                 };
                 ScCharSyncLevelExp synclevel = new()
                 {
@@ -471,6 +469,10 @@ namespace Campofinale.Game.Character
                 GetOwner().Send(ScMsgId.ScCharSyncLevelExp, synclevel);
                 GetOwner().Send(ScMsgId.ScCharLevelUp, levelUp);
                 GetOwner().Send(new PacketScSyncWallet(GetOwner()));
+                GetOwner().adventureBookManager.TaskUpdate(ConditionType.CheckGreaterCharLevelNum);
+                GetOwner().adventureBookManager.TaskUpdate(ConditionType.CharMaxLevel);
+                GetOwner().adventureBookManager.data.dailyCharLevelUp++;
+                GetOwner().adventureBookManager.TaskUpdate(ConditionType.CheckStatisticVal);
             }
         }
     }

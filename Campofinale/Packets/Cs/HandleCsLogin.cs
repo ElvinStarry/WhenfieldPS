@@ -1,7 +1,7 @@
 ﻿using BeyondTools.VFS.Crypto;
 using Campofinale.Database;
 using Campofinale.Game;
-using Campofinale.Game.Character;
+using Campofinale.Game.Char;
 using Campofinale.Network;
 using Campofinale.Packets.Sc;
 using Campofinale.Protocol;
@@ -211,8 +211,10 @@ namespace Campofinale.Packets.Cs
             session.EnterScene();
             session.Initialized = true;
             session.Update();
-            
-            
+            session.adventureBookManager.data.dailyLogin++;
+            session.adventureBookManager.TaskUpdate(ConditionType.CheckStatisticVal, null);
+
+
         }
         static byte[] GenerateRandomBytes(int length)
         {

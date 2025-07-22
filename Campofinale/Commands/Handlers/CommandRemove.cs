@@ -1,5 +1,5 @@
 using Campofinale.Database;
-using Campofinale.Game.Character;
+using Campofinale.Game.Char;
 using Campofinale.Packets.Sc;
 
 namespace Campofinale.Commands.Handlers;

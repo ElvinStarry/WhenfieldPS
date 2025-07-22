@@ -3,7 +3,7 @@ using Campofinale.Protocol;
 using Google.Protobuf;
 using System.Net.Sockets;
 using Campofinale.Packets.Sc;
-using Campofinale.Game.Character;
+using Campofinale.Game.Char;
 using Campofinale.Resource;
 using Campofinale.Game.Inventory;
 using static Campofinale.Resource.ResourceManager;
@@ -16,6 +16,7 @@ using Campofinale.Game.Factory;
 using Campofinale.Game.MissionSys;
 using Pastel;
 using System.Drawing;
+using Campofinale.Game.Adventure;
 
 
 namespace Campofinale
@@ -98,6 +99,7 @@ namespace Campofinale
         public BitsetManager bitsetManager;
         public FactoryManager factoryManager;
         public MissionSystem missionSystem;
+        public AdventureBookManager adventureBookManager;
         public int teamIndex = 0;
         public List<Team> teams = new List<Team>();
         public List<Mail> mails = new List<Mail>();
@@ -106,6 +108,7 @@ namespace Campofinale
         public long maxDashEnergy = 250;
         public uint curStamina = 10;
         public long nextRecoverTime = 0;
+        public long nextDailyReset = 0;
         public Dungeon currentDungeon;
         public PlayerSafeZoneInfo savedSaveZone;
         
@@ -128,6 +131,7 @@ namespace Campofinale
             spaceshipManager = new(this);   
             factoryManager = new(this);
             missionSystem = new(this);
+            adventureBookManager = new(this);
             receivorThread = new Thread(new ThreadStart(Receive));
            
         }
@@ -168,6 +172,7 @@ namespace Campofinale
                 {
                     sceneManager.scenes = data.scenes;
                 }
+                nextDailyReset = data.nextDailyReset;
                 bitsetManager.Load(data.bitsets);
                 savedSaveZone = data.savedSafeZone;
                 if(Server.config.serverOptions.missionsEnabled) missionSystem.Load();
@@ -176,7 +181,7 @@ namespace Campofinale
             {
                 Initialize(); //only if no account found
             }
-               
+            adventureBookManager.Load();
             sceneManager.Load();
             factoryManager.Load();
             return (data != null);
@@ -572,6 +577,7 @@ namespace Campofinale
             DatabaseManager.db.SavePlayerData(this);
             inventoryManager.Save();
             spaceshipManager.Save();
+            adventureBookManager.Save();
             if(Server.config.serverOptions.missionsEnabled) missionSystem.Save();
             SaveCharacters();
             SaveMails();
@@ -579,6 +585,7 @@ namespace Campofinale
         }
         public void AddStamina(uint stamina)
         {
+            
             curStamina += stamina;
             if(curStamina > maxStamina)
             {
@@ -594,6 +601,12 @@ namespace Campofinale
             {
                 nextRecoverTime= DateTime.UtcNow.AddMinutes(7).ToUnixTimestampMilliseconds();
                 AddStamina(1);
+            }
+            if(curtimestamp >= nextDailyReset && adventureBookManager.data!=null)
+            {
+                nextDailyReset = DateTime.UtcNow.GetNextDailyReset().ToUnixTimestampMilliseconds();
+                adventureBookManager.DailyReset();
+                this.Send(new PacketScAdventureBookSync(this));
             }
             if(LoadFinish)
             sceneManager.Update();

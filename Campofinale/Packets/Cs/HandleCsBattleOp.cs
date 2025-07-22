@@ -1,4 +1,4 @@
-﻿using Campofinale.Game.Character;
+﻿using Campofinale.Game.Char;
 using Campofinale.Game.Entities;
 using Campofinale.Network;
 using Campofinale.Protocol;

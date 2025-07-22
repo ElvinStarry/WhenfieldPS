@@ -21,6 +21,17 @@ namespace Campofinale
         {
             return (long)(dateTime - UnixEpoch).TotalMilliseconds;
         }
+        public static DateTime GetNextDailyReset(this DateTime dateTime)
+        {
+            DateTime now = DateTime.UtcNow;
+            DateTime todayReset = new DateTime(now.Year, now.Month, now.Day, 6, 0, 0, DateTimeKind.Utc);
+
+            // Se siamo già passati oltre le 6:00 AM di oggi, ritorna le 6:00 AM di domani
+            if (now >= todayReset)
+                return todayReset.AddDays(1);
+            else
+                return todayReset;
+        }
     }
     public class Server
     {

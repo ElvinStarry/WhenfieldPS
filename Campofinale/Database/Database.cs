@@ -1,5 +1,6 @@
 ﻿using Campofinale.Game;
-using Campofinale.Game.Character;
+using Campofinale.Game.Adventure;
+using Campofinale.Game.Char;
 using Campofinale.Game.Gacha;
 using Campofinale.Game.Inventory;
 using Campofinale.Game.MissionSys;
@@ -9,6 +10,7 @@ using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
 using System.Security.Cryptography;
 using System.Text;
+using static Campofinale.Game.Adventure.AdventureBookManager;
 using static Campofinale.Resource.ResourceManager;
 
 namespace Campofinale.Database
@@ -33,6 +35,7 @@ namespace Campofinale.Database
         public long maxDashEnergy = 250;
         public uint curStamina;
         public long nextRecoverTime;
+        public long nextDailyReset;
         public List<Scene> scenes = new();
         public Dictionary<int, List<int>> bitsets = new();
         public PlayerSafeZoneInfo savedSafeZone = new();
@@ -83,6 +86,10 @@ namespace Campofinale.Database
         public MissionData LoadMissionData(ulong roleId)
         {
             return _database.GetCollection<MissionData>("missionsData").Find(c => c.roleId == roleId).FirstOrDefault();
+        }
+        public AdventureBookData LoadAdventureBookData(ulong roleId)
+        {
+            return _database.GetCollection<AdventureBookData>("adventureBookData").Find(c => c.roleId == roleId).FirstOrDefault();
         }
         public List<Character> LoadCharacters(ulong roleId)
         {
@@ -152,7 +159,8 @@ namespace Campofinale.Database
                 bitsets=player.bitsetManager.bitsets,
                 savedSafeZone = player.savedSaveZone,
                 gender=player.gender,
-                bag=player.inventoryManager.items.bag
+                bag=player.inventoryManager.items.bag,
+                nextDailyReset = player.nextDailyReset,
             };
             UpsertPlayerData(data);
         }
@@ -253,6 +261,23 @@ namespace Campofinale.Database
             var result = collection.ReplaceOne(
                 filter,
                 room,
+                new ReplaceOptions { IsUpsert = true }
+            );
+        }
+        public void UpsertAdventureBookData(AdventureBookManager.AdventureBookData data)
+        {
+            if (data._id == ObjectId.Empty)
+            {
+                data._id = ObjectId.GenerateNewId();
+            }
+            var collection = _database.GetCollection<AdventureBookManager.AdventureBookData>("adventureBookData");
+
+            var filter =
+                Builders<AdventureBookManager.AdventureBookData>.Filter.Eq(c => c.roleId, data.roleId);
+
+            var result = collection.ReplaceOne(
+                filter,
+                data,
                 new ReplaceOptions { IsUpsert = true }
             );
         }
@@ -402,6 +427,6 @@ namespace Campofinale.Database
             }
         }
 
-
+        
     }
 }

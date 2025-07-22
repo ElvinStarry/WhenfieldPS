@@ -63,8 +63,12 @@ namespace Campofinale.Game.Inventory
                     {
                         id=bundle.id
                     };
-                    
-                    if (!item.InstanceType())
+                    if(bundle.id == "item_daily_activation")
+                    {
+                        owner.adventureBookManager.data.dailyActivation += bundle.count;
+                        continue;
+                    }
+                    if (!item.InstanceType() || sourceType == 0)
                     {
                         item = AddItem(bundle.id, bundle.count);
                         end.RewardVirtualList.Add(new RewardItem()

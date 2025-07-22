@@ -1,5 +1,5 @@
 using static Campofinale.Resource.ResourceManager;
-using Campofinale.Game.Character;
+using Campofinale.Game.Char;
 using Campofinale.Database;
 using Campofinale.Game.Inventory;
 

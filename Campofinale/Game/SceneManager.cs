@@ -46,7 +46,7 @@ namespace Campofinale.Game
         public void LoadCurrentTeamEntities()
         {
             globalEntities.RemoveAll(e => e is EntityCharacter);
-            foreach (Character.Character chara in player.GetCurTeam())
+            foreach (Char.Character chara in player.GetCurTeam())
             {
                 EntityCharacter ch = new(chara.guid, player.roleId);
                 globalEntities.Add(ch);
