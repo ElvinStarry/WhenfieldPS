@@ -606,7 +606,8 @@ namespace Campofinale
             {
                 nextDailyReset = DateTime.UtcNow.GetNextDailyReset().ToUnixTimestampMilliseconds();
                 adventureBookManager.DailyReset();
-                this.Send(new PacketScAdventureBookSync(this));
+                if (Initialized)
+                    this.Send(new PacketScAdventureBookSync(this));
             }
             if(LoadFinish)
             sceneManager.Update();

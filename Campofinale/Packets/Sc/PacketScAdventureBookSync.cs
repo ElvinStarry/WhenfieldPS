@@ -11,7 +11,6 @@ namespace Campofinale.Packets.Sc
             ScAdventureBookSync proto = new ScAdventureBookSync() {
                 AdventureBookStage=player.adventureBookManager.data.adventureBookStage,
                 DailyActivation=player.adventureBookManager.data.dailyActivation,
-                
             };
             foreach (GameAdventureTask task in player.adventureBookManager.data.tasks)
             {

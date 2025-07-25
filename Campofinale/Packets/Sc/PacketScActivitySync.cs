@@ -26,6 +26,7 @@ namespace Campofinale.Packets.Sc
                             {
                                 LoginDays=1,
                                 RewardDays=16,
+                                
                             }
                         }
                     }
