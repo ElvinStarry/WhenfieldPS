@@ -19,6 +19,7 @@ namespace Campofinale.Packets.Cs
                 {
                    
                     case BattleActionOperateType.BattleOpEntityValueModify:
+
                         OnEntityValueModify(session, data);
                         break;
                     case BattleActionOperateType.BattleOpSkillStartCast:
@@ -34,7 +35,7 @@ namespace Campofinale.Packets.Cs
                         OnEntityDie(session, data.EntityDieOpData);
                         break;
                     default:
-                        Logger.PrintWarn($"Unsupported BattleActionOperateType.{data.OpType}");
+                        Logger.PrintWarn($"Unimplemented BattleActionOperateType.{data.OpType}");
                         break;
                 }
             }
@@ -73,9 +74,8 @@ namespace Campofinale.Packets.Cs
                         HealEntity(session, item);
                     }
                     break;
-                
                 default:
-                    Logger.PrintWarn($"Unsupported ServerBattleActionType.{data.Action.ActionType}");
+                    Logger.PrintWarn($"Unimplemented ServerBattleActionType.{data.Action.ActionType}");
                     break;
             }
         }
@@ -106,7 +106,6 @@ namespace Campofinale.Packets.Cs
         private static void OnSkillStartCast(Player session, BattleClientOpData data)
         {
             ulong casterId = data.OwnerId;
-            
             Character character = session.chars.Find(c => c.guid == casterId);
             if (character != null)
             {
@@ -140,7 +139,7 @@ namespace Campofinale.Packets.Cs
                     BattleInfo = new()
                     {
                         Hp = character.curHp,
-                        Ultimatesp = character.ultimateSp+1
+                        Ultimatesp = character.ultimateSp
                     },
                     Objid = character.guid,
                 };
@@ -154,17 +153,17 @@ namespace Campofinale.Packets.Cs
 
         private static void OnEntityValueModify(Player session, BattleClientOpData data)
         {
-            Logger.PrintWarn("EntityValueModify called: " + data.EntityValueModifyData.ToString());
-            
             Character character = session.chars.Find(c => c.guid == data.EntityValueModifyData.EntityInstId);
             if (character != null)
             {
+               
                 character.curHp = data.EntityValueModifyData.Value.Hp;
+                character.ultimateSp = data.EntityValueModifyData.Value.Ultimatesp;
                 ScCharSyncStatus s = new()
                 {
                     BattleInfo = new()
                     {
-                        Hp = data.EntityValueModifyData.Value.Hp,
+                        Hp = character.curHp,
                         Ultimatesp = character.ultimateSp
                     },
                     Objid = character.guid,
