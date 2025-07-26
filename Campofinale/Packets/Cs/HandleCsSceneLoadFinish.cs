@@ -13,11 +13,10 @@ namespace Campofinale.Packets.Cs
         {
             CsSceneLoadFinish req = packet.DecodeBody<CsSceneLoadFinish>();
 
-
+            session.curSceneNumId=req.SceneNumId;
             session.Send(new PacketScSelfSceneInfo(session, SelfInfoReasonType.SlrEnterScene));
             session.sceneManager.LoadCurrentTeamEntities();
             session.sceneManager.LoadCurrent();
-            session.LoadFinish = true;
             
             if (session.curSceneNumId == 98)
             {
@@ -37,7 +36,7 @@ namespace Campofinale.Packets.Cs
                 }
                     
             }
-            session.LoadFinish = true;
+            session.sceneLoadState = Player.SceneLoadState.OK;
         }
     }
 }

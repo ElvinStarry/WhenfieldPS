@@ -59,7 +59,10 @@ namespace Campofinale.Packets.Sc
                 sceneInfo.Detail.CharList.Add(session.chars.Find(c => c.guid == m).ToSceneProto());
             });
 
-            //Levelscripts here?
+            if (infoReason == SelfInfoReasonType.SlrSeamlesslyEnterScene)
+            {
+                sceneInfo.TeamInfo = null;
+            }
             if(infoReason!= SelfInfoReasonType.SlrChangeTeam)
             ResourceManager.GetLevelData(session.curSceneNumId).levelData.levelScripts.ForEach(l =>
             {

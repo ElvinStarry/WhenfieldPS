@@ -67,7 +67,7 @@ namespace Campofinale
         public static Dispatch? dispatch;
         public static ConfigFile? config;
         public static List<CsMsgId> csMessageToHide = new() { CsMsgId.CsMoveObjectMove, CsMsgId.CsBattleOp,CsMsgId.CsPing };
-        public static List<ScMsgId> scMessageToHide = new() { ScMsgId.ScMoveObjectMove, ScMsgId.ScPing };
+        public static List<ScMsgId> scMessageToHide = new() { ScMsgId.ScMoveObjectMove, ScMsgId.ScPing,ScMsgId.ScObjectEnterView };
         public void Start(ConfigFile config)
         {
             {

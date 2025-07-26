@@ -17,6 +17,7 @@ using Campofinale.Game.MissionSys;
 using Pastel;
 using System.Drawing;
 using Campofinale.Game.Adventure;
+using static Campofinale.Player;
 
 
 namespace Campofinale
@@ -349,7 +350,7 @@ namespace Campofinale
             {
                 //sceneManager.UnloadCurrent(false);
                 //sceneManager.LoadCurrent();
-                LoadFinish = false;
+                sceneLoadState = SceneLoadState.Loading;
                 Send(new PacketScEnterSceneNotify(this, curSceneNumId));
             }
             if (savedSaveZone == null || savedSaveZone.sceneNumId == 0)
@@ -362,7 +363,14 @@ namespace Campofinale
                 };
             }
         }
-        public bool LoadFinish = true;
+        public enum SceneLoadState
+        {
+            OK=0,
+            Loading=1,
+
+        }
+        public SceneLoadState sceneLoadState=0;
+        // public bool LoadFinish = true;
         public void EnterScene(int sceneNumId, Vector3f pos, Vector3f rot, PassThroughData passThroughData = null)
         {
            // if (!LoadFinish) return;
@@ -381,13 +389,44 @@ namespace Campofinale
                 curSceneNumId = sceneNumId;
                 position = pos;
                 rotation = rot;
-                LoadFinish = false;
+                sceneLoadState = SceneLoadState.Loading;
                 Send(new PacketScEnterSceneNotify(this, sceneNumId, pos, passThroughData));
                 //sceneManager.LoadCurrent();
             }
             else
             {
                 Logger.PrintError($"Scene {sceneNumId} not found");
+            }
+        }
+        /// <summary>
+        /// Seamless Crossing scene is not working, self scene info is not modifying the current scene num id in the client...
+        /// </summary>
+        /// <param name="sceneNumId"></param>
+        public void SeamlessEnterScene(int sceneNumId)
+        {
+            if(curSceneNumId != sceneNumId && sceneLoadState == SceneLoadState.OK)
+            {
+                sceneLoadState=SceneLoadState.Loading;
+                curSceneNumId = sceneNumId;
+                Send(new PacketScSelfSceneInfo(this, SelfInfoReasonType.SlrSeamlesslyEnterScene));
+                ScFactoryModifyChapterScene modify = new()
+                {
+                    ChapterId=GetCurrentChapter(),
+                    SceneId=sceneNumId,
+                    Tms=DateTime.UtcNow.ToUnixTimestampMilliseconds()
+                };
+                Send(ScMsgId.ScFactoryModifyChapterScene, modify);
+                ScSceneCrossSceneStatus cross = new()
+                {
+                    ObjId = teams[teamIndex].leader,
+                    SceneNumId = curSceneNumId
+                };
+                Send(ScMsgId.ScSceneCrossSceneStatus, cross);
+                
+               
+                sceneManager.LoadCurrentTeamEntities();
+                sceneManager.LoadCurrent();
+                sceneLoadState = SceneLoadState.OK;
             }
         }
         public void EnterScene(int sceneNumId)
@@ -410,7 +449,7 @@ namespace Campofinale
                 position = GetLevelData(sceneNumId).playerInitPos;
                 rotation = GetLevelData(sceneNumId).playerInitRot;
                 // sceneManager.LoadCurrent();
-                LoadFinish = false;
+                sceneLoadState = SceneLoadState.Loading;
                 Send(new PacketScEnterSceneNotify(this, sceneNumId));
                 
             }
@@ -609,7 +648,7 @@ namespace Campofinale
                 if (Initialized)
                     this.Send(new PacketScAdventureBookSync(this));
             }
-            if(LoadFinish)
+            if(sceneLoadState==0)
             sceneManager.Update();
             factoryManager.Update();
         }
