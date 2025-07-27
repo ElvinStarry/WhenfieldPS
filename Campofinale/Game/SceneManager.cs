@@ -412,7 +412,7 @@ namespace Campofinale.Game
                 
                 if(e.spawned==false && (GetActiveScript(e.belongLevelScriptId) || e.belongLevelScriptId==0))
                 {
-                    if(currentAreaRange.IsObjectInside(e.Position))
+                    if(currentAreaRange.IsObjectInside(e.Position) || sceneNumId==87)
                     if (!e.defaultHide)
                     {
                         toSpawn.Add(e);
@@ -435,7 +435,7 @@ namespace Campofinale.Game
             List<ulong> toDespawn=new();
             foreach(Entity en in GetEntityExcludingChar().FindAll(e=> e.spawned==true))
             {
-               if (!currentAreaRange.IsObjectInside(en.Position))
+               if (!currentAreaRange.IsObjectInside(en.Position) && en.scriptSpawn==false && sceneNumId != 87)
                {
                     toDespawn.Add(en.guid);
                     en.spawned = false;
@@ -458,7 +458,7 @@ namespace Campofinale.Game
             });
             GetOwner().Send(new PacketScObjectEnterView(GetOwner(), GetEntityExcludingChar().FindAll(e => e.belongLevelScriptId == id)));
         }
-        public void SpawnEnemy(ulong v)
+        public void SpawnEnemy(ulong v, bool scriptSpawn=false)
         {
             LevelScene lv_scene = ResourceManager.GetLevelData(sceneNumId);
             LevelEnemyData en = lv_scene.levelData.enemies.Find(e=>e.levelLogicId == v);
@@ -468,10 +468,16 @@ namespace Campofinale.Game
                 {
                     type = en.entityType,
                     belongLevelScriptId = en.belongLevelScriptId,
-                    levelLogicId = en.levelLogicId
+                    levelLogicId = en.levelLogicId,
+                    scriptSpawn = scriptSpawn
                 };
                 entities.Add(entity);
+                Logger.Print($"Enemy Id {v} found on scene {sceneNumId}:{lv_scene.mapIdStr}");
                 SpawnEntity(entity);
+            }
+            else
+            {
+                Logger.PrintWarn($"Enemy Id {v} not found on scene {sceneNumId}:{lv_scene.mapIdStr}");
             }
         }
 

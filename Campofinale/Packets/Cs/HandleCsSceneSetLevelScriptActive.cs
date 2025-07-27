@@ -122,7 +122,7 @@ namespace Campofinale.Packets.Cs
                 case ScriptActionType.SpawnEnemy:
                     foreach (ulong id in action.valueUlong)
                     {
-                        player.sceneManager.GetCurScene().SpawnEnemy(id);
+                        player.sceneManager.GetCurScene().SpawnEnemy(id,true);
                     }
                     
                     break;

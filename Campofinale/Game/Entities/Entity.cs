@@ -23,6 +23,7 @@ namespace Campofinale.Game.Entities
         public int sceneNumId;
         public bool spawned = false;
         public bool defaultHide = false;
+        public bool scriptSpawn = false;
         public Entity()
         {
 
