@@ -12,7 +12,7 @@ class Program
 {
     static void Main(string[] args)
     {
-        StartServer(args);
+       StartServer(args);
         //FakeClientTester();
     }
     public static byte[] ConcatenateByteArrays(byte[] array1, byte[] array2)
@@ -22,7 +22,7 @@ class Program
     private static void FakeClientTester()
     {
         //
-        string serverIp = "beyond-tyo.gryphline.com"; 
+        string serverIp = "beyond-cn.hypergryph.com"; 
         int serverPort = 30000;
         Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
@@ -33,7 +33,6 @@ class Program
         socket.Connect(new IPEndPoint(ipAddress, serverPort));
 
         socket.Send(Packet.EncodePacket((int)CsMsgId.CsLogin,new CsLogin() { ClientVersion="0.5.5",Uid= "", Token= "", Env=EnvType.Prod,PlatformId=ClientPlatformType.Windows,Area=AreaType.Oversea,ClientResVersion="", LoginToken= "" }.ToByteArray()));
-
         while (true)
         {
             byte[] buffer = new byte[3];
@@ -44,6 +43,7 @@ class Program
                 byte headLength = Packet.GetByte(buffer, 0);
                 ushort bodyLength = Packet.GetUInt16(buffer, 1);
                 byte[] moreData = new byte[bodyLength + headLength];
+                
                 while (socket.Available < moreData.Length)
                 {
 
