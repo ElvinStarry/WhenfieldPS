@@ -678,30 +678,13 @@ namespace Campofinale
                 table = ResourceManager.dungeonTable[dungeonId],
             };
             this.currentDungeon = dungeon;
-            ScEnterDungeon enter = new()
-            {
-                DungeonId = dungeonId,
-                SceneId = dungeon.table.sceneId,
-                
-            };
-           
-            Send(new PacketScSyncAllUnlock(this));
-            
-            EnterScene(GetSceneNumIdFromLevelData(dungeon.table.sceneId));
-            Send(ScMsgId.ScEnterDungeon, enter);
-
+            dungeon.Enter();
         }
 
         public void LeaveDungeon(CsLeaveDungeon req)
         {
-            ScLeaveDungeon rsp = new()
-            {
-                DungeonId = req.DungeonId,
-            };
-            Send(ScMsgId.ScLeaveDungeon, rsp);
-            Dungeon dungeon = currentDungeon;
-            currentDungeon = null;
-            EnterScene(dungeon.prevPlayerSceneNumId, dungeon.prevPlayerPos, dungeon.prevPlayerRot);
+            if(currentDungeon!=null)
+                currentDungeon.Leave();
         }
 
         public string GetCurrentChapter()

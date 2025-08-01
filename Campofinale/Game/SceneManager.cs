@@ -260,8 +260,6 @@ namespace Campofinale.Game
         public List<ulong> activeScripts = new();
 
         public List<LevelScript> scripts = new();
-        [BsonIgnore, JsonIgnore]
-        private LevelFunctionRangeData currentAreaRange = new();
         public int GetCollection(string id)
         {
             if (collections.ContainsKey(id))
@@ -293,6 +291,7 @@ namespace Campofinale.Game
             foreach(Entity e in GetEntityExcludingChar().FindAll(e => e.spawned))
             {
                 guids.Add(e.guid);
+                e.spawned = false;
             }
             entities.Clear();
             GetOwner().Send(new PacketScObjectLeaveView(GetOwner(), guids));
@@ -388,35 +387,28 @@ namespace Campofinale.Game
                 return true;
             }
         }
-        
-        private void UpdateArea()
-        {
-            LevelScene lv_scene = ResourceManager.GetLevelData(sceneNumId);
-            lv_scene.levelData.functionArea.ranges.ForEach(range =>
-            {
-                if (range.IsObjectInside(GetOwner().position))
-                {
-                    currentAreaRange=range;
-                }
-            });
-        }
+
         //Bug on scene 101: spawning entities in this way make the game break if you try to load another scene from scene 101
         public async void UpdateShowEntities()
         {
-            UpdateArea();
             List<Entity> toSpawn = new();
             List<Entity> toCheck = GetEntityExcludingChar().FindAll(e => e.spawned == false);
             toCheck.Sort((a, b) => a.Position.Distance(GetOwner().position).CompareTo(b.Position.Distance(GetOwner().position)));
             foreach (Entity e in toCheck)
             {
-                
-                if(e.spawned==false && (GetActiveScript(e.belongLevelScriptId) || e.belongLevelScriptId==0))
+                if(e.Position.Distance(GetOwner().position) > 300 && sceneNumId != 87)
                 {
-                    if(currentAreaRange.IsObjectInside(e.Position) || sceneNumId==87)
+                    continue;
+                }
+                if(e.spawned==false)
+                {
                     if (!e.defaultHide)
                     {
-                        toSpawn.Add(e);
-                        e.spawned = true;
+                        if (GetActiveScript(e.belongLevelScriptId))
+                        {
+                            toSpawn.Add(e);
+                            e.spawned = true;
+                        }
                     }
                     
                 }
@@ -432,18 +424,6 @@ namespace Campofinale.Game
                     GetOwner().Send(new PacketScObjectEnterView(GetOwner(), chunk));
                 }
             }
-            List<ulong> toDespawn=new();
-            foreach(Entity en in GetEntityExcludingChar().FindAll(e=> e.spawned==true))
-            {
-               if (!currentAreaRange.IsObjectInside(en.Position) && en.scriptSpawn==false && sceneNumId != 87)
-               {
-                    toDespawn.Add(en.guid);
-                    en.spawned = false;
-               }
-
-            }
-            if(toDespawn.Count > 0)
-            GetOwner().Send(new PacketScObjectLeaveView(GetOwner(), toDespawn));
         }
 
         public Player GetOwner()
@@ -469,7 +449,6 @@ namespace Campofinale.Game
                     type = en.entityType,
                     belongLevelScriptId = en.belongLevelScriptId,
                     levelLogicId = en.levelLogicId,
-                    scriptSpawn = scriptSpawn
                 };
                 entities.Add(entity);
                 Logger.Print($"Enemy Id {v} found on scene {sceneNumId}:{lv_scene.mapIdStr}");

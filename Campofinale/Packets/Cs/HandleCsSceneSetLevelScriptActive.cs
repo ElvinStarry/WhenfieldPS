@@ -16,51 +16,44 @@ namespace Campofinale.Packets.Cs
         public static void Handle(Player session, CsMsgId cmdId, Packet packet)
         {
             CsSceneSetLevelScriptActive req = packet.DecodeBody<CsSceneSetLevelScriptActive>();
-            if (req.IsActive)
+            LevelScriptData data = ResourceManager.GetLevelData(session.curSceneNumId).levelData.levelScripts.Find(s=>s.scriptId==req.ScriptId);
+            if (data != null)
+            if (data.refGameId != null && session.currentDungeon != null)
+            {
+                if (session.currentDungeon.table.dungeonId != data.refGameId)
+                {
+                    return;
+                }
+            }
+            var sceneScript = session.sceneManager.GetCurScene().scripts.Find(s => s.scriptId == req.ScriptId);
+
+            if (sceneScript != null)
             {
                 
-                var sceneScript = session.sceneManager.GetCurScene().scripts.Find(s => s.scriptId == req.ScriptId);
-                if (sceneScript != null)
+                if (req.IsActive)
                 {
                     sceneScript.state = 3;
-                    ScSceneLevelScriptStateNotify rsp = new ScSceneLevelScriptStateNotify()
-                    {
-                        SceneNumId = req.SceneNumId,
-                        ScriptId = req.ScriptId,
-
-                        State = sceneScript.state
-                    };
-
-                    if (!session.sceneManager.GetCurScene().activeScripts.Contains(req.ScriptId))
-                    {
-                        session.sceneManager.GetCurScene().activeScripts.Add(req.ScriptId);
-                        session.sceneManager.GetCurScene().UpdateShowEntities();
-                    }
-                    session.Send(ScMsgId.ScSceneLevelScriptStateNotify, rsp);
                 }
-                
-
-
-            }
-            else
-            {
-                var sceneScript = session.sceneManager.GetCurScene().scripts.Find(s => s.scriptId == req.ScriptId);
-                if (sceneScript != null)
+                else
                 {
                     sceneScript.state = 2;
-                    ScSceneLevelScriptStateNotify rsp = new ScSceneLevelScriptStateNotify()
-                    {
-                        SceneNumId = req.SceneNumId,
-                        ScriptId = req.ScriptId,
-
-                        State = sceneScript.state
-                    };
-
-                    session.sceneManager.GetCurScene().UpdateShowEntities();
-                    session.Send(ScMsgId.ScSceneLevelScriptStateNotify, rsp);
                 }
+                ScSceneLevelScriptStateNotify rsp = new ScSceneLevelScriptStateNotify()
+                {
+                    SceneNumId = req.SceneNumId,
+                    ScriptId = req.ScriptId,
+
+                    State = sceneScript.state
+                };
+
+                if (!session.sceneManager.GetCurScene().activeScripts.Contains(req.ScriptId))
+                {
+                    session.sceneManager.GetCurScene().activeScripts.Add(req.ScriptId);
+                    session.sceneManager.GetCurScene().UpdateShowEntities();
+                }
+                session.Send(ScMsgId.ScSceneLevelScriptStateNotify, rsp);
             }
-            
+
 
         }
 
@@ -68,45 +61,40 @@ namespace Campofinale.Packets.Cs
         public static void HandleCsSceneSetLevelScriptStart(Player session, CsMsgId cmdId, Packet packet)
         {
             CsSceneSetLevelScriptStart req = packet.DecodeBody<CsSceneSetLevelScriptStart>();
-            
-            if (req.IsStart)
+            LevelScriptData data = ResourceManager.GetLevelData(session.curSceneNumId).levelData.levelScripts.Find(s => s.scriptId == req.ScriptId);
+            if(data!=null)
+            if (data.refGameId != null && session.currentDungeon != null)
             {
-                var sceneScript = session.sceneManager.GetCurScene().scripts.Find(s => s.scriptId == req.ScriptId);
-                if (sceneScript != null)
+                if (session.currentDungeon.table.dungeonId != data.refGameId)
+                {
+                    return;
+                }
+            }
+            var sceneScript = session.sceneManager.GetCurScene().scripts.Find(s => s.scriptId == req.ScriptId);
+            if (sceneScript != null)
+            {
+                
+               
+                if (req.IsStart)
                 {
                     sceneScript.state = 4;
-                    ScSceneLevelScriptStateNotify rsp = new ScSceneLevelScriptStateNotify()
-                    {
-                        SceneNumId = req.SceneNumId,
-                        ScriptId = req.ScriptId,
-
-                        State = sceneScript.state
-                    };
-
-                    session.Send(ScMsgId.ScSceneLevelScriptStateNotify, rsp);
                 }
-
-            }
-            else
-            {
-                var sceneScript = session.sceneManager.GetCurScene().scripts.Find(s => s.scriptId == req.ScriptId);
-                if (sceneScript != null)
+                else
                 {
                     sceneScript.state = 3;
-                    ScSceneLevelScriptStateNotify rsp = new ScSceneLevelScriptStateNotify()
-                    {
-                        SceneNumId = req.SceneNumId,
-                        ScriptId = req.ScriptId,
-
-                        State = sceneScript.state
-                    };
-
-                    session.Send(ScMsgId.ScSceneLevelScriptStateNotify, rsp);
                 }
+                ScSceneLevelScriptStateNotify rsp = new ScSceneLevelScriptStateNotify()
+                {
+                    SceneNumId = req.SceneNumId,
+                    ScriptId = req.ScriptId,
+
+                    State = sceneScript.state
+                };
+                session.Send(ScMsgId.ScSceneLevelScriptStateNotify, rsp);
             }
             
-            
-            
+
+
         }
         
         public static void ExecuteEventAction(Player player, ScriptAction action, CsSceneLevelScriptEventTrigger req)

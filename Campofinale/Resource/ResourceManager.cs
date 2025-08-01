@@ -601,6 +601,7 @@ namespace Campofinale.Resource
                 public class LevelScriptData
                 {
                     public ulong scriptId;
+                    public string refGameId;
                     public List<ParamKeyValue> properties = new();
                     public Dictionary<int, string> propertyIdToKeyMap = new();
                     public ScriptActionMap actionMap = new();
