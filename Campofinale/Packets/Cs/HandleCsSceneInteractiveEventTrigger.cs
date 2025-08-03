@@ -11,8 +11,11 @@ namespace Campofinale.Packets.Cs
         public static void Handle(Player session, CsMsgId cmdId, Packet packet)
         {
             CsSceneInteractiveEventTrigger  req = packet.DecodeBody<CsSceneInteractiveEventTrigger>();
-            
-            
+            ScSceneInteractiveEventTrigger rsp = new()
+            {
+                
+            };
+            session.Send(ScMsgId.ScSceneInteractiveEventTrigger, rsp,packet.csHead.UpSeqid);
             EntityInteractive entity = (EntityInteractive)session.sceneManager.GetEntity(req.Id);
             if (entity != null)
             {

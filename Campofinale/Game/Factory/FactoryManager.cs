@@ -105,6 +105,7 @@ namespace Campofinale.Game.Factory
         {
             v++;
             uint nodeId = v;
+            
             FactoryBuildingTable table = ResourceManager.factoryBuildingTable[place.TemplateId];
             FactoryNode node = new()
             {
