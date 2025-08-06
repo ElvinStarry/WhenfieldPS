@@ -11,6 +11,7 @@ using MongoDB.Driver;
 using System.Security.Cryptography;
 using System.Text;
 using static Campofinale.Game.Adventure.AdventureBookManager;
+using static Campofinale.Game.Factory.FactoryManager;
 using static Campofinale.Resource.ResourceManager;
 
 namespace Campofinale.Database
@@ -103,7 +104,10 @@ namespace Campofinale.Database
         {
             return _database.GetCollection<SpaceshipRoom>("spaceship_rooms").Find(c => c.owner == roleId).ToList();
         }
-        
+        public FactoryData LoadFactoryData(ulong roleId)
+        {
+            return _database.GetCollection<FactoryData>("factory").Find(c => c.roleId == roleId).ToList().FirstOrDefault();
+        }
         public List<Item> LoadInventoryItems(ulong roleId)
         {
             return _database.GetCollection<Item>("items").Find(c => c.owner == roleId).ToList();
@@ -319,6 +323,22 @@ namespace Campofinale.Database
                 new ReplaceOptions { IsUpsert = true }
             );
         }
+        public void UpsertFactoryData(FactoryData item)
+        {
+            if (item._id == ObjectId.Empty)
+            {
+                item._id = ObjectId.GenerateNewId();
+            }
+            var collection = _database.GetCollection<FactoryData>("factory");
+            var filter =
+               Builders<FactoryData>.Filter.Eq(c => c.roleId, item.roleId);
+
+            var result = collection.ReplaceOne(
+                filter,
+                item,
+                new ReplaceOptions { IsUpsert = true }
+            );
+        }
         public void UpsertItem(Item item)
         {
             if (item._id == ObjectId.Empty)
@@ -427,6 +447,6 @@ namespace Campofinale.Database
             }
         }
 
-        
+
     }
 }

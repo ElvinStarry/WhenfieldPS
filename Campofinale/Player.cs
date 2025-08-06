@@ -617,6 +617,7 @@ namespace Campofinale
             inventoryManager.Save();
             spaceshipManager.Save();
             adventureBookManager.Save();
+            factoryManager.Save();
             if(Server.config.serverOptions.missionsEnabled) missionSystem.Save();
             SaveCharacters();
             SaveMails();

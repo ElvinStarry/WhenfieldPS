@@ -3,8 +3,10 @@ using Campofinale.Game.Inventory;
 using Campofinale.Packets.Sc;
 using Campofinale.Resource;
 using Campofinale.Resource.Dynamic;
+using Campofinale.Resource.Table;
 using MongoDB.Bson.Serialization.Attributes;
 using System;
+using System.Diagnostics;
 using System.Text.Json.Serialization;
 using static Campofinale.Resource.Dynamic.SpawnerConfig;
 using static Campofinale.Resource.ResourceManager;
@@ -220,13 +222,18 @@ namespace Campofinale.Game
         {
             foreach (var level in ResourceManager.levelDatas)
             {
-                if(scenes.Find(s=>s.sceneNumId==level.idNum) == null)
+                int grade = 1;
+                if (ResourceManager.levelGradeTable.ContainsKey(level.id))
+                {
+                    grade = ResourceManager.levelGradeTable[level.id].grades.Last().grade;
+                }
+                if (scenes.Find(s=>s.sceneNumId==level.idNum) == null)
                 scenes.Add(new Scene()
                 {
                     guid = (ulong)player.random.Next(),
                     ownerId=player.roleId,
                     sceneNumId=level.idNum,
-                    
+                    grade= grade
                 });
             }
         }
@@ -260,6 +267,8 @@ namespace Campofinale.Game
         public List<ulong> activeScripts = new();
 
         public List<LevelScript> scripts = new();
+        public int grade = 0;
+
         public int GetCollection(string id)
         {
             if (collections.ContainsKey(id))
@@ -304,7 +313,18 @@ namespace Campofinale.Game
         {
             Unload();
             LevelScene lv_scene = ResourceManager.GetLevelData(sceneNumId);
-           
+            
+            LevelGradeInfo sceneGrade = null;
+            LevelGradeTable table = null;
+            ResourceManager.levelGradeTable.TryGetValue(lv_scene.id, out table);
+            if (table != null)
+            {
+                sceneGrade=table.grades.Find(g=>g.grade==grade);
+            }
+            if (sceneGrade == null)
+            {
+                sceneGrade = new();
+            }
             lv_scene.levelData.interactives.ForEach(en =>
             {
                 if (GetOwner().noSpawnAnymore.Contains(en.levelLogicId) && sceneNumId != 87)
@@ -342,7 +362,7 @@ namespace Campofinale.Game
             {
                 if(GetOwner().noSpawnAnymore.Contains(en.levelLogicId) && sceneNumId != 87) return;
                 
-                EntityMonster entity = new(en.entityDataIdKey,en.level,ownerId,en.position,en.rotation, sceneNumId, en.levelLogicId)
+                EntityMonster entity = new(en.entityDataIdKey,sceneGrade.monsterBaseLevel+ en.level,ownerId,en.position,en.rotation, sceneNumId, en.levelLogicId)
                 {
                     type=en.entityType,
                     belongLevelScriptId=en.belongLevelScriptId,
@@ -366,7 +386,16 @@ namespace Campofinale.Game
                 entity.defaultHide = en.defaultHide;
                 entities.Add(entity);
             });
-
+            GetOwner().factoryManager.chapters.ForEach(ch =>
+            {
+                ch.nodes.ForEach(n =>
+                {
+                    if (n.sceneNumId == sceneNumId)
+                    {
+                        n.SendEntity(GetOwner(), ch.chapterId);
+                    }
+                });
+            });
             UpdateShowEntities();
         }
         

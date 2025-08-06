@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using System.Numerics;
 using System;
 using static Campofinale.Resource.ResourceManager.LevelScene;
+using static Campofinale.Resource.ResourceManager.LevelScene.LevelData;
 
 namespace Campofinale.Resource
 {
@@ -73,6 +74,7 @@ namespace Campofinale.Resource
         public static Dictionary<int, ItemTypeTable> itemTypeTable = new(); //
         public static Dictionary<string, SNSChatTable> snsChatTable = new();//
         public static Dictionary<string, GiftItemTable> giftItemTable = new();
+        public static Dictionary<string, InteractiveFacWrapperTable> interactiveFacWrapperTable = new();
         public static List<MissionDataTable> missionDataTable = new();
 
         public static InteractiveTable interactiveTable = new(); //
@@ -225,6 +227,7 @@ namespace Campofinale.Resource
                 foreach (string json in jsonFiles)
                 {
                     InteractiveData data = JsonConvert.DeserializeObject<InteractiveData>(ReadJsonFile(json));
+                    
                     if (data != null)
                     {
                         interactiveData.Add(data);
@@ -339,7 +342,8 @@ namespace Campofinale.Resource
         public class InteractiveData
         {
             public string id;
-            public Dictionary<string, int> propertyKeyToIdMap;
+            public Dictionary<string, int> propertyKeyToIdMap = new();
+            public List<ParamKeyValue> saveProperties = new();
         }
         public class FactoryBuildingTable
         {
@@ -816,6 +820,10 @@ namespace Campofinale.Resource
                                     param.ValueIntList.Add(val.valueBit64);
                                     param.ValueType = (int)ParamValueType.Int;
                                     break;
+                                case ParamRealType.UInt:
+                                    param.ValueIntList.Add(val.valueBit64);
+                                    param.ValueType = (int)ParamValueType.Int;
+                                    break;
                                 case ParamRealType.WaterVolumePtr:
                                     param.ValueIntList.Add(val.valueBit64);
                                     param.ValueType = (int)ParamValueType.Int;
@@ -979,6 +987,10 @@ namespace Campofinale.Resource
             public static Vector3f operator *(Vector3f v, float scalar)
             {
                 return new Vector3f(v.x * scalar, v.y * scalar, v.z * scalar);
+            }
+            public static Vector3f operator +(Vector3f v, Vector3f v2)
+            {
+                return new Vector3f(v.x + v2.x, v.y + v2.y, v.z + v2.z);
             }
             public Vector3f(float x, float y, float z)
             {

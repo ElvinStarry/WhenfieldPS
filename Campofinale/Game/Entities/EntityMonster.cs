@@ -43,7 +43,11 @@ namespace Campofinale.Game.Entities
         {
             List<AttrInfo> attrInfo = new();
             EnemyTable table = ResourceManager.enemyTable[templateId];
-            enemyAttributeTemplateTable[table.attrTemplateId].levelDependentAttributes[level].attrs.ForEach(attr =>
+            if(level >= enemyAttributeTemplateTable[table.attrTemplateId].levelDependentAttributes.Count)
+            {
+                level = 80;
+            }
+            enemyAttributeTemplateTable[table.attrTemplateId].levelDependentAttributes[level-1].attrs.ForEach(attr =>
             {
                 attrInfo.Add(new AttrInfo()
                 {

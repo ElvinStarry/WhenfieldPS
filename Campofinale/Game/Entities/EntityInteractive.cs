@@ -33,9 +33,25 @@ namespace Campofinale.Game.Entities
             this.BornRot = rot;
             this.templateId = templateId;
             this.sceneNumId = scene;
+           
         }
         
-        
+        public void InitDefaultProperties()
+        {
+            InteractiveData data = ResourceManager.interactiveData.Find(i => i.id == templateId);
+            if (data != null)
+            {
+                properties.AddRange(data.saveProperties);
+            }
+        }
+        public void SetPropValue(uint val, string key)
+        {
+            ParamKeyValue keyValue = properties.Find(p => p.key == key);
+            if (keyValue != null)
+            {
+                keyValue.value.valueArray[0].valueBit64 = val;
+            }
+        }
         public SceneInteractive ToProto()
         {
             
@@ -105,15 +121,17 @@ namespace Campofinale.Game.Entities
             {
                 string oriTemplateId = ResourceManager.interactiveTable.interactiveDataDict[templateId].templateId;
                 InteractiveData data=ResourceManager.interactiveData.Find(i=>i.id == oriTemplateId);
+
                 if(data != null)
                 {
                     return (true,data.propertyKeyToIdMap[key]);
                 }
+                Logger.PrintError("Interactive Data not found");
                 return (false, maxCur + 1);
             }
             catch (Exception ex)
             {
-                //Logger.PrintError(ex.Message);
+                Logger.PrintError(ex.Message);
                 return (false,maxCur+1);
             }
 

@@ -12,7 +12,7 @@ namespace Campofinale.Packets.Sc
 
         public PacketScFactorySyncChapter(Player client, string chapterId) {
 
-            string json = File.ReadAllText("ScFactorySyncChapter.json");
+            /*string json = File.ReadAllText("ScFactorySyncChapter.json");
             
             //ScFactorySyncChapter chapter = Newtonsoft.Json.JsonConvert.DeserializeObject<ScFactorySyncChapter>(json);
             ScFactorySyncChapter chapter = new()
@@ -61,7 +61,7 @@ namespace Campofinale.Packets.Sc
                                
                            }
                        }
-                   }*/
+                   }
                 },
                 Blackboard = new()
                 {
@@ -119,7 +119,7 @@ namespace Campofinale.Packets.Sc
                     {
                     },
 
-                });*/
+                });
                 LevelGradeInfo sceneGrade = ResourceManager.levelGradeTable[levelGroup].grades[0];
                 chapter.Blackboard.Power.PowerGen += sceneGrade.bandwidth;
                 chapter.Blackboard.Power.PowerSaveMax += sceneGrade.bandwidth;
@@ -185,9 +185,9 @@ namespace Campofinale.Packets.Sc
             foreach(FactoryNode node in client.factoryManager.GetChapter(chapterId).nodes)
             {
                 chapter.Nodes.Add(node.ToProto());
-            }
+            }*/
             //Logger.Print(Newtonsoft.Json.JsonConvert.SerializeObject(chapter,Newtonsoft.Json.Formatting.Indented));
-            SetData(ScMsgId.ScFactorySyncChapter, chapter);
+            SetData(ScMsgId.ScFactorySyncChapter, client.factoryManager.GetChapter(chapterId).ToProto());
         }
 
     }
