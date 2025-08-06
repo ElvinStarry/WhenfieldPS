@@ -35,7 +35,18 @@ namespace Campofinale.Game.Factory.Components
                 });
             }
         }
-
+        public FComponentPortManager(uint id, int size) : base(id, FCComponentType.PortManager)
+        {
+            for (int i = 0; i < size; i++)
+            {
+                ports.Add(new FPort()
+                {
+                    index = i,
+                    ownerComId = 0,
+                    touchComId = 0
+                });
+            }
+        }
         public override void SetComponentInfo(ScdFacCom proto)
         {
             proto.PortManager = new();

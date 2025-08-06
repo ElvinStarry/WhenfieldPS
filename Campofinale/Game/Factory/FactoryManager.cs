@@ -721,6 +721,19 @@ namespace Campofinale.Game.Factory
                 case FCNodeType.PowerDiffuser:
                     components.Add(new FComponentPowerPole(chapter.nextCompV()).Init());
                     break;
+                case FCNodeType.Battle:
+                    components.Add(new FComponentBattle(chapter.nextCompV()).Init());
+                    break;
+                case FCNodeType.Producer:
+
+                    components.Add(new FComponentPortManager(chapter.nextCompV(), 3).Init());
+                    components.Add(new FComponentPortManager(chapter.nextCompV(), 3).Init());
+                    components.Add(new FComponentProducer(chapter.nextCompV()).Init());
+                    components.Add(new FComponentFormulaMan(chapter.nextCompV()).Init());
+                    components.Add(new FComponentCache(chapter.nextCompV()).Init());
+                    components.Add(new FComponentCache(chapter.nextCompV()).Init());
+                    components.Add(new FComponentCache(chapter.nextCompV()).Init());
+                    break;
                 case FCNodeType.TravelPole:
                     components.Add(new FComponentTravelPole(chapter.nextCompV()).Init());
                     break;
@@ -783,12 +796,16 @@ namespace Campofinale.Game.Factory
             }
             else
             {
-                EntityInteractive e = new(interactiveFacWrapperTable[templateId].interactiveTemplateId, player.roleId, worldPosition, direction, sceneNumId, guid);
-                e.InitDefaultProperties();
-                e.SetPropValue(nodeId, "factory_inst_id");
+                if (interactiveFacWrapperTable.ContainsKey(templateId))
+                {
+                    EntityInteractive e = new(interactiveFacWrapperTable[templateId].interactiveTemplateId, player.roleId, worldPosition, direction, sceneNumId, guid);
+                    e.InitDefaultProperties();
+                    e.SetPropValue(nodeId, "factory_inst_id");
 
-                player.sceneManager.GetCurScene().entities.Add(e);
-                player.sceneManager.GetCurScene().SpawnEntity(e);
+                    player.sceneManager.GetCurScene().entities.Add(e);
+                    player.sceneManager.GetCurScene().SpawnEntity(e);
+                }
+                
             }
            
         }
@@ -829,6 +846,14 @@ namespace Campofinale.Game.Factory
                 {
                     case FCComponentType.PowerPole:
                         return FCComponentPos.PowerPole;
+                    case FCComponentType.TravelPole:
+                        return FCComponentPos.TravelPole;
+                    case FCComponentType.Battle:
+                        return FCComponentPos.Battle1;
+                    case FCComponentType.Producer:
+                        return FCComponentPos.Producer;
+                    case FCComponentType.FormulaMan:
+                        return FCComponentPos.FormulaMan;
                 }
                 return FCComponentPos.Invalid;
             }
