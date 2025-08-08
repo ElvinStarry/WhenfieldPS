@@ -311,6 +311,10 @@ namespace Campofinale.Game
         }
         public void Load()
         {
+            if (grade == 0)
+            {
+                grade = 1;
+            }
             Unload();
             LevelScene lv_scene = ResourceManager.GetLevelData(sceneNumId);
             
