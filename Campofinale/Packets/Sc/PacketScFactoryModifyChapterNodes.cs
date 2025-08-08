@@ -11,7 +11,7 @@ namespace Campofinale.Packets.Sc
             ScFactoryModifyChapterNodes edit = new()
             {
                 ChapterId = chapterId,
-                Tms = DateTime.UtcNow.ToUnixTimestampMilliseconds()/1000,
+                Tms = DateTime.UtcNow.ToUnixTimestampMilliseconds(),
                 Nodes =
                 {
                     node.ToProto()
@@ -24,7 +24,7 @@ namespace Campofinale.Packets.Sc
             ScFactoryModifyChapterNodes edit = new()
             {
                 ChapterId = chapterId,
-                Tms = DateTime.UtcNow.ToUnixTimestampMilliseconds() / 1000,
+                Tms = DateTime.UtcNow.ToUnixTimestampMilliseconds(),
                 RemoveNodes =
                 {
                     nodeId

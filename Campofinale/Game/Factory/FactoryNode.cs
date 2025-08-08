@@ -78,6 +78,15 @@ namespace Campofinale.Game.Factory
             }
             
         }
+        public FactoryBuildingTable GetBuildingTable()
+        {
+            ResourceManager.factoryBuildingTable.TryGetValue(templateId, out FactoryBuildingTable table);
+            if (table == null)
+            {
+                table = new FactoryBuildingTable();
+            }
+            return table;
+        }
         public void UpdatePortManager(FactoryChapter chapter,FComponentPortManager manager)
         {
             if (ResourceManager.factoryBuildingTable.TryGetValue(templateId, out FactoryBuildingTable table))
@@ -213,7 +222,6 @@ namespace Campofinale.Game.Factory
                         conveyorComp.items.Add(i);
                         i.tms = DateTime.UtcNow.ToUnixTimestampMilliseconds();
                         conveyorComp.lastPopTms = i.tms;
-                        Logger.Print("Spawning item in conveyor: " + conveyorComp.lastPopTms);
                         return true;
                     }
                     else
@@ -250,7 +258,6 @@ namespace Campofinale.Game.Factory
             if (originalPorts == null || originalPorts.Count == 0)
                 return transformedPorts;
 
-            // Ottieni la posizione e rotazione base dall'oggetto
             FMesh mesh = GetMesh();
             if (mesh.points.Count < 2)
                 return transformedPorts;
@@ -258,7 +265,6 @@ namespace Campofinale.Game.Factory
             Vector3f objectPosition = mesh.points[0];
             float objectRotationY = direction.y % 360f;
 
-            // Ottieni le dimensioni originali
             FactoryBuildingTable table;
             if (!ResourceManager.factoryBuildingTable.TryGetValue(templateId, out table))
                 return transformedPorts;
@@ -300,7 +306,6 @@ namespace Campofinale.Game.Factory
 
                 transformedPort.trans.position = transformedPos;
 
-                // Rotazione della porta
                 transformedPort.trans.rotation = new Vector3f(
                     originalPort.trans.rotation.x,
                     (originalPort.trans.rotation.y + objectRotationY) % 360f,
@@ -381,6 +386,8 @@ namespace Campofinale.Game.Factory
                 {
                     InPower = InPower(),
                     NeedInPower = true,
+                    PowerCost= GetBuildingTable().bandwidth,
+                    PowerCostShow= GetBuildingTable().bandwidth,
                 },
 
                 NodeType = (int)nodeType,

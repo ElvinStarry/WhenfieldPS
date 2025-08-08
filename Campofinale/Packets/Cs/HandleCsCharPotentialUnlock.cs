@@ -15,6 +15,7 @@ namespace Campofinale.Packets.Cs
             Character character = session.chars.Find(c => c.guid == req.CharObjId);
             if (character != null)
             {
+
                 character.potential=req.Level;
                 
                 //TODO consume Item ID

@@ -61,7 +61,7 @@ namespace Campofinale.Game.Factory.Components
 
         public bool IsFull()
         {
-            int maxItems = items.Count * 100;
+            int maxItems = items.Count * 50;
             int count = 0;
             foreach (var item in items)
             {
@@ -75,7 +75,7 @@ namespace Campofinale.Game.Factory.Components
             int remaining = count;
             foreach (var item in items)
             {
-                int space = 100-item.count;
+                int space = 50-item.count;
                 if (item.id==id)
                 {
                     if (space >= remaining)

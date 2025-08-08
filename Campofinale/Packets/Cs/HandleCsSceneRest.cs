@@ -12,7 +12,7 @@ namespace Campofinale.Packets.Cs
         public static void Handle(Player session, CsMsgId cmdId, Packet packet)
         {
             CsSceneRest req = packet.DecodeBody<CsSceneRest>();
-            
+            if (session.sceneLoadState == Player.SceneLoadState.Loading) return;
             ScSceneRevival revival = new()
             {
                 

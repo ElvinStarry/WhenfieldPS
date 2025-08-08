@@ -78,6 +78,10 @@ namespace Campofinale.Packets.Sc
 
                 };
             }
+            if(op.OpType == FactoryOpType.MoveItemCacheToBag)
+            {
+                proto.MoveItemCacheToBag = new();
+            }
             proto.Index=op.Index;
             SetData(ScMsgId.ScFactoryOpRet, proto);
         }

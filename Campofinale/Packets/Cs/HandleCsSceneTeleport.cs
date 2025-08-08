@@ -1,6 +1,7 @@
 ﻿using Campofinale.Network;
 using Campofinale.Protocol;
 using Campofinale.Utils;
+using static Campofinale.Resource.ResourceManager;
 
 namespace Campofinale.Packets.Cs
 {
@@ -15,7 +16,7 @@ namespace Campofinale.Packets.Cs
             if (session.curSceneNumId != req.SceneNumId)
             {
                 session.EnterScene(req.SceneNumId, new Resource.ResourceManager.Vector3f(req.Position), new Resource.ResourceManager.Vector3f(req.Rotation));
-               /* ScSceneTeleport t = new()
+                ScSceneTeleport t = new()
                 {
                     TeleportReason = req.TeleportReason,
                     PassThroughData = req.PassThroughData,
@@ -23,7 +24,7 @@ namespace Campofinale.Packets.Cs
                     Rotation = req.Rotation,
                     SceneNumId = req.SceneNumId,
                 };
-                session.Send(ScMsgId.ScSceneTeleport, t);*/
+                session.Send(ScMsgId.ScSceneTeleport, t);
             }
             else
             {
@@ -41,6 +42,9 @@ namespace Campofinale.Packets.Cs
                     TpUuid= (ulong)id
                 };
                 session.curSceneNumId = t.SceneNumId;
+                session.position = new Vector3f(req.Position);
+                session.rotation = new Vector3f(req.Rotation);
+                session.sceneLoadState = Player.SceneLoadState.Loading;
                 session.Send(ScMsgId.ScSceneTeleport, t);
             }
             

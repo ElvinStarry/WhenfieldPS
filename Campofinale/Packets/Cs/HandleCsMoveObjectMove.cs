@@ -12,6 +12,7 @@ namespace Campofinale.Packets.Cs
         public static void Handle(Player session, CsMsgId cmdId, Packet packet)
         {
             CsMoveObjectMove req = packet.DecodeBody<CsMoveObjectMove>();
+            if (session.sceneLoadState != Player.SceneLoadState.OK) return;
             foreach (var moveInfo in req.MoveInfo)
             {
               

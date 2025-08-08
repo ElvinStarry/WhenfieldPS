@@ -72,6 +72,7 @@ namespace Campofinale.Game.Factory
         public void SendFactoryHsSync()
         {
             if (!player.Initialized) return;
+            if (player.GetCurrentChapter() == "") return;
             long curtimestamp = DateTime.UtcNow.ToUnixTimestampMilliseconds();
 
             ScFactoryHsSync hs = new()

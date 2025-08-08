@@ -27,8 +27,18 @@ namespace Campofinale.Game
         }
         public void Update()
         {
-            if (GetCurScene()!=null)
-            GetCurScene().UpdateShowEntities();
+            if (GetCurScene() != null)
+            {
+                try
+                {
+                    GetCurScene().UpdateShowEntities();
+                }
+                catch(Exception e)
+                {
+
+                }
+            }
+            
         }
         public Entity GetEntity(ulong guid)
         {

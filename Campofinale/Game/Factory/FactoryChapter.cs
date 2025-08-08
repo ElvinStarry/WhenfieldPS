@@ -24,7 +24,7 @@ namespace Campofinale.Game.Factory
             ScFactorySyncChapter chapter = new()
             {
                 ChapterId = chapterId,
-                Tms = DateTime.UtcNow.ToUnixTimestampMilliseconds() / 1000,
+                Tms = DateTime.UtcNow.ToUnixTimestampMilliseconds(),
                 Blackboard = new()
                 {
                     Power = new()
@@ -40,11 +40,12 @@ namespace Campofinale.Game.Factory
                 {
                     LastDay = new()
                     {
-
+                        
                     },
                     Other = new()
                     {
-                        InPowerBuilding = 1
+                        InPowerBuilding = nodes.FindAll(n=>n.lastPowered==true).Count,
+                        
                     }
                 },
                 PinBoard = new()
@@ -75,7 +76,7 @@ namespace Campofinale.Game.Factory
                             Current = 0,
                             Max = sceneGrade.bandwidth,
                             TravelPoleMax = sceneGrade.travelPoleLimit,
-
+                            
                             BattleCurrent = 0,
                             BattleMax = sceneGrade.battleBuildingLimit,
                         },
@@ -152,10 +153,12 @@ namespace Campofinale.Game.Factory
             maps.Add(new ScdFactorySyncMap()
             {
                 MapId = ResourceManager.strIdNumTable.chapter_map_id.dic[mapId],
+                
                 Wires =
                 {
                     GetWires()
-                }
+                },
+                
             });
             return maps;
         }
@@ -181,7 +184,8 @@ namespace Campofinale.Game.Factory
                         {
                             Index = i,
                             FromComId = compA,
-                            ToComId = compB
+                            ToComId = compB,
+                            
                         });
 
                         addedConnections.Add(key);
@@ -243,6 +247,9 @@ namespace Campofinale.Game.Factory
                 case FactoryOpType.MoveItemBagToCache:
                     MoveItemBagToCache(op, seq);
                     break;
+                case FactoryOpType.MoveItemCacheToBag:
+                    MoveItemCacheToBag(op, seq);
+                    break;
                 case FactoryOpType.ChangeProducerMode:
                     ChangeProducerMode(op, seq);
                     break;
@@ -254,6 +261,9 @@ namespace Campofinale.Game.Factory
                     break;
                 case FactoryOpType.DismantleBoxConveyor:
                     DismantleBoxConveyor(op, seq);
+                    break;
+                case FactoryOpType.UseHealTowerPoint:
+                    //TODO
                     break;
                 case FactoryOpType.SetTravelPoleDefaultNext:
                     FactoryNode travelNode = GetNodeByCompId(op.SetTravelPoleDefaultNext.ComponentId);
@@ -283,7 +293,7 @@ namespace Campofinale.Game.Factory
                 ScFactoryOpRet ret = new()
                 {
                     RetCode = FactoryOpRetCode.Fail,
-
+                    
                 };
                 GetOwner().Send(ScMsgId.ScFactoryOpRet, ret, seq);
             }
@@ -315,6 +325,49 @@ namespace Campofinale.Game.Factory
             GetOwner().Send(new PacketScFactoryOpRet(GetOwner(), 0, op), seq);
             
         }
+        public void MoveItemCacheToBag(CsFactoryOp op, ulong seq)
+        {
+            var move = op.MoveItemCacheToBag;
+            FComponentCache cacheComp = GetCompById<FComponentCache>(move.ComponentId);
+            if (cacheComp != null)
+            {
+                ItemCount cacheItem = cacheComp.items[move.CacheGridIndex];
+                Item gridItem = null;
+                GetOwner().inventoryManager.items.bag.TryGetValue(move.GridIndex, out gridItem);
+                if (gridItem == null)
+                {
+                    GetOwner().inventoryManager.items.bag.Add(move.GridIndex, new Item(ownerId,cacheItem.id,cacheItem.count));
+                    cacheItem.id = "";
+                    cacheItem.count = 0;
+                    
+                }
+                else
+                {
+                    if(gridItem.id == cacheItem.id)
+                    {
+                        int availableSpace = 50 - gridItem.amount;
+                        if(cacheItem.count > availableSpace)
+                        {
+                            gridItem.amount += availableSpace;
+                            cacheItem.count-= availableSpace;
+                        }
+                        else
+                        {
+                            gridItem.amount += cacheItem.count;
+                            cacheItem.id = "";
+                            cacheItem.count = 0;
+                        }
+                    }
+                    else
+                    {
+                        //TODO Swap
+                    }
+                    
+                }
+            }
+            GetOwner().inventoryManager.items.UpdateBagInventoryPacket();
+            GetOwner().Send(new PacketScFactoryOpRet(GetOwner(), 0, op), seq);
+        }
         public void MoveItemBagToCache(CsFactoryOp op, ulong seq)
         {
             var move = op.MoveItemBagToCache;
@@ -327,7 +380,7 @@ namespace Campofinale.Game.Factory
                 {
                     if(cacheComp.items[move.CacheGridIndex].id == "" || cacheComp.items[move.CacheGridIndex].id == gridItem.id)
                     {
-                        int canAdd = 100 - cacheComp.items[move.CacheGridIndex].count;
+                        int canAdd = 50 - cacheComp.items[move.CacheGridIndex].count;
 
                         if (canAdd >= gridItem.amount)
                         {
@@ -385,7 +438,7 @@ namespace Campofinale.Game.Factory
                 {
                     ChapterId = chapterId,
                     MapId = nodeRem.mapId,
-                    Tms = DateTime.UtcNow.ToUnixTimestampMilliseconds() / 1000,
+                    Tms = DateTime.UtcNow.ToUnixTimestampMilliseconds(),
                     Wires =
                     {
                         GetWires()
@@ -468,7 +521,7 @@ namespace Campofinale.Game.Factory
                 {
                     ChapterId = chapterId,
                     MapId = GetNodeByCompId(nodeFrom.compId).mapId,
-                    Tms = DateTime.UtcNow.ToUnixTimestampMilliseconds() / 1000,
+                    Tms = DateTime.UtcNow.ToUnixTimestampMilliseconds(),
                     Wires =
                     {
                         GetWires()
@@ -552,7 +605,6 @@ namespace Campofinale.Game.Factory
         public void PlaceConveyor(CsFactoryOp op, ulong seq)
         {
             var placeConveyor = op.PlaceConveyor;
-            Logger.Print($"'PlaceConveyor': {JsonConvert.SerializeObject(placeConveyor)}");
             v++;
             uint nodeId = v;
             List<Vector3f> points = new();
