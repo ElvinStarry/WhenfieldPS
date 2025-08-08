@@ -69,6 +69,7 @@ namespace Campofinale.Resource
         public static DialogIdTable dialogIdTable = new();//
         public static Dictionary<string, LevelShortIdTable> levelShortIdTable = new();
         public static Dictionary<string, FactoryBuildingTable> factoryBuildingTable = new();
+        public static Dictionary<string, FactoryMachineCraftTable> factoryMachineCraftTable = new();
         public static Dictionary<string, FacSTTNodeTable> facSTTNodeTable = new();
         public static Dictionary<string, FacSTTLayerTable> facSTTLayerTable = new();
         public static Dictionary<int, ItemTypeTable> itemTypeTable = new(); //
@@ -339,11 +340,54 @@ namespace Campofinale.Resource
         {
             return strIdNumTable.item_id.dic[item_id];
         }
+
+        public static string FindFactoryMachineCraftIdUsingCacheItems(List<ItemCount> items)
+        {
+            // Estrae solo gli ID degli items in input e li ordina
+            var inputItemIds = items.Select(item => item.id).OrderBy(id => id).ToList();
+
+            foreach (var recipe in factoryMachineCraftTable.Values.ToList())
+            {
+                // Raccoglie tutti gli ID degli ingredienti della ricetta
+                var recipeItemIds = new List<string>();
+                foreach (var ingr in recipe.ingredients)
+                {
+                    recipeItemIds.AddRange(ingr.group.Select(item => item.id));
+                }
+
+                // Ordina gli ID degli ingredienti della ricetta
+                var sortedRecipeItemIds = recipeItemIds.OrderBy(id => id).ToList();
+
+                // Confronta le due liste di ID (ignorando le quantità)
+                if (inputItemIds.SequenceEqual(sortedRecipeItemIds))
+                {
+                    return recipe.id; // Trovata corrispondenza
+                }
+            }
+
+            return ""; // Nessuna corrispondenza trovata
+        }
+
         public class InteractiveData
         {
             public string id;
             public Dictionary<string, int> propertyKeyToIdMap = new();
             public List<ParamKeyValue> saveProperties = new();
+        }
+        public class ItemCount
+        {
+            public int count;
+            public string id = "";
+            public long tms = DateTime.UtcNow.ToUnixTimestampMilliseconds();
+
+            public ScdFactorySyncItem ToFactoryItemProto()
+            {
+                return new ScdFactorySyncItem()
+                {
+                    Count = count,
+                    Id = id,
+                };
+            }
         }
         public class FactoryBuildingTable
         {
@@ -354,15 +398,107 @@ namespace Campofinale.Resource
             public int powerConsume;
             public FacBuildingType type;
             public FBuildingRange range;
+            public List<FacPort> outputPorts = new();
+            public List<FacPort> inputPorts = new();
+            public class FacPort
+            {
+                public int index;
+                public int isOutput;
+                public bool isPipe;
+                public FacPortTrans trans = new();
 
+                public Vector3f GetBack()
+                {
+                    float angleY = trans.rotation.y % 360f;
+
+                    Vector3f offset;
+
+                    switch ((int)angleY)
+                    {
+                        default:
+                        case 360:
+                        case 0:
+                            offset = new Vector3f(0, 0, -1); 
+                            break;
+                        case 90:
+                            offset = new Vector3f(-1, 0, 0); 
+                            break;
+                        case 180:
+                            offset = new Vector3f(0, 0, 1);  
+                            break;
+                        case 270:
+                            offset = new Vector3f(1, 0, 0); 
+                            break;
+                    }
+
+                    return trans.position + offset;
+                }
+                public Vector3f GetFront()
+                {
+                    float angleY = trans.rotation.y % 360f;
+
+                    Vector3f offset=new();
+
+                    switch ((int)angleY)
+                    {
+                        default:
+                        case 360:
+                        case 0:
+                            offset = new Vector3f(0, 0, 1);
+                            break;
+                        case 90:
+                            offset = new Vector3f(1, 0, 0);
+                            break;
+                        case 180:
+                            offset = new Vector3f(0, 0, -1);
+                            break;
+                        case 270:
+                            offset = new Vector3f(-1, 0, 0);
+                            break;
+                    }
+
+                    return trans.position + offset;
+                }
+
+                public class FacPortTrans
+                {
+                    public Vector3f position=new();
+                    public Vector3f rotation = new();
+                }
+            }
             public FCNodeType GetNodeType()
             {
-                string nodeTypeName = type.ToString();
-                if (Enum.TryParse(nodeTypeName, out FCNodeType fromName))
+                switch (type)
                 {
-                    return fromName;
+                    case FacBuildingType.Battle:
+                        return FCNodeType.Battle;
+                    case FacBuildingType.Hub:
+                        return FCNodeType.Hub;
+                    case FacBuildingType.SubHub:
+                        return FCNodeType.SubHub;
+                    case FacBuildingType.MachineCrafter:
+                        return FCNodeType.Producer;
+                    case FacBuildingType.PowerPort:
+                        return FCNodeType.PowerPort;
+                    case FacBuildingType.PowerPole:
+                        return FCNodeType.PowerPole;
+                    case FacBuildingType.PowerDiffuser:
+                        return FCNodeType.PowerDiffuser;
+                    case FacBuildingType.TravelPole:
+                        return FCNodeType.TravelPole;
+                    case FacBuildingType.Medic:
+                        return FCNodeType.HealTower;
+                    case FacBuildingType.Unloader:
+                        return FCNodeType.BusUnloader;
+                    case FacBuildingType.Loader:
+                        return FCNodeType.BusLoader;
+                    case FacBuildingType.Miner:
+                        return FCNodeType.Collector;
+                    case FacBuildingType.Storager:
+                        return FCNodeType.DepositBox;
+                    default:
+                        return FCNodeType.Invalid;
                 }
-                return FCNodeType.Invalid;
             }
             public struct FBuildingRange
             {
@@ -978,7 +1114,20 @@ namespace Campofinale.Resource
             public float x;
             public float y;
             public float z;
-            
+
+            public override bool Equals(object obj)
+            {
+                if (obj is Vector3f v)
+                {
+                    return x == v.x && y == v.y && z == v.z;
+                }
+                return false;
+            }
+
+            public override int GetHashCode()
+            {
+                return HashCode.Combine(x, y, z);
+            }
 
             public Vector3f()
             {

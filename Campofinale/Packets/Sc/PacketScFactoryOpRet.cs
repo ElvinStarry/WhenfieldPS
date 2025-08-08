@@ -42,6 +42,20 @@ namespace Campofinale.Packets.Sc
                     
                 };
             }
+            if (op.OpType == FactoryOpType.DismantleBoxConveyor)
+            {
+                proto.DismantleBoxConveyor = new()
+                {
+
+                };
+            }
+            if (op.OpType == FactoryOpType.ChangeProducerMode)
+            {
+                proto.ChangeProducerMode = new()
+                {
+                    
+                };
+            }
             if (op.OpType == FactoryOpType.SetTravelPoleDefaultNext)
             {
                 proto.SetTravelPoleDefaultNext = new()
@@ -49,9 +63,46 @@ namespace Campofinale.Packets.Sc
                     
                 };
             }
+            if (op.OpType == FactoryOpType.EnableNode)
+            {
+                proto.EnableNode = new()
+                {
+                    
+                };
+            }
+
+            if (op.OpType == FactoryOpType.MoveItemBagToCache)
+            {
+                proto.MoveItemBagToCache = new()
+                {
+
+                };
+            }
             proto.Index=op.Index;
             SetData(ScMsgId.ScFactoryOpRet, proto);
         }
+        public PacketScFactoryOpRet(Player client, List<uint> val, CsFactoryOp op)
+        {
 
+            ScFactoryOpRet proto = new ScFactoryOpRet()
+            {
+                RetCode = FactoryOpRetCode.Ok,
+                OpType = op.OpType,
+
+            };
+            
+            if (op.OpType == FactoryOpType.PlaceConveyor)
+            {
+                proto.PlaceConveyor = new()
+                {
+                    NodeId =
+                    {
+                        val
+                    }
+                };
+            }
+            proto.Index = op.Index;
+            SetData(ScMsgId.ScFactoryOpRet, proto);
+        }
     }
 }

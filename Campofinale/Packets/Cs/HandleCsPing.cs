@@ -17,25 +17,7 @@ namespace Campofinale.Packets.Cs
                 ClientTs = req.ClientTs,
                 ServerTs = (ulong)curtimestamp,
             }));
-            /*ScFactoryHsSync s = new()
-            {
-                Blackboard = new()
-                {
-                    InventoryNodeId = 0,
-                    Power = new()
-                    {
-                        
-                    }
-                },
-                CcList =
-                {
-
-                },
-                Tms = curtimestamp / 1000,
-                ChapterId = session.GetCurrentChapter()
-            };
-            
-            session.Send(ScMessageId.ScFactoryHsSync,s);*/
+            session.factoryManager.SendFactoryHsSync();
 
             //Logger.Print("Server: " + curtimestamp + " client: " + req.ClientTs);
         }

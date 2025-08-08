@@ -4,6 +4,8 @@ using MongoDB.Bson;
 using System.Reflection;
 using static Campofinale.Game.Factory.FactoryNode;
 using Campofinale.Game.Inventory;
+using Campofinale.Game.Factory;
+using Campofinale.Game.Factory.BuildingsBehaviour;
 
 namespace Campofinale.Database
 {
@@ -66,6 +68,7 @@ namespace Campofinale.Database
             BsonSerializer.RegisterSerializer(typeof(Dictionary<int, Item>), new CustomDictionarySerializer<int, Item>());
             
             RegisterSubclasses<FComponent>();
+            RegisterSubclasses<NodeBuildingBehaviour>();
             Logger.Print("Connecting to MongoDB..."); 
             try
             {
