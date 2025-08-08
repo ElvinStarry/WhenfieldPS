@@ -22,7 +22,7 @@ namespace Campofinale.Packets.Sc
                     TeamType = CharBagTeamType.Main
 
                 },
-                SceneGrade = 4,
+                SceneGrade = session.sceneManager.GetCurScene().grade,
                 
                 Detail = new()
                 {
