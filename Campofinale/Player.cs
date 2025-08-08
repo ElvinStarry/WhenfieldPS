@@ -759,5 +759,24 @@ namespace Campofinale
             }
                 
         }
+
+        public void RestTeam()
+        {
+            GetCurTeam().ForEach(chara =>
+            {
+                chara.curHp = chara.CalcAttributes()[AttributeType.MaxHp].val;
+                ScCharSyncStatus state = new ScCharSyncStatus()
+                {
+                    Objid = chara.guid,
+                    IsDead = chara.curHp < 1,
+                    BattleInfo = new()
+                    {
+                        Hp = chara.curHp,
+                        Ultimatesp = chara.ultimateSp
+                    }
+                };
+                Send(ScMsgId.ScCharSyncStatus, state);
+            });
+        }
     }
 }

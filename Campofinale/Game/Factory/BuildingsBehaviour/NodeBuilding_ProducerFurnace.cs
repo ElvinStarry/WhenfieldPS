@@ -80,7 +80,7 @@ namespace Campofinale.Game.Factory.BuildingsBehaviour
                         
                         producer.lastFormulaId = recipe;
                         producer.progress += craftingRecipe.totalProgress/craftingRecipe.progressRound;
-                        currentProgress++;
+                        currentProgress++; 
                         if (currentProgress >= craftingRecipe.progressRound)
                         {
                             currentProgress = 0;
