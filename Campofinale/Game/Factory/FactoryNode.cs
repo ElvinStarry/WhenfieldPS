@@ -10,6 +10,7 @@ using Campofinale.Game.Factory.BuildingsBehaviour;
 using static Campofinale.Resource.ResourceManager.FactoryBuildingTable;
 using Newtonsoft.Json;
 using System.Drawing;
+using Campofinale.Game.Inventory;
 
 namespace Campofinale.Game.Factory
 {
@@ -55,14 +56,27 @@ namespace Campofinale.Game.Factory
                 lastPowered = powered;
                 chapter.GetOwner().Send(new PacketScFactoryModifyChapterNodes(chapter.GetOwner(), chapter.chapterId, this));
             }
-            if (nodeBehaviour != null)
+            if (nodeBehaviour != null && !deactive)
             {
                 nodeBehaviour.Update(chapter,this);
             }
-            foreach(var comp in components.FindAll(c=> c is FComponentPortManager))
+            foreach (var comp in components.FindAll(c => c is FComponentPortManager))
             {
-                UpdatePortManager(chapter, (FComponentPortManager)comp);
+                var portmanager = (FComponentPortManager)comp;
+                if (portmanager.customPos != FCComponentPos.PortOutManager)
+                {
+                    UpdatePortManager(chapter, portmanager);
+                }
             }
+            foreach (var comp in components.FindAll(c => c is FComponentPortManager))
+            {
+                var portmanager = (FComponentPortManager)comp;
+                if (portmanager.customPos == FCComponentPos.PortOutManager)
+                {
+                    UpdatePortManager(chapter, portmanager);
+                }
+            }
+            
         }
         public void UpdatePortManager(FactoryChapter chapter,FComponentPortManager manager)
         {
@@ -99,7 +113,7 @@ namespace Campofinale.Game.Factory
                         FComponentBoxConveyor output = chapter.GetCompById<FComponentBoxConveyor>(port.touchComId);
                         FComponentCache outputCache = chapter.GetCompById<FComponentCache>(port.ownerComId);
                         FactoryNode conveyorNode = chapter.GetNodeByCompId(port.touchComId);
-                        if(outputCache!=null && output != null && conveyorNode != null)
+                        if (outputCache != null && output != null && conveyorNode != null)
                         {
                             bool did = false;
                             outputCache.items.ForEach(i =>
@@ -109,22 +123,20 @@ namespace Campofinale.Game.Factory
                                     ItemCount add = new ItemCount()
                                     {
                                         id = i.id,
-                                        count = 1,
-                                        
+                                        count = 1
                                     };
-                                    
-                                    
-                                    if (conveyorNode.AddConveyorItem(i))
+
+                                    if (conveyorNode.AddConveyorItem(add))
                                     {
                                         did = true;
                                         outputCache.ConsumeItems(new List<ItemCount>() { add });
                                     }
-                                    
+
                                 }
                             });
                         }
                     }
-                    
+
                 }
                 else
                 {
@@ -137,7 +149,7 @@ namespace Campofinale.Game.Factory
                             c.nodeType == FCNodeType.BoxConveyor &&
                             c.points.Any(p => p.x == back.x && p.y == back.y && p.z == back.z));
                         var compPort = manager.ports.Find(p => p.index == port.index);
-                       
+
                         if (compPort != null)
                         {
                             if (node != null)
@@ -151,24 +163,65 @@ namespace Campofinale.Game.Factory
                         }
 
                     }
+
+                    //Input items
+                    foreach (var port in manager.ports)
+                    {
+                        FComponentBoxConveyor input = chapter.GetCompById<FComponentBoxConveyor>(port.touchComId);
+                        FComponentCache inputCache = chapter.GetCompById<FComponentCache>(port.ownerComId);
+                        FactoryNode conveyorNode = chapter.GetNodeByCompId(port.touchComId);
+                        if (inputCache != null && input != null && conveyorNode != null)
+                        {
+                            bool did = false;
+                            ItemCount toRemove = null;
+                            foreach (var item in input.items)
+                            {
+                                if (!did && item.count > 0 && item.IsItemAtConveyorEnd(BlockCalculator.CalculateTotalBlocks(conveyorNode.points)))
+                                {
+
+                                    if (!inputCache.IsFull())
+                                    {
+                                        did = true;
+                                        toRemove = item;
+                                        inputCache.AddItem(item.id, item.count);
+                                        break;
+                                    }
+
+                                }
+                            }
+                            if(toRemove!=null)
+                            input.items.Remove(toRemove);
+
+                        }
+                    }
                 }
-               
             }
            
         }
 
         private bool AddConveyorItem(ItemCount i)
         {
-            int length=BlockCalculator.CalculateTotalBlocks(points);
+            float length=BlockCalculator.CalculateTotalBlocks(points);
             FComponentBoxConveyor conveyorComp = GetComponent<FComponentBoxConveyor>();
             if (conveyorComp != null)
             {
-                if(conveyorComp.items.Count < length)
+                if(conveyorComp.items.Count < (int)length)
                 {
-                    conveyorComp.items.Add(i);
-                    int size = BlockCalculator.CalculateTotalBlocks(points) - 1;
-                    conveyorComp.lastPopTms = i.tms;
-                    return true;
+                    long timestamp = i.tms - conveyorComp.lastPopTms;
+                    if(timestamp >= 2000)
+                    {
+                        conveyorComp.items.Add(i);
+                        i.tms = DateTime.UtcNow.ToUnixTimestampMilliseconds();
+                        conveyorComp.lastPopTms = i.tms;
+                        Logger.Print("Spawning item in conveyor: " + conveyorComp.lastPopTms);
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                   
+                        
                 }
             }
             return false;
@@ -413,7 +466,14 @@ namespace Campofinale.Game.Factory
                     components.Add(new FComponentBattle(chapter.nextCompV()).Init());
                     break;
                 case FCNodeType.Producer:
-                    nodeBehaviour=new NodeBuilding_Producer();
+                    if (templateId == "grinder_1")
+                    {
+                        nodeBehaviour = new NodeBuilding_Producer();
+                    }else if (templateId == "furnance_1")
+                    {
+                        nodeBehaviour = new NodeBuilding_ProducerFurnace();
+                    }
+                    if(nodeBehaviour!=null)
                     nodeBehaviour.Init(chapter, this);
                     break;
                 case FCNodeType.BoxConveyor:

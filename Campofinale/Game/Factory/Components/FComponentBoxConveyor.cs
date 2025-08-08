@@ -10,14 +10,17 @@ namespace Campofinale.Game.Factory.Components
         public List<ItemCount> items = new();
         public FComponentBoxConveyor(uint id) : base(id, FCComponentType.BoxConveyor,FCComponentPos.BoxConveyor)
         {
+            lastPopTms=DateTime.UtcNow.ToUnixTimestampMilliseconds();
         }
 
+        
         public override void SetComponentInfo(ScdFacCom proto)
         {
             if (items == null)
             {
                 items = new List<ItemCount>();
             }
+
             proto.BoxConveyor = new()
             {
                 LastPopTms = lastPopTms,

@@ -9,7 +9,7 @@ namespace Campofinale.Game.Factory
 {
     public class BlockCalculator
     {
-        public static int CalculateTotalBlocks(List<Vector3f> points)
+        public static float CalculateTotalBlocks(List<Vector3f> points)
         {
             if (points == null || points.Count < 2)
                 return 0;

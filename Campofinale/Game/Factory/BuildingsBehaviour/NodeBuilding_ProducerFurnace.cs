@@ -13,26 +13,34 @@ using System.Xml.Linq;
 
 namespace Campofinale.Game.Factory.BuildingsBehaviour
 {
-    public class NodeBuilding_Producer : NodeBuildingBehaviour
+    public class NodeBuilding_ProducerFurnace : NodeBuildingBehaviour
     {
         public uint inputCacheId = 0;
         public uint outputCacheId = 0;
+        public uint inputCacheIdFluid = 0;
+        public uint outputCacheIdFluid = 0;
         public uint producerId = 0;
         public int currentProgress = 0;
         public override void Init(FactoryChapter chapter, FactoryNode node)
         {
-                FComponentCache cache1 = (FComponentCache)new FComponentCache(chapter.nextCompV(), FCComponentPos.CacheIn1).Init();
-                FComponentCache cache2 = (FComponentCache)new FComponentCache(chapter.nextCompV(), FCComponentPos.CacheOut1).Init();
-                FComponentProducer producer = (FComponentProducer)new FComponentProducer(chapter.nextCompV()).Init();
-                node.components.Add(producer);
-                node.components.Add(new FComponentFormulaMan(chapter.nextCompV()).Init());
-                node.components.Add(cache1);
-                node.components.Add(cache2);
-                inputCacheId = cache1.compId;
-                outputCacheId = cache2.compId;
-                producerId = producer.compId;
-                node.components.Add(new FComponentPortManager(chapter.nextCompV(), 3, cache1).Init());
-                node.components.Add(new FComponentPortManager(chapter.nextCompV(), 3, cache2).Init());
+            FComponentCache cache1 = (FComponentCache)new FComponentCache(chapter.nextCompV(), FCComponentPos.CacheIn1).Init();
+            FComponentCache cache2 = (FComponentCache)new FComponentCache(chapter.nextCompV(), FCComponentPos.CacheOut1).Init();
+            FComponentCache cache3 = (FComponentCache)new FComponentCache(chapter.nextCompV(), FCComponentPos.CacheFluidIn1).Init();
+            FComponentCache cache4 = (FComponentCache)new FComponentCache(chapter.nextCompV(), FCComponentPos.CacheFluidOut1).Init();
+            FComponentProducer producer = (FComponentProducer)new FComponentProducer(chapter.nextCompV()).Init();
+            node.components.Add(producer);
+            node.components.Add(new FComponentFormulaMan(chapter.nextCompV()).Init());
+            node.components.Add(cache1);
+            node.components.Add(cache2);
+            node.components.Add(cache3);
+            node.components.Add(cache4);
+            inputCacheId = cache1.compId;
+            outputCacheId = cache2.compId;
+            inputCacheIdFluid = cache3.compId;
+            outputCacheIdFluid = cache4.compId;
+            producerId = producer.compId;
+            node.components.Add(new FComponentPortManager(chapter.nextCompV(), 4, cache1).Init());
+            node.components.Add(new FComponentPortManager(chapter.nextCompV(), 4, cache2).Init());
         }
         public string GetFormulaGroupId(string templateId)
         {

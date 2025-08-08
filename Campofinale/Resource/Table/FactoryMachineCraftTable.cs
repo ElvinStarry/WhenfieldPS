@@ -11,6 +11,7 @@ namespace Campofinale.Resource.Table
         public int progressRound;
         public long totalProgress;
         public int signal;
+        public string formulaGroupId;
         public List<FactoryMachineCraftIngredient> ingredients = new();
         public List<FactoryMachineCraftIngredient> outcomes = new();
 

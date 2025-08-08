@@ -341,12 +341,12 @@ namespace Campofinale.Resource
             return strIdNumTable.item_id.dic[item_id];
         }
 
-        public static string FindFactoryMachineCraftIdUsingCacheItems(List<ItemCount> items)
+        public static string FindFactoryMachineCraftIdUsingCacheItems(List<ItemCount> items, string group)
         {
             // Estrae solo gli ID degli items in input e li ordina
             var inputItemIds = items.Select(item => item.id).OrderBy(id => id).ToList();
 
-            foreach (var recipe in factoryMachineCraftTable.Values.ToList())
+            foreach (var recipe in factoryMachineCraftTable.Values.ToList().FindAll(r=>r.formulaGroupId==group))
             {
                 // Raccoglie tutti gli ID degli ingredienti della ricetta
                 var recipeItemIds = new List<string>();
@@ -386,7 +386,15 @@ namespace Campofinale.Resource
                 {
                     Count = count,
                     Id = id,
+                    Tms = tms
                 };
+            }
+            public bool IsItemAtConveyorEnd(float conveyorSize)
+            {
+                long spawnTms = tms;
+                long endTms = spawnTms + (long)(2000 * conveyorSize);
+                long cur = DateTime.UtcNow.ToUnixTimestampMilliseconds();
+                return cur > endTms;
             }
         }
         public class FactoryBuildingTable

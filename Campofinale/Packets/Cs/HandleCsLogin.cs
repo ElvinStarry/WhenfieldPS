@@ -89,7 +89,8 @@ namespace Campofinale.Packets.Cs
                 IsFirstLogin = false,
                 IsReconnect=false,
                 LastRecvUpSeqid = packet.csHead.UpSeqid,
-                
+                ServerTimeZone=2,
+                ServerTime=DateTime.UtcNow.ToUnixTimestampMilliseconds(),
             };
             byte[] encKey = GenerateRandomBytes(32);
             string serverPublicKeyPem = req.ClientPublicKey.ToStringUtf8();
