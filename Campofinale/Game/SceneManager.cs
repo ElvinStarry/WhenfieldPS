@@ -267,7 +267,7 @@ namespace Campofinale.Game
         public List<ulong> activeScripts = new();
 
         public List<LevelScript> scripts = new();
-        public int grade = 0;
+        public int grade = 1;
 
         public int GetCollection(string id)
         {
