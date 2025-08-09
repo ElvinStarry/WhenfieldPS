@@ -73,33 +73,19 @@ namespace Campofinale.Game.Factory
         {
             if (!player.Initialized) return;
             if (player.GetCurrentChapter() == "") return;
-            long curtimestamp = DateTime.UtcNow.ToUnixTimestampMilliseconds();
-
-            ScFactoryHsSync hs = new()
-            {
-                Tms = curtimestamp,
-                CcList =
-                {
-                },
-                Blackboard = GetChapter(player.GetCurrentChapter()).ToProto().Blackboard,
-                ChapterId = player.GetCurrentChapter(),
-            };
+            List<FactoryNode> nodeUpdateList = new();
             foreach (var node in GetChapter(player.GetCurrentChapter()).nodes)
             {
 
                 if (node != null)
                 {
-                    if (node.position.DistanceXZ(player.position) < 150)
+                    if (node.position.DistanceXZ(player.position) < 150 && node.nodeType != FCNodeType.BoxConveyor)
                     {
-                        node.components.ForEach(c =>
-                        {
-                            hs.CcList.Add(c.ToProto());
-                        });
+                        nodeUpdateList.Add(node);
                     }
-
                 }
             }
-            player.Send(ScMsgId.ScFactoryHsSync, hs);
+            player.Send(new PacketScFactoryHsSync(player,GetChapter(player.GetCurrentChapter()), nodeUpdateList));
         }
         public void Update()
         {

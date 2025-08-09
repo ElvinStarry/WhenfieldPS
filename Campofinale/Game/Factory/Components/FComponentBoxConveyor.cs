@@ -13,7 +13,6 @@ namespace Campofinale.Game.Factory.Components
             lastPopTms=DateTime.UtcNow.ToUnixTimestampMilliseconds();
         }
 
-        
         public override void SetComponentInfo(ScdFacCom proto)
         {
             if (items == null)
@@ -26,8 +25,10 @@ namespace Campofinale.Game.Factory.Components
                 LastPopTms = lastPopTms,
                 
             };
+
             items.ForEach(item =>
             {
+                if(item!=null)    
                 proto.BoxConveyor.Items.Add(item.ToFactoryItemProto());
             });
 

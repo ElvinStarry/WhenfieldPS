@@ -11,6 +11,7 @@ using static Campofinale.Resource.ResourceManager.FactoryBuildingTable;
 using Newtonsoft.Json;
 using System.Drawing;
 using Campofinale.Game.Inventory;
+using System.Numerics;
 
 namespace Campofinale.Game.Factory
 {
@@ -135,7 +136,7 @@ namespace Campofinale.Game.Factory
                                         count = 1
                                     };
 
-                                    if (conveyorNode.AddConveyorItem(add))
+                                    if (conveyorNode.AddConveyorItem(chapter,add))
                                     {
                                         did = true;
                                         outputCache.ConsumeItems(new List<ItemCount>() { add });
@@ -199,7 +200,7 @@ namespace Campofinale.Game.Factory
                                 }
                             }
                             if(toRemove!=null)
-                            input.items.Remove(toRemove);
+                                conveyorNode.RemoveConveyorItem(chapter,toRemove);
 
                         }
                     }
@@ -208,7 +209,14 @@ namespace Campofinale.Game.Factory
            
         }
 
-        private bool AddConveyorItem(ItemCount i)
+        private void RemoveConveyorItem(FactoryChapter chapter,ItemCount toRemove)
+        {
+            FComponentBoxConveyor conveyorComp = GetComponent<FComponentBoxConveyor>();
+            conveyorComp.items.Remove(toRemove);
+            chapter.GetOwner().Send(new PacketScFactoryHsSync(chapter.GetOwner(), chapter, new List<FactoryNode>() { this}));
+        }
+
+        private bool AddConveyorItem(FactoryChapter chapter,ItemCount i)
         {
             float length=BlockCalculator.CalculateTotalBlocks(points);
             FComponentBoxConveyor conveyorComp = GetComponent<FComponentBoxConveyor>();
@@ -222,6 +230,7 @@ namespace Campofinale.Game.Factory
                         conveyorComp.items.Add(i);
                         i.tms = DateTime.UtcNow.ToUnixTimestampMilliseconds();
                         conveyorComp.lastPopTms = i.tms;
+                        chapter.GetOwner().Send(new PacketScFactoryHsSync(chapter.GetOwner(), chapter, new List<FactoryNode>() { this }));
                         return true;
                     }
                     else

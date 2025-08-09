@@ -18,24 +18,59 @@ namespace Campofinale.Game.Factory
         public uint v = 1;
         public uint compV = 0;
         public int bandwidth = 200;
+        public FactoryBlackboard blackboard = new();
+        public class FactoryBlackboard
+        {
+            public uint inventoryNodeId=1;
+            public FacBbPower power = new();
 
+            public class FacBbPower
+            {
+                public long powerGen;
+                public long powerSaveMax;
+                public long powerSaveCurrent;
+                public long powerCost;
+                public bool isStopByPower;
+            }
+            public ScdFactorySyncBlackboard ToProto()
+            {
+                return new ScdFactorySyncBlackboard()
+                {
+                    InventoryNodeId = inventoryNodeId,
+                    Power = new()
+                    {
+                        IsStopByPower=power.isStopByPower,
+                        PowerCost=power.powerCost,
+                        PowerGen=power.powerGen,
+                        PowerSaveCurrent=power.powerSaveCurrent,
+                        PowerSaveMax=power.powerSaveMax,    
+                    }
+                };
+            }
+
+            public ScdFactoryHsBb ToProtoHsBb()
+            {
+                return new ScdFactoryHsBb()
+                {
+                    Power = new()
+                    {
+                        IsStopByPower = power.isStopByPower,
+                        PowerSaveCurrent = power.powerSaveCurrent,
+                        PowerSaveMax = power.powerSaveMax,
+                        
+                    },
+                    
+                };
+            }
+        }
         public ScFactorySyncChapter ToProto()
         {
+            blackboard = new();
             ScFactorySyncChapter chapter = new()
             {
                 ChapterId = chapterId,
                 Tms = DateTime.UtcNow.ToUnixTimestampMilliseconds(),
-                Blackboard = new()
-                {
-                    Power = new()
-                    {
-                        PowerGen = 0,
-                        PowerSaveMax = 0,
-                        PowerSaveCurrent = 0,
-                        PowerCost = 0
-                    },
-                    InventoryNodeId = 1
-                },
+                Blackboard = new(),
                 Statistic = new()
                 {
                     LastDay = new()
@@ -57,15 +92,15 @@ namespace Campofinale.Game.Factory
 
                 },
             };
-            chapter.Blackboard.Power.PowerSaveCurrent = bandwidth;
+            blackboard.power.powerSaveCurrent = bandwidth;
             domainDataTable[chapterId].levelGroup.ForEach(levelGroup =>
             {
                 int grade = GetOwner().sceneManager.GetScene(GetSceneNumIdFromLevelData(levelGroup)).grade;
                 LevelGradeInfo sceneGrade = ResourceManager.levelGradeTable[levelGroup].grades.Find(g => g.grade == grade);
                 if (sceneGrade != null)
                 {
-                    chapter.Blackboard.Power.PowerGen += sceneGrade.bandwidth;
-                    chapter.Blackboard.Power.PowerSaveMax += sceneGrade.bandwidth;
+                    blackboard.power.powerGen += sceneGrade.bandwidth;
+                    blackboard.power.powerSaveMax += sceneGrade.bandwidth;
 
                     var scene = new ScdFactorySyncScene()
                     {
@@ -141,7 +176,7 @@ namespace Campofinale.Game.Factory
             {
 
             }
-           
+            chapter.Blackboard = blackboard.ToProto();
             chapter.Maps.AddRange(GetMaps());
             return chapter;
         }

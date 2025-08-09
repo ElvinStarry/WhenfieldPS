@@ -152,7 +152,7 @@ namespace Campofinale
                 try
                 {
                     clients.ForEach(client => { if (client != null) client.Update(); });
-                    Thread.Sleep(1000);
+                    Thread.Sleep(250);
                 }
                 catch (Exception ex)
                 {

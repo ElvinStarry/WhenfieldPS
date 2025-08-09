@@ -18,7 +18,7 @@ namespace Campofinale.Game.Factory.BuildingsBehaviour
         public uint inputCacheId = 0;
         public uint outputCacheId = 0;
         public uint producerId = 0;
-        public int currentProgress = 0;
+        public long timestampFinish = 0;
         public override void Init(FactoryChapter chapter, FactoryNode node)
         {
                 FComponentCache cache1 = (FComponentCache)new FComponentCache(chapter.nextCompV(), FCComponentPos.CacheIn1).Init();
@@ -71,11 +71,14 @@ namespace Campofinale.Game.Factory.BuildingsBehaviour
                         producer.inProduce = true;
                         
                         producer.lastFormulaId = recipe;
-                        producer.progress += craftingRecipe.totalProgress/craftingRecipe.progressRound;
-                        currentProgress++;
-                        if (currentProgress >= craftingRecipe.progressRound)
+                        if (timestampFinish == 0)
                         {
-                            currentProgress = 0;
+                            timestampFinish = DateTime.UtcNow.ToUnixTimestampMilliseconds() + 1000 * craftingRecipe.progressRound;
+                        }
+                        producer.progress = (DateTime.UtcNow.ToUnixTimestampMilliseconds()/timestampFinish)* craftingRecipe.totalProgress;
+                        if (DateTime.UtcNow.ToUnixTimestampMilliseconds() >= timestampFinish)
+                        {
+                            timestampFinish= DateTime.UtcNow.ToUnixTimestampMilliseconds()+1000* craftingRecipe.progressRound;
                             List<ItemCount> toConsume = craftingRecipe.GetIngredients();
                             inCache.ConsumeItems(toConsume);
                             craftingRecipe.outcomes.ForEach(e =>
@@ -92,6 +95,7 @@ namespace Campofinale.Game.Factory.BuildingsBehaviour
                     {
                         producer.inProduce = false;
                         producer.progress = 0;
+                        timestampFinish = 0;
                     }
                 }
                 else
@@ -99,6 +103,7 @@ namespace Campofinale.Game.Factory.BuildingsBehaviour
                     producer.inBlock = false;
                     producer.inProduce = false;
                     producer.progress = 0;
+                    timestampFinish = 0;
                 }
             }
           

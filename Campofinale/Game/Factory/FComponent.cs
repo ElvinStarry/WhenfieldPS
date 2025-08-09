@@ -1,6 +1,7 @@
 ﻿using Campofinale.Game.Factory.Components;
 using Campofinale.Resource;
 using MongoDB.Bson.Serialization.Attributes;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -104,5 +105,7 @@ namespace Campofinale.Game.Factory
             }
             return this;
         }
+
+        
     }
 }

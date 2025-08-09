@@ -11,7 +11,6 @@ using static Campofinale.Resource.ResourceManager;
 using Google.Protobuf.Collections;
 using Campofinale.Packets.Sc;
 using Campofinale.Protocol;
-using CsvHelper.Configuration.Attributes;
 
 namespace Campofinale.Game.Inventory
 {
