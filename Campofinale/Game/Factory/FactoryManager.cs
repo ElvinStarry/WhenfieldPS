@@ -76,10 +76,9 @@ namespace Campofinale.Game.Factory
             List<FactoryNode> nodeUpdateList = new();
             foreach (var node in GetChapter(player.GetCurrentChapter()).nodes)
             {
-
                 if (node != null)
                 {
-                    if (node.position.DistanceXZ(player.position) < 150 && node.nodeType != FCNodeType.BoxConveyor)
+                    if (node.position.DistanceXZ(player.position) < 150 && node.nodeBehaviour!=null)
                     {
                         nodeUpdateList.Add(node);
                     }

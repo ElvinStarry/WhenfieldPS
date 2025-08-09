@@ -312,24 +312,6 @@ namespace Campofinale
             teams.Add(new Team());
             teams.Add(new Team());
             bitsetManager.Load(new Dictionary<int, List<int>>());
-            /*mails.Add(new Mail()
-            {
-                expireTime=DateTime.UtcNow.AddDays(30).Ticks,
-                sendTime=DateTime.UtcNow.Ticks,
-                claimed=false,
-                guid=random.Next(),
-                owner=roleId,
-                isRead=false,
-                content=new Mail_Content()
-                {
-                    content= "Welcome to Campofinale, Join our Discord for help: https://discord.gg/5uJGJJEFHa",
-                    senderName="SuikoAkari",
-                    title="Welcome",
-                    templateId="",
-                }
-
-            });*/
-            
 
             spaceshipManager.Load();
         }
@@ -348,8 +330,6 @@ namespace Campofinale
             }
             else
             {
-                //sceneManager.UnloadCurrent(false);
-                //sceneManager.LoadCurrent();
                 sceneLoadState = SceneLoadState.Loading;
                 Send(new PacketScEnterSceneNotify(this, curSceneNumId));
             }
@@ -370,7 +350,6 @@ namespace Campofinale
 
         }
         public SceneLoadState sceneLoadState=0;
-        // public bool LoadFinish = true;
         public void EnterScene(int sceneNumId, Vector3f pos, Vector3f rot, PassThroughData passThroughData = null)
         {
            // if (!LoadFinish) return;
@@ -573,15 +552,10 @@ namespace Campofinale
             {
 
             }
-            
-
-
-
             Disconnect();
         }
         public void Kick(CODE code, string optionalMsg="")
         {
-
             Send(ScMsgId.ScNtfErrorCode, new ScNtfErrorCode()
             {
                 Details = optionalMsg,
@@ -606,8 +580,6 @@ namespace Campofinale
                 Logger.Print($"{nickname} Disconnected");
                 socket.Disconnect(false);
             }
-            
-            
         }
         public void Save()
         {

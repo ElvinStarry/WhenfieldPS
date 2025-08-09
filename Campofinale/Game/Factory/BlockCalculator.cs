@@ -9,7 +9,7 @@ namespace Campofinale.Game.Factory
 {
     public class BlockCalculator
     {
-        public static float CalculateTotalBlocks(List<Vector3f> points)
+        public static int CalculateTotalBlocks(List<Vector3f> points)
         {
             if (points == null || points.Count < 2)
                 return 0;
@@ -36,7 +36,6 @@ namespace Campofinale.Game.Factory
             int y1 = (int)Math.Floor(p2.y);
             int z1 = (int)Math.Floor(p2.z);
 
-            // Algoritmo di Bresenham 3D
             int dx = Math.Abs(x1 - x0);
             int dy = Math.Abs(y1 - y0);
             int dz = Math.Abs(z1 - z0);
@@ -44,7 +43,6 @@ namespace Campofinale.Game.Factory
             int sy = y0 < y1 ? 1 : -1;
             int sz = z0 < z1 ? 1 : -1;
 
-            // Decision variables
             if (dx >= dy && dx >= dz)
             {
                 int err1 = 2 * dy - dx;
@@ -89,7 +87,7 @@ namespace Campofinale.Game.Factory
                     y0 += sy;
                 }
             }
-            else // dz è la dimensione dominante
+            else
             {
                 int err1 = 2 * dy - dz;
                 int err2 = 2 * dx - dz;
@@ -112,7 +110,6 @@ namespace Campofinale.Game.Factory
                 }
             }
 
-            // Aggiungi l'ultimo punto
             blocks.Add(Tuple.Create(x1, y1, z1));
         }
     }
