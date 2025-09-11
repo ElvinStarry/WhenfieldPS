@@ -13,7 +13,7 @@ class Program
     static void Main(string[] args)
     {
        StartServer(args);
-       //FakeClientTester();
+      // FakeClientTester();
     }
     public static byte[] ConcatenateByteArrays(byte[] array1, byte[] array2)
     {
