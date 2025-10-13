@@ -41,13 +41,19 @@ namespace Campofinale.Game.MissionSys
             
             quests.ForEach(q =>
             {
+                var data = GetQuestData(q.questId);
+                if (data == null)
+                {
+                    Logger.PrintError($"[Mission] Quest data not found for {q.questId}, skipping in ToProto");
+                    return;
+                }
+
                 Quest quest=new Quest()
                 {
                     QuestId = q.questId,
                     QuestState = (int)q.state,
 
                 };
-                var data = GetQuestData(q.questId);
                 data.objectiveList.ForEach(o =>
                 {
                     int progressValue = q.objectiveProgress.GetValueOrDefault(o.condition.uniqueId, 0);
@@ -116,7 +122,6 @@ namespace Campofinale.Game.MissionSys
                     owner.Send(ScMsgId.ScMissionStateUpdate, s);
                 }
 
-                int i = 0;
                 foreach (var q in data.questDic.Values)
                 {
                     AddQuest(q, false);
@@ -239,13 +244,14 @@ namespace Campofinale.Game.MissionSys
                 };
                 data.objectiveList.ForEach(o =>
                 {
+                    int progressValue = quest.objectiveProgress.GetValueOrDefault(o.condition.uniqueId, 0);
                     upd.QuestObjectives.Add(new QuestObjective()
                     {
                         ConditionId = o.condition.uniqueId,
                         IsComplete=true,
                         Values =
                         {
-                            {o.condition.uniqueId,1 }
+                            {o.condition.uniqueId, progressValue > 0 ? progressValue : 1 }
                         }
                     });
                 });
