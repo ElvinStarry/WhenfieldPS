@@ -32,8 +32,8 @@ jobs:
           dotnet-version: 9.0.x
       - name: Restore dependencies
         run: dotnet restore
-      - name: Publish with NativeAOT
-        run: dotnet publish Campofinale/Campofinale.csproj --configuration Release -p:PublishAot=true -p:SelfContained=true --runtime win-x64
+      - name: Publish with ReadyToRun
+        run: dotnet publish Campofinale/Campofinale.csproj --configuration Release -p:PublishReadyToRun=true --runtime win-x64 --self-contained
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -53,8 +53,8 @@ jobs:
           dotnet-version: 9.0.x
       - name: Restore dependencies
         run: dotnet restore
-      - name: Publish with NativeAOT
-        run: dotnet publish Campofinale/Campofinale.csproj --configuration Release -p:PublishAot=true -p:SelfContained=true --runtime linux-x64
+      - name: Publish with ReadyToRun
+        run: dotnet publish Campofinale/Campofinale.csproj --configuration Release -p:PublishReadyToRun=true --runtime linux-x64 --self-contained
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
