@@ -12,13 +12,7 @@ namespace Campofinale.Packets.Cs
 
             Logger.Print($"[Mission] Client trigger done - Mission: {req.MissionId}, Scene: {req.SceneName}");
 
-            // Acknowledge client trigger completion
-            ScMissionClientTriggerDone rsp = new()
-            {
-                MissionId = req.MissionId,
-                SceneName = req.SceneName
-            };
-            session.Send(ScMsgId.ScMissionClientTriggerDone, rsp, packet.csHead.UpSeqid);
+            // No corresponding protocol in Sc, ignore
         }
     }
 }

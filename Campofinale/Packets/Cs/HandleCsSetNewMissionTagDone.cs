@@ -12,14 +12,7 @@ namespace Campofinale.Packets.Cs
 
             Logger.Print($"[Mission] New mission tags marked as read: {string.Join(", ", req.NewMissionTags)}");
 
-            // Mark new mission tags as read (for red dot notification system)
-            // This could be stored in player data if needed for persistence
-
-            // Acknowledge to client
-            ScSetNewMissionTagDone rsp = new();
-            rsp.NewMissionTags.AddRange(req.NewMissionTags);
-
-            session.Send(ScMsgId.ScSetNewMissionTagDone, rsp, packet.csHead.UpSeqid);
+            // No corresponding protocol in Sc, ignore
         }
     }
 }
