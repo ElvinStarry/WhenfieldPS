@@ -32,6 +32,7 @@ namespace Campofinale.Resource
         public static Dictionary<string, SystemJumpTable> systemJumpTable = new(); //
         public static Dictionary<string, SettlementBasicDataTable> settlementBasicDataTable = new();
         public static Dictionary<string, BlocMissionTable> blocMissionTable = new();
+        public static BlocMissionConst blocMissionConst = new();
         public static MissionAreaTable missionAreaTable = new(); //
         public static Dictionary<string, DialogTextTable> dialogTextTable = new();
         public static Dictionary<string, GameSystemConfigTable> gameSystemConfigTable = new();
@@ -117,6 +118,7 @@ namespace Campofinale.Resource
             systemJumpTable = JsonConvert.DeserializeObject<Dictionary<string, SystemJumpTable>>(ReadJsonFile("TableCfg/SystemJumpTable.json"));
             settlementBasicDataTable = JsonConvert.DeserializeObject<Dictionary<string, SettlementBasicDataTable>>(ReadJsonFile("TableCfg/SettlementBasicDataTable.json"));
             blocMissionTable = JsonConvert.DeserializeObject<Dictionary<string, BlocMissionTable>>(ReadJsonFile("TableCfg/BlocMissionTable.json"));
+            blocMissionConst = JsonConvert.DeserializeObject<BlocMissionConst>(ReadJsonFile("TableCfg/BlocMissionConst.json")) ?? new BlocMissionConst();
             dialogTextTable = JsonConvert.DeserializeObject<Dictionary<string, DialogTextTable>>(ReadJsonFile("TableCfg/DialogTextTable.json"));
             gameSystemConfigTable = JsonConvert.DeserializeObject<Dictionary<string, GameSystemConfigTable>>(ReadJsonFile("TableCfg/GameSystemConfigTable.json"));
             wikiGroupTable = JsonConvert.DeserializeObject<Dictionary<string, WikiGroupTable>>(ReadJsonFile("TableCfg/WikiGroupTable.json"));
@@ -585,6 +587,13 @@ namespace Campofinale.Resource
         {
             public string missionId;
 
+        }
+        public class BlocMissionConst
+        {
+            public int addRefreshNumDuration;
+            public string livenessMissionId;
+            public int maxBlocMissionCompletedNum;
+            public int maxRefreshNum;
         }
         public class ExpItemDataMap
         {

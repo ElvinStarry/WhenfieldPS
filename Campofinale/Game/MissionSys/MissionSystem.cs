@@ -2,16 +2,29 @@
 using Campofinale.Protocol;
 using Campofinale.Resource;
 using Campofinale.Resource.Table;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Campofinale.Game.MissionSys
 {
+    public class BlocMissionState
+    {
+        public Dictionary<string, string> blocMissions = new();
+        public long rollCount;
+        public long nextRefreshTime;
+        public bool rewardGot;
+        public int completedNum;
+    }
+
     public class MissionSystem
     {
         public Player owner;
         public List<GameMission> missions=new();
         public List<GameQuest> quests=new();
         public string curMission = "e0m0";
+        public BlocMissionState blocMissionState = new();
 
         public MissionSystem(Player o)
         {
@@ -28,6 +41,8 @@ namespace Campofinale.Game.MissionSys
             }
             ScSyncAllMission sync = new ScSyncAllMission();
             sync.TrackMissionId = curMission;
+            missions ??= new List<GameMission>();
+            quests ??= new List<GameQuest>();
             missions.ForEach(m =>
             {
                 if(!sync.Missions.ContainsKey(m.missionId))
@@ -87,12 +102,14 @@ namespace Campofinale.Game.MissionSys
         }
         public void Save()
         {
+            NormalizeState();
             DatabaseManager.db.UpsertMissionData(new MissionData()
             {
                 roleId=owner.roleId,
                 curMission=curMission,
                 missions=missions,
                 quests=quests,
+                blocMissionState = blocMissionState,
             });
         }
         public void Load()
@@ -100,32 +117,101 @@ namespace Campofinale.Game.MissionSys
             MissionData data= DatabaseManager.db.LoadMissionData(owner.roleId);
             if (data != null)
             {
-                curMission = data.curMission;
-                missions = data.missions;
-                quests = data.quests;
+                if (!string.IsNullOrWhiteSpace(data.curMission))
+                {
+                    curMission = data.curMission;
+                }
+                missions = data.missions ?? missions;
+                quests = data.quests ?? quests;
+                blocMissionState = data.blocMissionState ?? blocMissionState;
             }
+            NormalizeState();
+        }
+        private void NormalizeState()
+        {
+            missions = (missions ?? new List<GameMission>())
+                .Where(m => m != null && !string.IsNullOrWhiteSpace(m.missionId))
+                .GroupBy(m => m.missionId)
+                .Select(g => g.Last())
+                .ToList();
+
+            quests = (quests ?? new List<GameQuest>())
+                .Where(q => q != null && !string.IsNullOrWhiteSpace(q.questId))
+                .GroupBy(q => q.questId)
+                .Select(g =>
+                {
+                    var quest = g.Last();
+                    quest.objectiveProgress ??= new Dictionary<string, int>();
+                    var data = GetQuestData(quest.questId);
+                    if (data != null)
+                    {
+                        foreach (var objective in data.objectiveList)
+                        {
+                            quest.objectiveProgress.TryAdd(objective.condition.uniqueId, 0);
+                        }
+                    }
+                    return quest;
+                })
+                .ToList();
+
+            blocMissionState ??= new BlocMissionState();
+            blocMissionState.blocMissions ??= new Dictionary<string, string>();
+            if (blocMissionState.blocMissions.Count == 0 && ResourceManager.blocMissionTable.Count > 0)
+            {
+                string defaultMission = ResourceManager.blocMissionTable.Values.First().missionId;
+                foreach (var bloc in ResourceManager.blocDataTable.Keys)
+                {
+                    if (!string.IsNullOrWhiteSpace(bloc))
+                    {
+                        blocMissionState.blocMissions.TryAdd(bloc, defaultMission);
+                    }
+                }
+            }
+        }
+        public GameMission GetMissionById(string id)
+        {
+            return missions.Find(m => m.missionId == id);
         }
         public void AddMission(string id,MissionState state = MissionState.Available, bool notify=false)
         {
-            MissionDataTable data = ResourceManager.missionDataTable.Find(m=>m.missionId == id);
-            if (data != null)
+            if (string.IsNullOrWhiteSpace(id))
             {
-                missions.Add(new GameMission(id, state));
-                if (notify)
-                {
-                    ScMissionStateUpdate s = new()
-                    {
-                        MissionId = data.missionId,
-                        MissionState = (int)state,
-                        SucceedId=-1,
-                    };
-                    owner.Send(ScMsgId.ScMissionStateUpdate, s);
-                }
+                Logger.PrintError("[Mission] Attempted to add mission with empty id");
+                return;
+            }
 
-                foreach (var q in data.questDic.Values)
+            MissionDataTable data = ResourceManager.missionDataTable.Find(m=>m.missionId == id);
+            GameMission mission = GetMissionById(id);
+            if (mission == null)
+            {
+                mission = new GameMission(id, state);
+                missions.Add(mission);
+            }
+            else
+            {
+                mission.state = state;
+            }
+
+            if (notify)
+            {
+                ScMissionStateUpdate s = new()
                 {
-                    AddQuest(q, false);
-                }
+                    MissionId = mission.missionId,
+                    MissionState = (int)mission.state,
+                    SucceedId = -1,
+                };
+                owner.Send(ScMsgId.ScMissionStateUpdate, s);
+            }
+
+            if (data == null)
+            {
+                Logger.PrintWarn($"[Mission] Mission data not found for {id}, skipping quest initialization");
+                return;
+            }
+
+            foreach (var q in data.questDic.Values)
+            {
+                AddQuest(q, false);
             }
         }
         public GameQuest GetQuestById(string id)
@@ -186,6 +272,13 @@ namespace Campofinale.Game.MissionSys
 
                 quest.state = QuestState.Processing;
                 var data = GetQuestData(id);
+                if (data == null)
+                {
+                    Logger.PrintError($"[Quest] Quest data not found for {id} in ProcessQuest");
+                    return;
+                }
+
+                quest.objectiveProgress ??= new Dictionary<string, int>();
 
                 // Ensure progress is initialized for all objectives
                 foreach (var objective in data.objectiveList)
@@ -232,6 +325,14 @@ namespace Campofinale.Game.MissionSys
             {
                 quest.state = QuestState.Completed;
                 var data = GetQuestData(id);
+                if (data == null)
+                {
+                    Logger.PrintError($"[Quest] Quest data not found for {id} in CompleteQuest");
+                    quest.state = QuestState.Completed;
+                    quests.Remove(quest);
+                    return;
+                }
+                quest.objectiveProgress ??= new Dictionary<string, int>();
                 ScQuestStateUpdate update = new()
                 {
                     QuestId = quest.questId,
@@ -272,6 +373,8 @@ namespace Campofinale.Game.MissionSys
                 Logger.PrintError($"[Quest] Quest {questId} not found for player {owner.roleId}");
                 return;
             }
+
+            quest.objectiveProgress ??= new Dictionary<string, int>();
 
             var questData = GetQuestData(questId);
             if (questData == null)
@@ -342,20 +445,31 @@ namespace Campofinale.Game.MissionSys
             {
                 TrackMission("");
             }
-            GameMission mission = missions.Find(m => m.missionId == v);
+            GameMission mission = GetMissionById(v);
             MissionDataTable data = ResourceManager.missionDataTable.Find(m => m.missionId == v);
-            if (mission != null && data != null)
+            if (mission == null)
             {
-                mission.state=MissionState.Completed;
-                ScMissionStateUpdate s = new()
-                {
-                    MissionId = mission.missionId,
-                    MissionState = (int)mission.state,
-                    SucceedId = -1,
+                Logger.PrintError($"[Mission] Mission {v} not found for player {owner.roleId} when completing");
+                return;
+            }
 
-                };
-                owner.Send(ScMsgId.ScMissionStateUpdate, s);
+            mission.state=MissionState.Completed;
+            ScMissionStateUpdate s = new()
+            {
+                MissionId = mission.missionId,
+                MissionState = (int)mission.state,
+                SucceedId = -1,
+
+            };
+            owner.Send(ScMsgId.ScMissionStateUpdate, s);
+
+            if (data != null)
+            {
                 GiveRewards(data.rewardId);
+            }
+            else
+            {
+                Logger.PrintWarn($"[Mission] Mission data not found for {v} while completing, reward skipped");
             }
         }
 
@@ -366,38 +480,156 @@ namespace Campofinale.Game.MissionSys
                 TrackMission("");
             }
 
-            GameMission mission = missions.Find(m => m.missionId == missionId);
+            GameMission mission = GetMissionById(missionId);
             MissionDataTable data = ResourceManager.missionDataTable.Find(m => m.missionId == missionId);
 
-            if (mission != null && data != null)
+            if (mission == null)
             {
-                mission.state = MissionState.Failed;
+                Logger.PrintError($"[Mission] Mission {missionId} not found for player {owner.roleId} when failing");
+                return;
+            }
 
-                ScMissionStateUpdate s = new()
+            mission.state = MissionState.Failed;
+
+            ScMissionStateUpdate s = new()
+            {
+                MissionId = mission.missionId,
+                MissionState = (int)mission.state,
+                SucceedId = -1,
+            };
+            owner.Send(ScMsgId.ScMissionStateUpdate, s);
+
+            Logger.Print($"[Mission] Mission {missionId} failed for player {owner.roleId}");
+
+            if (data == null)
+            {
+                Logger.PrintWarn($"[Mission] Mission data not found for {missionId} while processing failure");
+                return;
+            }
+
+            bool shouldRestart = false;
+            foreach (var questInfo in data.questDic.Values)
+            {
+                var questInstance = GetQuestById(questInfo.questId);
+                if (questInstance != null)
                 {
-                    MissionId = mission.missionId,
-                    MissionState = (int)mission.state,
-                    SucceedId = -1,
-                };
-                owner.Send(ScMsgId.ScMissionStateUpdate, s);
+                    questInstance.state = QuestState.Failed;
+                }
 
-                Logger.Print($"[Mission] Mission {missionId} failed for player {owner.roleId}");
-
-                // TODO: Trigger onMissionFailedId event if event system is implemented
-                // if (data.onMissionFailedId > 0) { TriggerEvent(data.onMissionFailedId); }
-
-                // Check for autoRestartWhenFailed in quests (future-proofing)
-                foreach (var quest in data.questDic.Values)
+                if (questInfo.autoRestartWhenFailed)
                 {
-                    if (quest.autoRestartWhenFailed)
-                    {
-                        Logger.Print($"[Mission] Auto-restarting mission {missionId} due to quest autoRestartWhenFailed");
-                        missions.Remove(mission);
-                        AddMission(missionId, MissionState.Available, notify: true);
-                        return;
-                    }
+                    shouldRestart = true;
                 }
             }
+
+            if (shouldRestart)
+            {
+                Logger.Print($"[Mission] Auto-restarting mission {missionId} due to quest autoRestartWhenFailed");
+                foreach (var questInfo in data.questDic.Values)
+                {
+                    var questInstance = GetQuestById(questInfo.questId);
+                    if (questInstance != null)
+                    {
+                        quests.Remove(questInstance);
+                    }
+                }
+
+                missions.Remove(mission);
+                AddMission(missionId, MissionState.Available, notify: true);
+            }
+        }
+
+        public ScSyncBlocMissionInfo BuildBlocMissionInfo()
+        {
+            bool hadAssignments = blocMissionState?.blocMissions?.Count > 0;
+            NormalizeState();
+            if (!hadAssignments && blocMissionState.blocMissions.Count > 0)
+            {
+                Save();
+            }
+
+            ScSyncBlocMissionInfo info = new()
+            {
+                RewardGot = blocMissionState.rewardGot,
+                RollCount = blocMissionState.rollCount,
+                NextRefreshTine = blocMissionState.nextRefreshTime,
+                CompletedNum = blocMissionState.completedNum,
+            };
+
+            foreach (var pair in blocMissionState.blocMissions)
+            {
+                if (!info.BlocMissions.ContainsKey(pair.Key))
+                {
+                    info.BlocMissions.Add(pair.Key, pair.Value);
+                }
+            }
+
+            return info;
+        }
+
+        public ScRollBlocMission RollBlocMission(string blocId)
+        {
+            NormalizeState();
+
+            if (string.IsNullOrWhiteSpace(blocId))
+            {
+                Logger.PrintError("[Bloc] Attempted to roll bloc mission with empty blocId");
+                return new ScRollBlocMission();
+            }
+
+            if (!ResourceManager.blocDataTable.ContainsKey(blocId))
+            {
+                Logger.PrintWarn($"[Bloc] Bloc {blocId} not found in BlocDataTable");
+            }
+
+            var missionPool = ResourceManager.blocMissionTable.Values
+                .Select(m => m.missionId)
+                .Where(id => !string.IsNullOrWhiteSpace(id))
+                .ToList();
+
+            if (missionPool.Count == 0)
+            {
+                Logger.PrintError("[Bloc] BlocMissionTable empty, cannot roll mission");
+                return new ScRollBlocMission()
+                {
+                    BlocId = blocId,
+                    MissionId = "",
+                    RollCount = blocMissionState.rollCount,
+                    NextRefreshTine = blocMissionState.nextRefreshTime
+                };
+            }
+
+            string currentMission = blocMissionState.blocMissions.GetValueOrDefault(blocId);
+            var selectable = missionPool.Where(id => id != currentMission).ToList();
+            if (selectable.Count == 0)
+            {
+                selectable = missionPool;
+            }
+
+            string nextMission = selectable[Random.Shared.Next(selectable.Count)];
+
+            blocMissionState.blocMissions[blocId] = nextMission;
+            blocMissionState.rollCount++;
+
+            int refreshSeconds = ResourceManager.blocMissionConst?.addRefreshNumDuration ?? 0;
+            if (refreshSeconds > 0)
+            {
+                blocMissionState.nextRefreshTime = DateTimeOffset.UtcNow.AddSeconds(refreshSeconds).ToUnixTimeMilliseconds();
+            }
+            else if (blocMissionState.nextRefreshTime == 0)
+            {
+                blocMissionState.nextRefreshTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            }
+
+            Save();
+
+            return new ScRollBlocMission()
+            {
+                BlocId = blocId,
+                MissionId = nextMission,
+                RollCount = blocMissionState.rollCount,
+                NextRefreshTine = blocMissionState.nextRefreshTime
+            };
         }
 
         public bool CheckQuestComplete(GameQuest quest, MissionDataTable.QuestInfo data)

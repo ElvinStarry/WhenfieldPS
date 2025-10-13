@@ -10,18 +10,16 @@ namespace Campofinale.Packets.Cs
         {
             CsRollBlocMission req = packet.DecodeBody<CsRollBlocMission>();
 
-            Logger.Print($"[Mission] Player {session.roleId} rolling bloc mission: {req.BlocId} (not implemented)");
+            Logger.Print($"[Mission] Player {session.roleId} rolling bloc mission: {req.BlocId}");
 
-            // Echo back the request, no actual mission rolled
-            ScRollBlocMission rsp = new()
+            ScRollBlocMission rsp = session.missionSystem.RollBlocMission(req.BlocId);
+            if (string.IsNullOrWhiteSpace(rsp.BlocId))
             {
-                BlocId = req.BlocId,
-                MissionId = "",
-                RollCount = 0,
-                NextRefreshTine = 0
-            };
+                rsp.BlocId = req.BlocId;
+            }
 
             session.Send(ScMsgId.ScRollBlocMission, rsp, packet.csHead.UpSeqid);
+            session.Send(ScMsgId.ScSyncBlocMissionInfo, session.missionSystem.BuildBlocMissionInfo());
         }
     }
 }

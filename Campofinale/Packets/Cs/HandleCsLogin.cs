@@ -187,6 +187,7 @@ namespace Campofinale.Packets.Cs
             session.Send(new PacketScSyncAllRoleScene(session));
             session.Send(new PacketScGameMechanicsSync(session));
             session.Send(new PacketScSyncAllBloc(session));
+            session.Send(ScMsgId.ScSyncBlocMissionInfo, session.missionSystem.BuildBlocMissionInfo());
             session.Send(new PacketScSyncWallet(session));
             session.Send(new PacketScSyncAllGameVar(session));
             session.Send(new PacketScSyncAllUnlock(session));
