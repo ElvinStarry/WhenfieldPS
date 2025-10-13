@@ -231,6 +231,7 @@ namespace Campofinale.Game.MissionSys
                 owner.Send(ScMsgId.ScQuestObjectivesUpdate, upd);
                 owner.Send(ScMsgId.ScQuestStateUpdate, update);
                 quests.Remove(quest);
+                //TODO: Quest rewards - check if data.rewardId exists and call GiveRewards
             }
         }
 
@@ -241,6 +242,24 @@ namespace Campofinale.Game.MissionSys
             {
                 MissionId = curMission,
             });
+        }
+
+        private void GiveRewards(string rewardId)
+        {
+            if (string.IsNullOrEmpty(rewardId))
+            {
+                return; // No reward for this mission
+            }
+
+            if (!ResourceManager.rewardTable.ContainsKey(rewardId))
+            {
+                Logger.PrintError($"[Mission] Reward ID {rewardId} not found in RewardTable!");
+                return;
+            }
+
+            // Give rewards at player's current position, sourceType=1 means mission reward
+            owner.inventoryManager.AddRewards(rewardId, owner.position, sourceType: 1);
+            Logger.Print($"[Mission] Rewarded player {owner.roleId} with {rewardId}");
         }
 
         public void CompleteMission(string v)
@@ -262,7 +281,7 @@ namespace Campofinale.Game.MissionSys
 
                 };
                 owner.Send(ScMsgId.ScMissionStateUpdate, s);
-                //TODO rewards
+                GiveRewards(data.rewardId);
             }
         }
     }
