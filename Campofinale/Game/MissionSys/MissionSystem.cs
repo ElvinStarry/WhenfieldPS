@@ -50,17 +50,19 @@ namespace Campofinale.Game.MissionSys
                 var data = GetQuestData(q.questId);
                 data.objectiveList.ForEach(o =>
                 {
+                    int progressValue = q.objectiveProgress.GetValueOrDefault(o.condition.uniqueId, 0);
                     quest.QuestObjectives.Add(new QuestObjective()
                     {
                         ConditionId = o.condition.uniqueId,
+                        IsComplete = progressValue > 0,
                         Values =
                         {
-                            {o.condition.uniqueId,0 }
+                            {o.condition.uniqueId, progressValue }
                         }
                     });
                 });
                 sync.CurQuests.Add(q.questId, quest);
-                
+
             });
             return sync;
         }
@@ -132,18 +134,26 @@ namespace Campofinale.Game.MissionSys
             {
                 quest = new GameQuest(data.questId);
                 quest.state = QuestState.Available;
+
+                // Initialize progress for all objectives to 0
+                foreach (var objective in data.objectiveList)
+                {
+                    quest.objectiveProgress[objective.condition.uniqueId] = 0;
+                }
+
                 if (notify)
                 {
                     ScQuestObjectivesUpdate upd = new()
                     {
                         QuestId = data.questId,
-                        
+
                     };
                     data.objectiveList.ForEach(o =>
                     {
                         upd.QuestObjectives.Add(new QuestObjective()
                         {
                             ConditionId=o.condition.uniqueId,
+                            IsComplete = false,
                             Values =
                             {
                                 {o.condition.uniqueId,0 }
@@ -159,7 +169,7 @@ namespace Campofinale.Game.MissionSys
                     owner.Send(ScMsgId.ScQuestStateUpdate, update);
                     owner.Send(ScMsgId.ScQuestObjectivesUpdate, upd);
                 }
-               
+
                 quests.Add(quest);
             }
         }
@@ -168,9 +178,19 @@ namespace Campofinale.Game.MissionSys
             GameQuest quest = GetQuestById(id);
             if (quest != null)
             {
-               
+
                 quest.state = QuestState.Processing;
                 var data = GetQuestData(id);
+
+                // Ensure progress is initialized for all objectives
+                foreach (var objective in data.objectiveList)
+                {
+                    if (!quest.objectiveProgress.ContainsKey(objective.condition.uniqueId))
+                    {
+                        quest.objectiveProgress[objective.condition.uniqueId] = 0;
+                    }
+                }
+
                 ScQuestStateUpdate update = new()
                 {
                     QuestId = quest.questId,
@@ -184,18 +204,20 @@ namespace Campofinale.Game.MissionSys
                 };
                 data.objectiveList.ForEach(o =>
                 {
+                    int progressValue = quest.objectiveProgress.GetValueOrDefault(o.condition.uniqueId, 0);
                     upd.QuestObjectives.Add(new QuestObjective()
                     {
                         ConditionId = o.condition.uniqueId,
+                        IsComplete = progressValue > 0,
                         Values =
                         {
-                            {o.condition.uniqueId,0 }
+                            {o.condition.uniqueId, progressValue }
                         }
                     });
                 });
                 owner.Send(ScMsgId.ScQuestObjectivesUpdate, upd);
                 owner.Send(ScMsgId.ScQuestStateUpdate, update);
-                
+
             }
         }
         public void CompleteQuest(string id)
@@ -230,7 +252,54 @@ namespace Campofinale.Game.MissionSys
                 owner.Send(ScMsgId.ScQuestObjectivesUpdate, upd);
                 owner.Send(ScMsgId.ScQuestStateUpdate, update);
                 quests.Remove(quest);
-                //TODO: Quest rewards - check if data.rewardId exists and call GiveRewards
+
+                // Give quest rewards
+                GiveRewards(data.rewardId);
+            }
+        }
+
+        public void FailQuest(string questId)
+        {
+            GameQuest quest = GetQuestById(questId);
+            if (quest == null)
+            {
+                Logger.PrintError($"[Quest] Quest {questId} not found for player {owner.roleId}");
+                return;
+            }
+
+            var questData = GetQuestData(questId);
+            if (questData == null)
+            {
+                Logger.PrintError($"[Quest] Quest data {questId} not found in resource table");
+                return;
+            }
+
+            quest.state = QuestState.Failed;
+
+            ScQuestStateUpdate update = new()
+            {
+                QuestId = quest.questId,
+                QuestState = (int)quest.state,
+                RoleBaseInfo = owner.GetRoleBaseInfo()
+            };
+
+            owner.Send(ScMsgId.ScQuestStateUpdate, update);
+
+            Logger.Print($"[Quest] Quest {questId} failed for player {owner.roleId}");
+
+            // Check if quest has autoRestartWhenFailed flag
+            if (questData.autoRestartWhenFailed)
+            {
+                Logger.Print($"[Quest] Auto-restarting quest {questId} due to autoRestartWhenFailed");
+                quests.Remove(quest);
+
+                // Re-add the quest in Available state
+                AddQuest(questData, notify: true);
+            }
+            else
+            {
+                // Keep the failed quest in the list for tracking
+                // Remove it only if explicitly requested or if quest system cleans up failed quests
             }
         }
 
@@ -323,6 +392,60 @@ namespace Campofinale.Game.MissionSys
                     }
                 }
             }
+        }
+
+        public bool CheckQuestComplete(GameQuest quest, MissionDataTable.QuestInfo data)
+        {
+            // Check if objectiveConditionNum is specified (complete N objectives)
+            if (data.objectiveConditionNum > 0)
+            {
+                int completedCount = 0;
+                foreach (var objective in data.objectiveList)
+                {
+                    if (quest.objectiveProgress.TryGetValue(objective.condition.uniqueId, out int value) && value > 0)
+                    {
+                        completedCount++;
+                    }
+                }
+                return completedCount >= data.objectiveConditionNum;
+            }
+
+            // Otherwise, all objectives must be completed
+            foreach (var objective in data.objectiveList)
+            {
+                if (!quest.objectiveProgress.TryGetValue(objective.condition.uniqueId, out int value) || value == 0)
+                {
+                    return false; // At least one objective not complete
+                }
+            }
+
+            return true;
+        }
+
+        public ScQuestObjectivesUpdate BuildObjectivesUpdate(GameQuest quest, MissionDataTable.QuestInfo data)
+        {
+            ScQuestObjectivesUpdate upd = new()
+            {
+                QuestId = quest.questId,
+            };
+
+            foreach (var objective in data.objectiveList)
+            {
+                int progressValue = quest.objectiveProgress.GetValueOrDefault(objective.condition.uniqueId, 0);
+                bool isComplete = progressValue > 0; // Assume > 0 means complete (can be refined)
+
+                upd.QuestObjectives.Add(new QuestObjective()
+                {
+                    ConditionId = objective.condition.uniqueId,
+                    IsComplete = isComplete,
+                    Values =
+                    {
+                        { objective.condition.uniqueId, progressValue }
+                    }
+                });
+            }
+
+            return upd;
         }
     }
 

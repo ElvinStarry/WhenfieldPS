@@ -11,6 +11,8 @@ namespace Campofinale.Game.MissionSys
     {
         public string questId;
         public QuestState state;
+        public Dictionary<string, int> objectiveProgress = new(); // conditionId -> progress value
+
         public GameQuest()
         {
 
