@@ -105,16 +105,15 @@ namespace Campofinale.Game.MissionSys
                 missions.Add(new GameMission(id, state));
                 if (notify)
                 {
-                    
                     ScMissionStateUpdate s = new()
                     {
                         MissionId = data.missionId,
                         MissionState = (int)state,
                         SucceedId=-1,
-
                     };
+                    owner.Send(ScMsgId.ScMissionStateUpdate, s);
                 }
-                
+
                 int i = 0;
                 foreach (var q in data.questDic.Values)
                 {
@@ -284,7 +283,48 @@ namespace Campofinale.Game.MissionSys
                 GiveRewards(data.rewardId);
             }
         }
+
+        public void FailMission(string missionId)
+        {
+            if (curMission == missionId)
+            {
+                TrackMission("");
+            }
+
+            GameMission mission = missions.Find(m => m.missionId == missionId);
+            MissionDataTable data = ResourceManager.missionDataTable.Find(m => m.missionId == missionId);
+
+            if (mission != null && data != null)
+            {
+                mission.state = MissionState.Failed;
+
+                ScMissionStateUpdate s = new()
+                {
+                    MissionId = mission.missionId,
+                    MissionState = (int)mission.state,
+                    SucceedId = -1,
+                };
+                owner.Send(ScMsgId.ScMissionStateUpdate, s);
+
+                Logger.Print($"[Mission] Mission {missionId} failed for player {owner.roleId}");
+
+                // TODO: Trigger onMissionFailedId event if event system is implemented
+                // if (data.onMissionFailedId > 0) { TriggerEvent(data.onMissionFailedId); }
+
+                // Check for autoRestartWhenFailed in quests (future-proofing)
+                foreach (var quest in data.questDic.Values)
+                {
+                    if (quest.autoRestartWhenFailed)
+                    {
+                        Logger.Print($"[Mission] Auto-restarting mission {missionId} due to quest autoRestartWhenFailed");
+                        missions.Remove(mission);
+                        AddMission(missionId, MissionState.Available, notify: true);
+                        return;
+                    }
+                }
+            }
+        }
     }
-    
-    
+
+
 }
