@@ -280,7 +280,7 @@ namespace Campofinale.Resource
         public static void LoadSpawners()
         {
             Logger.Print("Loading Spawners");
-            string directoryPath = @"DynamicAssets\gamedata\spawnerconfig";
+            string directoryPath = @"DynamicAssets/gamedata/spawnerconfig";
             try
             {
                 string[] jsonFiles = Directory.GetFiles(directoryPath, "*.json", SearchOption.AllDirectories);
