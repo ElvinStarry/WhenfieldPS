@@ -81,19 +81,52 @@ namespace Campofinale.Game.Spaceship
             SpaceshipChar chara = GetChar(req.CharId);
             if (chara != null)
             {
+                List<ItemBundle> validGifts = new();
+                int favorabilityIncrease = 0;
+
                 foreach (var item in req.Gifts)
                 {
-                    GiftItemTable giftItem = ResourceManager.giftItemTable[item.Id];
-                    chara.favorability += giftItem.favorablePoint * item.Count;
-                    //TODO item consume
+                    if (item.Count <= 0)
+                    {
+                        continue;
+                    }
+
+                    if (!ResourceManager.giftItemTable.TryGetValue(item.Id, out GiftItemTable giftItem))
+                    {
+                        continue;
+                    }
+
+                    validGifts.Add(item);
+                    favorabilityIncrease += giftItem.favorablePoint * item.Count;
                 }
+
+                if (validGifts.Count == 0)
+                {
+                    return;
+                }
+
+                foreach (var gift in validGifts)
+                {
+                    if (owner.inventoryManager.items.GetItemAmount(gift.Id) < gift.Count)
+                    {
+                        return;
+                    }
+                }
+
+                foreach (var gift in validGifts)
+                {
+                    owner.inventoryManager.ConsumeItem(gift.Id, gift.Count);
+                }
+
+                chara.favorability += favorabilityIncrease;
+
                 ScSpaceshipPresentGiftToChar confirm = new()
                 {
                     CurFav = chara.favorability,
                     CharId = chara.id,
                     RecvGiftCnt = req.Gifts.Count,
                 };
-                //TODO packet class
+                //packet class - never need to do anymore
                 /*ScSpaceshipCharFavorabilityChange change = new()
                 {
                     ChangeInfos =

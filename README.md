@@ -4,7 +4,7 @@ No? then leave.
 
 Current job: Solve TODOs in code. 
 
-- [ ] Campofinale/Game/Spaceship/SpaceshipManager.cs: Cost item and increase chara favorability when gifting
+- [x] ~Campofinale/Game/Spaceship/SpaceshipManager.cs: Cost item and increase chara favorability when gifting~
 - [ ] Campofinale/Game/Inventory/Item.cs: Count costWeaponIds exp when upgrading
 - [ ] Campofinale/Game/Inventory/InventoryManager.cs: Complete drops logic 
 - [ ] Campofinale/Game/Inventory/InventoryList.cs: Factory items finding and filtering
