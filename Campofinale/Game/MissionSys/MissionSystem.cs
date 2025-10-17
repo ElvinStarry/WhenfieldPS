@@ -20,6 +20,19 @@ namespace Campofinale.Game.MissionSys
 
     public class MissionSystem
     {
+        private class MissionObjectiveBinding
+        {
+            public string MissionId { get; init; } = "";
+            public string QuestId { get; init; } = "";
+            public string ConditionId { get; init; } = "";
+            public bool Optional { get; init; }
+        }
+
+        private static readonly object missionEventBindingLock = new();
+        private static bool missionEventBindingsInitialized;
+        private static Dictionary<string, Dictionary<string, List<MissionObjectiveBinding>>> missionEventBindings = new(StringComparer.OrdinalIgnoreCase);
+        private static Dictionary<string, List<MissionObjectiveBinding>> globalEventBindings = new(StringComparer.OrdinalIgnoreCase);
+
         public Player owner;
         public List<GameMission> missions=new();
         public List<GameQuest> quests=new();
@@ -29,6 +42,134 @@ namespace Campofinale.Game.MissionSys
         public MissionSystem(Player o)
         {
             owner = o;
+            EnsureMissionEventBindings();
+        }
+
+        private static void EnsureMissionEventBindings()
+        {
+            if (missionEventBindingsInitialized)
+            {
+                return;
+            }
+
+            lock (missionEventBindingLock)
+            {
+                if (missionEventBindingsInitialized)
+                {
+                    return;
+                }
+
+                missionEventBindings = new Dictionary<string, Dictionary<string, List<MissionObjectiveBinding>>>(StringComparer.OrdinalIgnoreCase);
+                globalEventBindings = new Dictionary<string, List<MissionObjectiveBinding>>(StringComparer.OrdinalIgnoreCase);
+
+                if (ResourceManager.missionDataTable == null || ResourceManager.missionDataTable.Count == 0)
+                {
+                    Logger.PrintWarn("[Mission] MissionDataTable not loaded yet, deferring mission event binding initialization");
+                    return;
+                }
+
+                foreach (MissionDataTable missionData in ResourceManager.missionDataTable)
+                {
+                    if (missionData == null || string.IsNullOrWhiteSpace(missionData.missionId) || missionData.questDic == null)
+                    {
+                        continue;
+                    }
+
+                    if (!missionEventBindings.TryGetValue(missionData.missionId, out var missionMap))
+                    {
+                        missionMap = new Dictionary<string, List<MissionObjectiveBinding>>(StringComparer.OrdinalIgnoreCase);
+                        missionEventBindings[missionData.missionId] = missionMap;
+                    }
+
+                    foreach (var questPair in missionData.questDic)
+                    {
+                        MissionDataTable.QuestInfo questInfo = questPair.Value;
+                        if (questInfo == null || questInfo.objectiveList == null)
+                        {
+                            continue;
+                        }
+
+                        foreach (var objective in questInfo.objectiveList)
+                        {
+                            string conditionId = objective?.condition?.uniqueId ?? string.Empty;
+                            if (string.IsNullOrWhiteSpace(conditionId))
+                            {
+                                continue;
+                            }
+
+                            AddMissionEventBinding(missionMap, conditionId, missionData.missionId, questInfo.questId, conditionId, questInfo.optional);
+                            AddGlobalEventBinding(conditionId, missionData.missionId, questInfo.questId, conditionId, questInfo.optional);
+
+                            // Alternate lookup keys to improve flexibility when matching event names.
+                            if (!string.IsNullOrWhiteSpace(questInfo.questId))
+                            {
+                                AddMissionEventBinding(missionMap, questInfo.questId, missionData.missionId, questInfo.questId, conditionId, questInfo.optional);
+                                AddGlobalEventBinding(questInfo.questId, missionData.missionId, questInfo.questId, conditionId, questInfo.optional);
+                            }
+
+                            string missionScopedKey = $"{missionData.missionId}:{conditionId}";
+                            AddMissionEventBinding(missionMap, missionScopedKey, missionData.missionId, questInfo.questId, conditionId, questInfo.optional);
+                            AddGlobalEventBinding(missionScopedKey, missionData.missionId, questInfo.questId, conditionId, questInfo.optional);
+                        }
+                    }
+                }
+
+                missionEventBindingsInitialized = true;
+            }
+        }
+
+        private static void AddMissionEventBinding(Dictionary<string, List<MissionObjectiveBinding>> container, string key, string missionId, string questId, string conditionId, bool optional)
+        {
+            if (container == null || string.IsNullOrWhiteSpace(key) || string.IsNullOrWhiteSpace(missionId) || string.IsNullOrWhiteSpace(questId) || string.IsNullOrWhiteSpace(conditionId))
+            {
+                return;
+            }
+
+            if (!container.TryGetValue(key, out var list))
+            {
+                list = new List<MissionObjectiveBinding>();
+                container[key] = list;
+            }
+
+            if (list.Any(binding => binding.QuestId == questId && binding.ConditionId == conditionId))
+            {
+                return;
+            }
+
+            list.Add(new MissionObjectiveBinding
+            {
+                MissionId = missionId,
+                QuestId = questId,
+                ConditionId = conditionId,
+                Optional = optional,
+            });
+        }
+
+        private static void AddGlobalEventBinding(string key, string missionId, string questId, string conditionId, bool optional)
+        {
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                return;
+            }
+
+            if (!globalEventBindings.TryGetValue(key, out var list))
+            {
+                list = new List<MissionObjectiveBinding>();
+                globalEventBindings[key] = list;
+            }
+
+            if (list.Any(binding => binding.MissionId == missionId && binding.QuestId == questId && binding.ConditionId == conditionId))
+            {
+                return;
+            }
+
+            list.Add(new MissionObjectiveBinding
+            {
+                MissionId = missionId,
+                QuestId = questId,
+                ConditionId = conditionId,
+                Optional = optional,
+            });
         }
         public ScSyncAllMission ToProto()
         {
@@ -111,6 +252,151 @@ namespace Campofinale.Game.MissionSys
                 quests=quests,
                 blocMissionState = blocMissionState,
             });
+        }
+
+        public void HandleMissionEventTrigger(string missionId, string eventName, IDictionary<string, DynamicParameter> properties)
+        {
+            EnsureMissionEventBindings();
+
+            if (string.IsNullOrWhiteSpace(eventName))
+            {
+                Logger.PrintWarn("[Mission] Received mission event trigger with empty event name");
+                return;
+            }
+
+            List<MissionObjectiveBinding> candidateBindings = new();
+            HashSet<string> processedBindings = new();
+
+            if (!string.IsNullOrWhiteSpace(missionId) && missionEventBindings.TryGetValue(missionId, out var missionMap) && missionMap.TryGetValue(eventName, out var missionSpecificBindings))
+            {
+                candidateBindings.AddRange(missionSpecificBindings);
+            }
+
+            if (candidateBindings.Count == 0 && globalEventBindings.TryGetValue(eventName, out var globalBindingsForEvent))
+            {
+                if (string.IsNullOrWhiteSpace(missionId))
+                {
+                    candidateBindings.AddRange(globalBindingsForEvent);
+                }
+                else
+                {
+                    candidateBindings.AddRange(globalBindingsForEvent.Where(binding => string.Equals(binding.MissionId, missionId, StringComparison.OrdinalIgnoreCase)));
+                }
+            }
+
+            if (candidateBindings.Count == 0)
+            {
+                Logger.PrintWarn($"[Mission] No objective binding found for event '{eventName}'{(string.IsNullOrWhiteSpace(missionId) ? string.Empty : $" within mission '{missionId}'")}");
+                return;
+            }
+
+            HashSet<string> questsToUpdate = new();
+            bool anyProgressUpdated = false;
+
+            foreach (var binding in candidateBindings)
+            {
+                if (!string.IsNullOrWhiteSpace(missionId) && !string.Equals(binding.MissionId, missionId, StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                string bindingKey = $"{binding.MissionId}|{binding.QuestId}|{binding.ConditionId}";
+                if (!processedBindings.Add(bindingKey))
+                {
+                    continue;
+                }
+
+                GameMission missionInstance = GetMissionById(binding.MissionId);
+                if (missionInstance == null)
+                {
+                    continue;
+                }
+
+                if (missionInstance.state == MissionState.Completed || missionInstance.state == MissionState.Failed)
+                {
+                    continue;
+                }
+
+                GameQuest quest = GetQuestById(binding.QuestId);
+                if (quest == null)
+                {
+                    Logger.PrintWarn($"[Quest] Quest {binding.QuestId} not found when processing mission event '{eventName}'");
+                    continue;
+                }
+
+                MissionDataTable.QuestInfo questData = GetQuestData(binding.QuestId);
+                if (questData == null)
+                {
+                    Logger.PrintError($"[Quest] Quest data {binding.QuestId} not found when processing mission event '{eventName}'");
+                    continue;
+                }
+
+                quest.objectiveProgress ??= new Dictionary<string, int>();
+                if (!quest.objectiveProgress.ContainsKey(binding.ConditionId))
+                {
+                    quest.objectiveProgress[binding.ConditionId] = 0;
+                }
+
+                if (quest.state == QuestState.Available)
+                {
+                    ProcessQuest(quest.questId);
+                    quest = GetQuestById(binding.QuestId) ?? quest;
+                }
+
+                int delta = ExtractProgressDelta(binding.ConditionId, properties);
+                if (delta <= 0)
+                {
+                    delta = 1;
+                }
+
+                int currentValue = quest.objectiveProgress.GetValueOrDefault(binding.ConditionId, 0);
+                quest.objectiveProgress[binding.ConditionId] = checked(currentValue + delta);
+
+                questsToUpdate.Add(quest.questId);
+                anyProgressUpdated = true;
+            }
+
+            if (!anyProgressUpdated)
+            {
+                return;
+            }
+
+            foreach (string questId in questsToUpdate)
+            {
+                GameQuest quest = GetQuestById(questId);
+                if (quest == null)
+                {
+                    continue;
+                }
+
+                MissionDataTable.QuestInfo questData = GetQuestData(questId);
+                if (questData == null)
+                {
+                    Logger.PrintError($"[Quest] Quest data {questId} missing during post-update mission event processing");
+                    continue;
+                }
+
+                ScQuestObjectivesUpdate objectivesUpdate = BuildObjectivesUpdate(quest, questData);
+                owner.Send(ScMsgId.ScQuestObjectivesUpdate, objectivesUpdate);
+
+                bool completed = CheckQuestComplete(quest, questData);
+                if (completed)
+                {
+                    CompleteQuest(questId);
+                }
+                else if (quest.state == QuestState.Processing)
+                {
+                    ScQuestStateUpdate stateUpdate = new()
+                    {
+                        QuestId = quest.questId,
+                        QuestState = (int)quest.state,
+                        RoleBaseInfo = owner.GetRoleBaseInfo(),
+                    };
+                    owner.Send(ScMsgId.ScQuestStateUpdate, stateUpdate);
+                }
+            }
+
+            Save();
         }
         public void Load()
         {
@@ -362,6 +648,8 @@ namespace Campofinale.Game.MissionSys
 
                 // Give quest rewards
                 GiveRewards(data.rewardId);
+
+                EvaluateMissionCompletionForQuest(id);
             }
         }
 
@@ -632,6 +920,60 @@ namespace Campofinale.Game.MissionSys
             };
         }
 
+        private void EvaluateMissionCompletionForQuest(string questId)
+        {
+            if (string.IsNullOrWhiteSpace(questId) || ResourceManager.missionDataTable == null)
+            {
+                return;
+            }
+
+            foreach (var missionData in ResourceManager.missionDataTable)
+            {
+                if (missionData?.questDic == null || string.IsNullOrWhiteSpace(missionData.missionId))
+                {
+                    continue;
+                }
+
+                if (!missionData.questDic.ContainsKey(questId))
+                {
+                    continue;
+                }
+
+                GameMission mission = GetMissionById(missionData.missionId);
+                if (mission == null)
+                {
+                    continue;
+                }
+
+                if (mission.state == MissionState.Completed)
+                {
+                    continue;
+                }
+
+                bool allRequiredCompleted = true;
+
+                foreach (var questEntry in missionData.questDic.Values)
+                {
+                    if (questEntry.optional)
+                    {
+                        continue;
+                    }
+
+                    GameQuest questInstance = GetQuestById(questEntry.questId);
+                    if (questInstance != null && questInstance.state != QuestState.Completed)
+                    {
+                        allRequiredCompleted = false;
+                        break;
+                    }
+                }
+
+                if (allRequiredCompleted)
+                {
+                    CompleteMission(missionData.missionId);
+                }
+            }
+        }
+
         public bool CheckQuestComplete(GameQuest quest, MissionDataTable.QuestInfo data)
         {
             // Check if objectiveConditionNum is specified (complete N objectives)
@@ -684,6 +1026,77 @@ namespace Campofinale.Game.MissionSys
             }
 
             return upd;
+        }
+
+        private static int ExtractProgressDelta(string conditionId, IDictionary<string, DynamicParameter> properties)
+        {
+            if (properties == null || properties.Count == 0)
+            {
+                return 1;
+            }
+
+            if (!string.IsNullOrWhiteSpace(conditionId) && properties.TryGetValue(conditionId, out var conditionParam))
+            {
+                return ExtractDynamicParameterValue(conditionParam, 1);
+            }
+
+            if (properties.TryGetValue("value", out var valueParam))
+            {
+                return ExtractDynamicParameterValue(valueParam, 1);
+            }
+
+            if (properties.TryGetValue("Value", out var upperValueParam))
+            {
+                return ExtractDynamicParameterValue(upperValueParam, 1);
+            }
+
+            if (properties.TryGetValue("count", out var countParam))
+            {
+                return ExtractDynamicParameterValue(countParam, 1);
+            }
+
+            if (properties.TryGetValue("Count", out var upperCountParam))
+            {
+                return ExtractDynamicParameterValue(upperCountParam, 1);
+            }
+
+            DynamicParameter firstParam = properties.Values.FirstOrDefault();
+            if (firstParam != null)
+            {
+                return ExtractDynamicParameterValue(firstParam, 1);
+            }
+
+            return 1;
+        }
+
+        private static int ExtractDynamicParameterValue(DynamicParameter parameter, int defaultValue)
+        {
+            if (parameter == null)
+            {
+                return defaultValue;
+            }
+
+            if (parameter.ValueIntList != null && parameter.ValueIntList.Count > 0)
+            {
+                return checked((int)parameter.ValueIntList[0]);
+            }
+
+            if (parameter.ValueFloatList != null && parameter.ValueFloatList.Count > 0)
+            {
+                return (int)Math.Round(parameter.ValueFloatList[0]);
+            }
+
+            if (parameter.ValueBoolList != null && parameter.ValueBoolList.Count > 0)
+            {
+                return parameter.ValueBoolList[0] ? 1 : 0;
+            }
+
+            if (parameter.ValueStringList != null && parameter.ValueStringList.Count > 0 && int.TryParse(parameter.ValueStringList[0], out int parsedValue))
+            {
+                return parsedValue;
+            }
+
+            return defaultValue;
         }
     }
 

@@ -2,8 +2,12 @@
 You are sure to know how to use it.
 No? then leave.
 
-Current job: Solve TODOs in code. 
+Current job: Implement important game modules.
+ - [x] ~Mission system~
+ - [ ] Factory 
+ - [ ] Interactive (Unable to get full event list now, difficult to do)
 
+TODOs in code: 
 - [x] ~Campofinale/Game/Spaceship/SpaceshipManager.cs: Cost item and increase chara favorability when gifting~
 - [ ] Campofinale/Game/Inventory/Item.cs: Count costWeaponIds exp when upgrading
 - [ ] Campofinale/Game/Inventory/InventoryManager.cs: Complete drops logic 

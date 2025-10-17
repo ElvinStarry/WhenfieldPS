@@ -20,8 +20,7 @@ namespace Campofinale.Packets.Cs
             };
             session.Send(ScMsgId.ScMissionEventTrigger, rsp, packet.csHead.UpSeqid);
 
-            // TODO: Implement event-based quest progression logic
-            // This could trigger quest updates, unlock new quests, etc.
+            session.missionSystem.HandleMissionEventTrigger(req.MissionId, req.EventName, req.Properties);
         }
     }
 }

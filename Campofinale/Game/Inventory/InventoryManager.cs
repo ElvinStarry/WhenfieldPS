@@ -82,7 +82,7 @@ namespace Campofinale.Game.Inventory
                     else
                     {
                         owner.sceneManager.CreateDrop(pos, bundle);
-                        //TODO drops
+                        //TODO drops - after interactive implemented
                     }
                 }
                 owner.Send(Protocol.ScMsgId.ScRewardToastBegin, begin);
