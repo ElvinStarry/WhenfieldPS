@@ -169,6 +169,58 @@ namespace Campofinale.Database
             };
             UpsertPlayerData(data);
         }
+        public bool ResetAccount(Account account)
+        {
+            if (account == null)
+            {
+                return false;
+            }
+
+            PlayerData playerData = GetPlayerById(account.id);
+            ulong roleId = playerData?.roleId ?? 0;
+
+            _database.GetCollection<PlayerData>("players").DeleteMany(p => p.accountId == account.id);
+
+            if (roleId != 0)
+            {
+                _database.GetCollection<MissionData>("missionsData").DeleteMany(m => m.roleId == roleId);
+                _database.GetCollection<AdventureBookData>("adventureBookData").DeleteMany(a => a.roleId == roleId);
+                _database.GetCollection<FactoryData>("factory").DeleteMany(f => f.roleId == roleId);
+                _database.GetCollection<Item>("items").DeleteMany(i => i.owner == roleId);
+                _database.GetCollection<Character>("avatars").DeleteMany(c => c.owner == roleId);
+                _database.GetCollection<SpaceshipChar>("spaceship_chars").DeleteMany(s => s.owner == roleId);
+                _database.GetCollection<SpaceshipRoom>("spaceship_rooms").DeleteMany(s => s.owner == roleId);
+                _database.GetCollection<Mail>("mails").DeleteMany(m => m.owner == roleId);
+                _database.GetCollection<GachaTransaction>("gachas").DeleteMany(g => g.ownerId == roleId);
+            }
+
+            return true;
+        }
+        public (string, int) ResetAccount(string username)
+        {
+            Account account = GetAccountByUsername(username);
+            if (account == null)
+            {
+                return ($"Account with username: {username} not found", 1);
+            }
+
+            ResetAccount(account);
+            Logger.Print($"Account with username: {username} has been reset");
+            return ($"Account with username: {username} has been reset", 0);
+        }
+        public (string, int) DeleteAccount(string username)
+        {
+            Account account = GetAccountByUsername(username);
+            if (account == null)
+            {
+                return ($"Account with username: {username} not found", 1);
+            }
+
+            ResetAccount(account);
+            _database.GetCollection<Account>("accounts").DeleteOne(a => a.id == account.id);
+            Logger.Print($"Account with username: {username} has been deleted");
+            return ($"Account with username: {username} has been deleted", 0);
+        }
         public (string,int) CreateAccount(string username)
         {
             Account exist = GetAccountByUsername(username);
