@@ -23,7 +23,7 @@ class Program
     private static void FakeClientTester()
     {
         //beyond-ric.gryphline.com
-        string serverIp = "beyond-euandus.gryphline.com"; 
+        string serverIp = "beyond-euandus-exhibition.gryphline.com"; 
         int serverPort = 30000;
         Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
@@ -32,7 +32,7 @@ class Program
         IPAddress ipAddress = addresses[0];
 
         socket.Connect(new IPEndPoint(ipAddress, serverPort));
-
+        //CBT 3 info we got: Proto body encrypted, Packet format seem the same, Cmd Id is not encrypted and is not shuffled
          socket.Send(Packet.EncodePacket((int)CsMsgId.CsLogin,new CsLogin() { ClientVersion="0.5.5",Uid= "", Token= "", Env=EnvType.Prod,PlatformId=ClientPlatformType.Windows,Area=AreaType.Oversea,ClientResVersion="", LoginToken= "" }.ToByteArray()));
         //socket.Send(Packet.EncodePacket((int)CsMsgId.CsFriendListSync, new CsFriendListSync() { }.ToByteArray()));
         
@@ -64,8 +64,10 @@ class Program
                             Console.WriteLine(JsonConvert.SerializeObject(p1));
                             break;
                         case ScMsgId.ScNtfErrorCode:
-                            ScNtfErrorCode p2 = ScNtfErrorCode.Parser.ParseFrom(packet.finishedBody);
-                            Console.WriteLine(JsonConvert.SerializeObject(p2));
+                            //ScNtfErrorCode p2 = ScNtfErrorCode.Parser.ParseFrom(packet.finishedBody);
+                            //Console.WriteLine(JsonConvert.SerializeObject(p2));
+                            string base642 = Convert.ToBase64String(packet.finishedBody);
+                            Console.WriteLine($"{(ScMsgId)packet.cmdId}: {base642}");
                             break;
                         default:
                             string base64 = Convert.ToBase64String(packet.finishedBody);
