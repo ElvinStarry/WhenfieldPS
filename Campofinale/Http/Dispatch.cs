@@ -135,7 +135,7 @@ namespace Campofinale.Http
 
             await ctx.Response.SendAsync(resp);
         }
-        [StaticRoute(HttpServerLite.HttpMethod.GET, "/api/remote_config/get_remote_config/1003/prod-cbt/default/default/network_config")]
+        [StaticRoute(HttpServerLite.HttpMethod.GET, "/api/remote_config/get_remote_config/1003/prod-cbt3/default/default/network_config")]
         public static async Task network_config(HttpContext ctx)
         {
             string resp = "{\"asset\":\"https://beyond.hg-cdn.com/asset/\",\"hgage\":\"\",\"sdkenv\":\"2\",\"u8root\":\"https://u8.gryphline.com/u8\",\"appcode\":4,\"channel\":\"prod\",\"netlogid\":\"GFz8RRMDN45w\",\"gameclose\":false,\"netlogurl\":\"http://native-log-collect.gryphline.com:32000/\",\"accounturl\":\"https://binding-api-account-prod.gryphline.com\",\"launcherurl\":\"https://launcher.gryphline.com\"}";
@@ -147,10 +147,10 @@ namespace Campofinale.Http
             await ctx.Response.SendAsync(resp);
         }
         
-        [StaticRoute(HttpServerLite.HttpMethod.GET, "/api/remote_config/get_remote_config/1003/prod-cbt/default/Windows/game_config")]
+        [StaticRoute(HttpServerLite.HttpMethod.GET, "/api/remote_config/get_remote_config/1003/prod-cbt3/default/Windows/game_config")]
         public static async Task game_config(HttpContext ctx)
         {
-            string resp = "{\"mockLogin\": false, \"selectSrv\": false, \"enableHotUpdate\": true, \"enableEntitySpawnLog\": false, \"enableCBT2AccessForbidden\": false}";
+            string resp = "{\"enableHotUpdate\": true, \"memorypackLowIOEnable\": true, \"enableIFixHotKeyReload\": true, \"enableFastSimulatePhysXFix\": true}";
 
             ctx.Response.StatusCode = 200;
             ctx.Response.ContentLength = resp.Length;
@@ -158,7 +158,7 @@ namespace Campofinale.Http
 
             await ctx.Response.SendAsync(resp);
         }
-        [StaticRoute(HttpServerLite.HttpMethod.GET, "/api/remote_config/get_remote_config/1003/prod-cbt/default/Windows/res_version")]
+        [StaticRoute(HttpServerLite.HttpMethod.GET, "/api/remote_config/get_remote_config/1003/prod-cbt3/default/Windows/res_version")]
         public static async Task os_windows_res_version(HttpContext ctx)
         {
 
@@ -226,7 +226,7 @@ namespace Campofinale.Http
 
         
         
-        [StaticRoute(HttpServerLite.HttpMethod.GET, "/api/remote_config/get_remote_config/1003/prod-cbt/default/default/server_config_EUAndUS")]
+        [StaticRoute(HttpServerLite.HttpMethod.GET, "/api/remote_config/get_remote_config/1003/prod-cbt3/default/default/server_config_EUAndUS")]
         public static async Task server_config_EUAndUS(HttpContext ctx)
         {
             string requestBody = ctx.Request.DataAsString;
@@ -288,7 +288,7 @@ namespace Campofinale.Http
         }
 
         //ANDROID
-        [StaticRoute(HttpServerLite.HttpMethod.GET, "/api/remote_config/get_remote_config/1003/prod-cbt/default/Android/res_version")]
+        [StaticRoute(HttpServerLite.HttpMethod.GET, "/api/remote_config/get_remote_config/1003/prod-cbt3/default/Android/res_version")]
         public static async Task os_android_res_version(HttpContext ctx)
         {
 
@@ -301,7 +301,7 @@ namespace Campofinale.Http
 
             await ctx.Response.SendAsync(resp);
         }
-        [StaticRoute(HttpServerLite.HttpMethod.GET, "/api/remote_config/get_remote_config/1003/prod-cbt/default/Android/game_config")]
+        [StaticRoute(HttpServerLite.HttpMethod.GET, "/api/remote_config/get_remote_config/1003/prod-cbt3/default/Android/game_config")]
         public static async Task game_config_os_android(HttpContext ctx)
         {
             string resp = "{\"mockLogin\": false, \"selectSrv\": false, \"enableHotUpdate\": true, \"enableNpcOptimize\": false, \"enableEntitySpawnLog\": false, \"enableCBT2AccessForbidden\": false, \"enableMobileFullScreenWaterMark\": false}";

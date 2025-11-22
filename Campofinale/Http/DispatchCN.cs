@@ -52,7 +52,7 @@ namespace Campofinale.Http
         [StaticRoute(HttpServerLite.HttpMethod.GET, "/api/remote_config/get_remote_config/3/prod-cbt/default/Windows/game_config")]
         public static async Task game_config_cn_windows(HttpContext ctx)
         {
-            string resp = "{\"mockLogin\": false, \"selectSrv\": false, \"enableHotUpdate\": true, \"enableEntitySpawnLog\": false, \"enableCBT2AccessForbidden\": false}";
+            string resp = "{\"enableHotUpdate\": true, \"memorypackLowIOEnable\": true, \"enableIFixHotKeyReload\": true}";
 
             ctx.Response.StatusCode = 200;
             ctx.Response.ContentLength = resp.Length;
