@@ -186,13 +186,13 @@ namespace Campofinale.Packets.Cs
             session.Send(ScMsgId.ScSettlementSyncAll, settlements);
             session.Send(new PacketScSyncAllRoleScene(session));
             session.Send(new PacketScGameMechanicsSync(session));
-            //session.Send(new PacketScSyncAllBloc(session));
+            session.Send(new PacketScFriendPersonalDataSync(session));
             session.Send(new PacketScSyncWallet(session));
             session.Send(new PacketScSyncAllGameVar(session));
             session.Send(new PacketScSyncAllUnlock(session));
             session.Send(new PacketScSyncAllBitset(session));
             session.Send(new PacketScSyncAllMiniGame(session));
-           
+            session.Send(new PacketScFriendListSimpleSync(session));
             string json = File.ReadAllText("93_ScSceneMapMarkSync.json");
             ScSceneMapMarkSync chapter = Newtonsoft.Json.JsonConvert.DeserializeObject<ScSceneMapMarkSync>(json);
             session.Send(ScMsgId.ScSceneMapMarkSync, chapter);

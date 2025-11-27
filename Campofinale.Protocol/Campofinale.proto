@@ -1575,8 +1575,9 @@ message FriendFriendUserInfo {
 }
 
 message FriendFriendInfo {
-  FriendFriendUserInfo friend_user_info = 1;
-  int64 create_time = 2;
+  FriendFriendUserInfo friendUserInfo = 1;
+  int64 createTime = 2;
+  string remarkName = 3;
 }
 
 message FriendRequestInfo {
@@ -4432,14 +4433,88 @@ enum Gender {
 }
 
 message ScSyncBaseData {
-  uint64 roleid = 1;
-  string role_name = 2;
-  uint32 level = 3;
-  uint32 exp = 4;
-  string short_id = 7;
-  Gender gender = 8;
+  int64 createTs = 1;
+  bytes clientSetting = 2;
+  uint64 roleid = 3;
+  Gender gender = 4;
+  uint32 level = 5;
+  uint32 exp = 6;
+  string shortId = 7;
+  string roleName = 8;
+  int64 createTsDisplay = 9;
+}
+message ScFriendPersonalDataSync {
+  FriendPersonalData data = 1;
+}
+message CsFriendChatListSimpleSync {
+  FriendChatListSimpleSyncType type = 1;
+}
+enum FriendChatListSimpleSyncType {
+  CHAT_LIST_SIMPLE_SYNC_DEFAULT = 0;
+  CHAT_LIST_SIMPLE_SYNC_THIRD_LOGIN = 1;
 }
 
+message ScFriendChatListSimpleSync {
+  repeated ScdFriendChatListData dataList = 1;
+  int32 dailySocialBuildingShareCnt = 2;
+}
+message ScdFriendChatListData {
+  uint64 roleId = 1;
+  uint32 readIndex = 2;
+  uint32 newestIndex = 3;
+  FriendChatListSimpleSyncType dataType = 10;
+}
+message ScFriendListSimpleSync {
+  repeated ScdFriendFriendSimpleInfo friendList = 1;
+}
+message ScFriendListQuery {
+  repeated FriendFriendInfo friendList = 1;
+}
+message ScdFriendFriendSimpleInfo {
+  uint64 roleId = 1;
+  int64 lastLogoutTime = 2;
+  bool online = 3;
+  uint32 adventureLevel = 4;
+  int64 createTime = 5;
+  bool helpFlag = 6;
+  bool clueFlag = 7;
+  string name = 8;
+  string remarkName = 9;
+  FriendSpaceshipHelpStatus helpStatus = 10;
+  bool guestRoomUnlock = 11;
+  string shortId = 12;
+  string signature = 13;
+  int32 userAvatarId = 14;
+  int32 userAvatarFrameId = 15;
+  int32 businessCardTopicId = 16;
+  HgThirdAccountType lastLoginType = 20;
+  ThirdAccountData thirdAccountData = 21;
+}
+message ThirdAccountData {
+  HgThirdAccountType thirdAccountDataType = 1;
+}
+message ThirdAccountDataPsn {
+  string accountId = 1;
+  string onlineId = 2;
+}
+enum HgThirdAccountType {
+  ACCOUNT_TYPE_DEFAULT = 0;
+  ACCOUNT_TYPE_PSN = 1;
+}
+enum FriendSpaceshipHelpStatus {
+  FRIEND_SPACESHIP_HELP_STATUS_INVALID = 0;
+  FRIEND_SPACESHIP_HELP_STATUS_CAN_HELP = 1;
+  FRIEND_SPACESHIP_HELP_STATUS_HELPED = 2;
+}
+message FriendPersonalData {
+  int32 userAvatarId = 1;
+  int32 userAvatarFrameId = 2;
+  int32 businessCardTopicId = 3;
+  string signature = 4;
+  repeated uint64 charList = 5;
+  bool businessCardExpandFlag = 20;
+  bool psnOnly = 30;
+}
 message ScNtfErrorCode {
   int32 error_code = 1;
   string details = 2;
