@@ -434,21 +434,22 @@ message BattleClientOpData {
   uint64 owner_id = 1;
   BattleActionOperateType op_type = 2;
   uint32 generation = 3;
-  int32 chapter_map_id = 17;
+  int32 chapter_map_id = 4;
   oneof op_data_impl {
-    BattleAddBuffOpData add_buff_op_data = 4;
-    BattleFinishBuffOpData finish_buff_op_data = 5;
-    BattleSkillAttachOpData skill_attach_op_data = 6;
-    BattleSkillDetachOpData skill_detach_op_data = 7;
-    BattleSkillStartCastOpData skill_start_cast_op_data = 8;
-    BattleSkillEndCastOpData skill_end_cast_op_data = 9;
-    BattleSwitchModeOpData skill_switch_mode_op_data = 10;
-    BattleTriggerActionOpData trigger_action_op_data = 11;
-    BattleUpdateHubOpData update_hub_op_data = 12;
-    BattleEntityDieOpData entity_die_op_data = 13;
-    BattleEntityValueModifyData entity_value_modify_data = 14;
-    BattleResetBattleDataOpData reset_battle_op_data = 15;
-    BattleUpdateDataVersionOpData update_data_version_op_data = 16;
+    BattleAddBuffOpData add_buff_op_data = 101;
+    BattleFinishBuffOpData finish_buff_op_data = 102;
+    BattleSkillAttachOpData skill_attach_op_data = 103;
+    BattleSkillDetachOpData skill_detach_op_data = 104;
+    //skill_enable_op_data = 105;
+    BattleSkillStartCastOpData skill_start_cast_op_data = 106;
+    BattleSkillEndCastOpData skill_end_cast_op_data = 107;
+    BattleSwitchModeOpData skill_switch_mode_op_data = 108;
+    BattleTriggerActionOpData trigger_action_op_data = 109;
+    //BattleUpdateHubOpData update_hub_op_data = 109;
+    BattleEntityDieOpData entity_die_op_data = 110;
+    BattleEntityValueModifyData entity_value_modify_data =111;
+    BattleResetBattleDataOpData reset_battle_op_data = 112;
+    BattleUpdateDataVersionOpData update_data_version_op_data =113;
   }
 }
 
@@ -1360,27 +1361,42 @@ message BattleSequenceRes {
 }
 
 message ServerBuff {
-  string buff_id = 1;
+  TemplateId buff_id = 1;
   uint64 inst_id = 2;
   BattleBlackboard blackboard = 3;
 }
-
+message TemplateId {
+  oneof type {
+    string strId=1;
+    int32 intId=2;
+  }
+}
 message ServerSkill {
-  string skill_id = 1;
+  TemplateId skill_id = 1;
   uint64 inst_id = 2;
   int32 potential_lv = 3;
   int32 level = 4;
   BattleBlackboard blackboard = 5;
   BattleSkillSource source = 6;
   repeated string talent_node_ids = 7;
+  bool isServerInit = 8;
+  bool isEnable = 9;
+  bool isPassive = 10;
 }
 
 message BattleMgrInfo {
   repeated ServerBuff buff_list = 1;
   repeated ServerSkill skill_list = 2;
   uint32 msg_generation = 3;
+  repeated ServerBuffStackingGroup stackingGroupList = 5;
+  BattlePartInstInfo partInstInfo = 6;
 }
+message BattlePartInstInfo {
+  map<string, uint64> partIdToInstId = 1;
+}
+message ServerBuffStackingGroup{
 
+}
 message DynamicParameter {
   int32 value_type = 1;
   int32 real_type = 2;
@@ -5171,6 +5187,8 @@ message SceneObjectCommonInfo {
   uint64 belong_level_script_id = 6;
   int32 scene_num_id = 7;
   double hp = 8;
+  uint32 belong_script_slot_id = 9;
+  bool is_battle_create = 10;
 }
 
 message SceneCharacter {
@@ -5330,7 +5348,6 @@ message ScSelfSceneInfo {
   int32 self_info_reason = 9;
   repeated string unlock_area = 10;
   repeated SceneDrop drop_list = 14;
-  int32 scene_grade = 15;
   ScdSceneTeamInfo team_info = 16;
   oneof scene_impl {
     SceneImplDungeon dungeon = 11;

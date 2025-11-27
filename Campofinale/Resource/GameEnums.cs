@@ -519,7 +519,8 @@
         SlrReviveByItem = 4,
         SlrResetDungeon = 5,
         SlrSeamlesslyEnterScene = 6,
-        SlrSeamlesslyTouchScene = 7
+        SlrSeamlesslyTouchScene = 7,
+        SlrChangeTeamByNpcTeammates = 8,
     }
     public enum TalentNodeType // TypeDefIndex: 33688
     {

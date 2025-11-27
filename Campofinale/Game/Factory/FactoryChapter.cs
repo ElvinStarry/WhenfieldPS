@@ -95,12 +95,14 @@ namespace Campofinale.Game.Factory
             blackboard.power.powerSaveCurrent = bandwidth;
             domainDataTable[chapterId].levelGroup.ForEach(levelGroup =>
             {
-                int grade = GetOwner().sceneManager.GetScene(GetSceneNumIdFromLevelData(levelGroup)).grade;
-                LevelGradeInfo sceneGrade = ResourceManager.levelGradeTable[levelGroup].grades.Find(g => g.grade == grade);
-                if (sceneGrade != null)
+                try
                 {
-                    blackboard.power.powerGen += sceneGrade.bandwidth;
-                    blackboard.power.powerSaveMax += sceneGrade.bandwidth;
+                    int grade = 1;
+                    /* LevelGradeInfo sceneGrade = ResourceManager.levelGradeTable[levelGroup].grades.Find(g => g.grade == grade);
+                     if (sceneGrade != null)
+                     {*/
+                    blackboard.power.powerGen += 1;
+                    blackboard.power.powerSaveMax += 1;
 
                     var scene = new ScdFactorySyncScene()
                     {
@@ -109,11 +111,11 @@ namespace Campofinale.Game.Factory
                         Bandwidth = new()
                         {
                             Current = 0,
-                            Max = sceneGrade.bandwidth,
-                            TravelPoleMax = sceneGrade.travelPoleLimit,
-                            
+                            Max = 1,
+                            TravelPoleMax = 111,
+
                             BattleCurrent = 0,
-                            BattleMax = sceneGrade.battleBuildingLimit,
+                            BattleMax = 11,
                         },
                         Settlements =
                         {
@@ -127,7 +129,7 @@ namespace Campofinale.Game.Factory
                     };
                     int index = 0;
                     LevelScene scen = GetLevelData(GetSceneNumIdFromLevelData(levelGroup));
-                    foreach (var reg in scen.levelData.factoryRegions)
+                    /*foreach (var reg in scen.levelData.factoryRegions)
                     {
                         foreach (var area in reg.areas)
                         {
@@ -160,9 +162,16 @@ namespace Campofinale.Game.Factory
                             }
 
                         }
-                    }
+                    }*/
                     chapter.Scenes.Add(scene);
                 }
+                catch (Exception ex)
+                {
+
+                }
+                
+                /* }
+             */
 
             });
             try
