@@ -4353,19 +4353,16 @@ message ScItemBagChgSpaceshipChapter {
 }
 
 message CsLogin {
-  string uid = 1;
-  string token = 2;
-  string channel = 3;
-  int32 server_group = 4;
-  uint64 last_recv_down_seqid = 5;
-  string client_version = 6;
-  string client_res_version = 7;
-  bytes client_public_key = 8;
-  ClientPlatformType platform_id = 9;
-  AreaType area = 10;
-  EnvType env = 11;
-  int32 pay_platform = 12;
-  string login_token = 13;
+  string uid = 5; //
+  string token = 6;//
+  string channel = 1;//
+  string client_version = 3;//
+  string client_res_version = 2;//
+  string client_public_key = 7;//
+  ClientPlatformType platform_id = 8;//
+  AreaType area = 9; //
+  EnvType env = 12;//
+  int32 client_language = 16;//
 }
 
 enum ClientPlatformType {
@@ -4391,17 +4388,19 @@ enum EnvType {
 }
 
 message ScLogin {
-  string uid = 1;
-  bool is_first_login = 2;
-  bytes server_public_key = 3;
-  bytes server_encryp_nonce = 4;
-  uint64 last_recv_up_seqid = 5;
-  bool is_reconnect = 6;
-  bool is_enc = 7;
-  bool is_client_reconnect = 8;
-  int64 server_time = 9;
-  int32 server_time_zone = 10;
-  string login_token = 11;
+  string uid = 1; //
+  string login_token = 2; //
+  bool is_first_login = 6; //
+  bytes server_public_key = 3;//
+  bytes server_encryp_nonce = 4;//
+  uint64 last_recv_up_seqid = 9;//
+  bool is_reconnect = 7;//
+  //bool is_enc = 7; 
+  bool is_client_reconnect = 5; //
+  int64 server_time = 8; //
+  int32 server_time_zone = 10;//
+  int32 server_area_type = 12; //
+  
 }
 
 message CsCreateRole {
