@@ -186,14 +186,13 @@ namespace Campofinale.Packets.Cs
             session.Send(ScMsgId.ScSettlementSyncAll, settlements);
             session.Send(new PacketScSyncAllRoleScene(session));
             session.Send(new PacketScGameMechanicsSync(session));
-            session.Send(new PacketScFriendPersonalDataSync(session));
+            
             session.Send(new PacketScSyncWallet(session));
             session.Send(new PacketScSyncAllGameVar(session));
             session.Send(new PacketScSyncAllUnlock(session));
             session.Send(new PacketScSyncAllBitset(session));
             session.Send(new PacketScSyncAllMiniGame(session));
-            session.Send(new PacketScFriendListSimpleSync(session));
-            session.Send(new PacketScFriendListQuery(session));
+
             session.Send(new PacketScShopSync(session));
             session.Send(new PacketScAchieveSync(session));
             string json = File.ReadAllText("93_ScSceneMapMarkSync.json");
@@ -210,7 +209,32 @@ namespace Campofinale.Packets.Cs
             session.Send(new PacketScSpaceshipSync(session));
             session.Send(new PacketScSyncFullDungeonStatus(session));
             session.Send(new PacketScActivitySync(session));
-            session.Send(ScMsgId.ScDomainDevelopmentSystemSync, new ScDomainDevelopmentSystemSync() { });
+            session.Send(ScMsgId.ScDomainDevelopmentSystemSync, new ScDomainDevelopmentSystemSync() {
+
+                Domains =
+                {
+                    new DomainDevelopment()
+                    {
+                        ChapterId="domain_1",
+                        DevDegree = new()
+                        {
+                            Level=1,
+                            
+                        },
+                        
+                    },
+                    new DomainDevelopment()
+                    {
+                        ChapterId="domain_2",
+                        DevDegree = new()
+                        {
+                            Level=1,
+
+                        },
+
+                    }
+                }
+            });
             session.Send(ScMsgId.ScSyncAllWiki, new ScSyncAllWiki()
             {
                 
@@ -218,6 +242,9 @@ namespace Campofinale.Packets.Cs
             session.Send(ScMsgId.ScPaySyncCashShops, new ScPaySyncCashShops() { ShopMgr=new()});
             session.Send(new PacketScSnsGetChatList(session));
             session.Send(ScMsgId.ScSyncFullDataEnd, new ScSyncFullDataEnd());
+            session.Send(new PacketScFriendListSimpleSync(session));
+            //session.Send(new PacketScFriendListQuery(session));
+            session.Send(new PacketScFriendPersonalDataSync(session));
             session.EnterScene();
             session.Initialized = true;
             session.Update();

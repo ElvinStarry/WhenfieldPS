@@ -17,7 +17,7 @@ namespace Campofinale.Packets.Sc
                 {
                     new ScdFriendFriendSimpleInfo()
                     {
-                        AdventureLevel=1,
+                        AdventureLevel=3,
                         Name=client.nickname,
                         Online=true,
                         RoleId=(ulong)client.roleId,
@@ -25,6 +25,7 @@ namespace Campofinale.Packets.Sc
                         RemarkName=client.nickname,
                         UserAvatarFrameId=3,
                         UserAvatarId=8,
+                        BusinessCardTopicId= 9,
                         ShortId="1",
                         ThirdAccountData = new()
                         {

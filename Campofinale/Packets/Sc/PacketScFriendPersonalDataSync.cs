@@ -15,6 +15,8 @@ namespace Campofinale.Packets.Sc
                     Signature="Campofinale!!",
                     UserAvatarFrameId=3,
                     UserAvatarId=8,
+                    BusinessCardTopicId= 9,
+                    CharList ={ 0},
                     
                 }
 

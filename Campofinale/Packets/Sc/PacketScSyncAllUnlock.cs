@@ -9,16 +9,10 @@ namespace Campofinale.Packets.Sc
 
         public PacketScSyncAllUnlock(Player client) {
 
-            List<int> toBlock=new List<int>()
-            {
-                (int)UnlockSystemType.Activity,
-                (int)UnlockSystemType.DomainShop,
-                (int)UnlockSystemType.Friend
-
-            };
+           
             ScSyncAllUnlock unlock = new()
             {
-                UnlockSystems = {client.unlockedSystems.Except(toBlock)},
+                UnlockSystems = {client.unlockedSystems},
                 
             };
             

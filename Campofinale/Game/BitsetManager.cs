@@ -35,7 +35,7 @@ namespace Campofinale.Game
                 2267743508524
             };
             LongBitSet readActiveBlackbox = new LongBitSet(hardcodedReadActiveBlackbox.ToArray());
-            foreach (int v in  strIdNumTable.area_id.dic.Values)
+            foreach (int v in  strIdNumTable.chapter_map_id.dic.Values)
             {
                 AddValue(BitsetType.LevelHaveBeen, v);
             }
