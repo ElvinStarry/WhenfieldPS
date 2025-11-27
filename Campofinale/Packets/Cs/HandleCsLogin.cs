@@ -193,6 +193,9 @@ namespace Campofinale.Packets.Cs
             session.Send(new PacketScSyncAllBitset(session));
             session.Send(new PacketScSyncAllMiniGame(session));
             session.Send(new PacketScFriendListSimpleSync(session));
+            session.Send(new PacketScFriendListQuery(session));
+            session.Send(new PacketScShopSync(session));
+            session.Send(new PacketScAchieveSync(session));
             string json = File.ReadAllText("93_ScSceneMapMarkSync.json");
             ScSceneMapMarkSync chapter = Newtonsoft.Json.JsonConvert.DeserializeObject<ScSceneMapMarkSync>(json);
             session.Send(ScMsgId.ScSceneMapMarkSync, chapter);
@@ -207,6 +210,12 @@ namespace Campofinale.Packets.Cs
             session.Send(new PacketScSpaceshipSync(session));
             session.Send(new PacketScSyncFullDungeonStatus(session));
             session.Send(new PacketScActivitySync(session));
+            session.Send(ScMsgId.ScDomainDevelopmentSystemSync, new ScDomainDevelopmentSystemSync() { });
+            session.Send(ScMsgId.ScSyncAllWiki, new ScSyncAllWiki()
+            {
+                
+            });
+            session.Send(ScMsgId.ScPaySyncCashShops, new ScPaySyncCashShops() { ShopMgr=new()});
             session.Send(new PacketScSnsGetChatList(session));
             session.Send(ScMsgId.ScSyncFullDataEnd, new ScSyncFullDataEnd());
             session.EnterScene();

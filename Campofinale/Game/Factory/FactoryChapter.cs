@@ -66,6 +66,7 @@ namespace Campofinale.Game.Factory
         public ScFactorySyncChapter ToProto()
         {
             blackboard = new();
+            
             ScFactorySyncChapter chapter = new()
             {
                 ChapterId = chapterId,
@@ -91,6 +92,11 @@ namespace Campofinale.Game.Factory
                     },
 
                 },
+                PendingPlace = new()
+                {
+                    
+                },
+                
             };
             blackboard.power.powerSaveCurrent = bandwidth;
             domainDataTable[chapterId].levelGroup.ForEach(levelGroup =>

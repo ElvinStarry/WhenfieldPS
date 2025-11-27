@@ -9,20 +9,31 @@ namespace Campofinale.Packets.Sc
 
         public PacketScFriendListSimpleSync(Player client) {
 
+           
             ScFriendListSimpleSync proto = new ScFriendListSimpleSync()
             {
+                
                 FriendList =
                 {
                     new ScdFriendFriendSimpleInfo()
                     {
                         AdventureLevel=1,
-                        Name="Campofinale",
-                        Online=true,    
-                        RoleId=(ulong)GameConstants.SERVER_UID.Item1,
-                        Signature="Campofinale Console",
-                        
+                        Name=client.nickname,
+                        Online=true,
+                        RoleId=(ulong)client.roleId,
+                        Signature="ayo",
+                        RemarkName=client.nickname,
+                        UserAvatarFrameId=3,
+                        UserAvatarId=8,
+                        ShortId="1",
+                        ThirdAccountData = new()
+                        {
+                            ThirdAccountDataType=HgThirdAccountType.AccountTypeDefault
+                        },
+                        LastLoginType=HgThirdAccountType.AccountTypeDefault
                     }
-                }
+                },
+                
                 
             };
            

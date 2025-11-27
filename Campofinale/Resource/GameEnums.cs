@@ -823,7 +823,9 @@ public enum EntityDataType // TypeDefIndex: 24999
         ReadActiveBlackbox = 49,
         ReadLevel = 50,
         FactroyPlacedBuilding = 51,
-        EnumMax = 52
+        EnumMax = 52,
+        UnlockUserAvatar = 55,
+        UnlockUserAvatarFrame = 56,
     }
 
     public enum UnlockSystemType

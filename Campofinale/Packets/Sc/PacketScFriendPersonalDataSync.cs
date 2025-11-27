@@ -13,6 +13,8 @@ namespace Campofinale.Packets.Sc
                 Data = new()
                 {
                     Signature="Campofinale!!",
+                    UserAvatarFrameId=3,
+                    UserAvatarId=8,
                     
                 }
 
