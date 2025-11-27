@@ -84,7 +84,7 @@ namespace Campofinale.Packets.Cs
             }
             ScLogin rsp = new()
             {
-                IsEnc = false,
+               
                 Uid = req.Uid,
                 IsFirstLogin = false,
                 IsReconnect=false,
@@ -93,14 +93,14 @@ namespace Campofinale.Packets.Cs
                 ServerTime=DateTime.UtcNow.ToUnixTimestampMilliseconds(),
             };
             byte[] encKey = GenerateRandomBytes(32);
-            string serverPublicKeyPem = req.ClientPublicKey.ToStringUtf8();
-            byte[] serverPublicKey = ConvertPemToBytes(serverPublicKeyPem);
-            byte[] encryptedEncKey = EncryptWithRsa(encKey, serverPublicKey);
+            //string serverPublicKeyPem = req.ClientPublicKey.ToStringUtf8();
+           // byte[] serverPublicKey = ConvertPemToBytes(serverPublicKeyPem);
+            //byte[] encryptedEncKey = EncryptWithRsa(encKey, serverPublicKey);
             byte[] serverEncrypNonce = GenerateRandomBytes(12);
            // rsp.ServerEncrypNonce = ByteString.CopyFrom(serverEncrypNonce);
            // rsp.ServerPublicKey = ByteString.CopyFrom(encryptedEncKey);
        
-            CSChaCha20 cipher = new CSChaCha20(encKey, serverEncrypNonce, 1);
+           // CSChaCha20 cipher = new CSChaCha20(encKey, serverEncrypNonce, 1);
             if (req.ClientVersion == GameConstants.GAME_VERSION || req.ClientVersion == GameConstants.GAME_VERSION_ANDROID)
             {
                 if (account == null)
