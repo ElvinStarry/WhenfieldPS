@@ -26,7 +26,6 @@ class Program
         string serverIp = "beyond-euandus-exhibition.gryphline.com"; 
         int serverPort = 30000;
         Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-
         IPAddress[] addresses = Dns.GetHostAddresses(serverIp);
 
         IPAddress ipAddress = addresses[0];
@@ -67,7 +66,8 @@ class Program
                             //ScNtfErrorCode p2 = ScNtfErrorCode.Parser.ParseFrom(packet.finishedBody);
                             //Console.WriteLine(JsonConvert.SerializeObject(p2));
                             string base642 = Convert.ToBase64String(packet.finishedBody);
-                            Console.WriteLine($"{(ScMsgId)packet.cmdId}: {base642}");
+                            
+                            Console.WriteLine($"{(ScMsgId)packet.cmdId}: HEAD:{packet.csHead.ToString()} BODY:{base642}");
                             break;
                         default:
                             string base64 = Convert.ToBase64String(packet.finishedBody);

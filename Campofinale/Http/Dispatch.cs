@@ -226,20 +226,45 @@ namespace Campofinale.Http
 
         
         
-        [StaticRoute(HttpServerLite.HttpMethod.GET, "/api/remote_config/get_remote_config/1003/prod-cbt3/default/default/server_config_EUAndUS")]
+        [StaticRoute(HttpServerLite.HttpMethod.POST, "/game/server/v1/server_list")]
         public static async Task server_config_EUAndUS(HttpContext ctx)
         {
             string requestBody = ctx.Request.DataAsString;
-            Console.WriteLine(requestBody);
-            string resp = "{\"addr\": \"" + Server.config.gameServer.accessAddress + "\", \"port\": " + Server.config.gameServer.accessPort + "}";
-
-
+           
+            object rspObj = new
+            {
+                msg = "OK",
+                status = 0,
+                type = "",
+                data = new
+                {
+                    serverList = new List<object>
+                    {
+                        new
+                        {
+                            serverId = "39",
+                            serverName = "Americas / Europe",
+                            serverDomain = "[{\"host\": \""+Server.config.gameServer.accessAddress+"\", \"port\": "+ Server.config.gameServer.accessPort +"}]",
+                            defaultChoose = true,
+                            extension= "{\"offsetSeconds\": -18000}"
+                        },
+                        new
+                        {
+                            serverId = "40",
+                            serverName = "Campofinale",
+                            serverDomain = "[{\"host\": \""+Server.config.gameServer.accessAddress+"\", \"port\": "+ Server.config.gameServer.accessPort +"}]",
+                            defaultChoose = true,
+                            extension= "{\"offsetSeconds\": -18000}"
+                        }
+                    }
+                }
+            };
 
             ctx.Response.StatusCode = 200;
 
             ctx.Response.ContentType = "application/json";
 
-            await ctx.Response.SendAsync(resp);
+            await ctx.Response.SendAsync(JsonConvert.SerializeObject(rspObj));
         }
         [StaticRoute(HttpServerLite.HttpMethod.GET, "/game/user/v1/query_zone_whitelist")]
         public static async Task query_zone_whitelist(HttpContext ctx)
