@@ -50,7 +50,6 @@ namespace Campofinale.Database
         public List<GameMission> missions = new();
         public List<GameQuest> quests = new();
         public string curMission = "e0m0";
-        public BlocMissionState blocMissionState = new();
     }
     public class Account
     {

@@ -9,15 +9,6 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Campofinale.Game.MissionSys
 {
-    public class BlocMissionState
-    {
-        public Dictionary<string, string> blocMissions = new();
-        public long rollCount;
-        public long nextRefreshTime;
-        public bool rewardGot;
-        public int completedNum;
-    }
-
     public class MissionSystem
     {
         private class MissionObjectiveBinding
@@ -37,7 +28,6 @@ namespace Campofinale.Game.MissionSys
         public List<GameMission> missions=new();
         public List<GameQuest> quests=new();
         public string curMission = "e0m0";
-        public BlocMissionState blocMissionState = new();
 
         public MissionSystem(Player o)
         {
@@ -250,7 +240,6 @@ namespace Campofinale.Game.MissionSys
                 curMission=curMission,
                 missions=missions,
                 quests=quests,
-                blocMissionState = blocMissionState,
             });
         }
 
@@ -409,7 +398,6 @@ namespace Campofinale.Game.MissionSys
                 }
                 missions = data.missions ?? missions;
                 quests = data.quests ?? quests;
-                blocMissionState = data.blocMissionState ?? blocMissionState;
             }
             NormalizeState();
         }
@@ -439,20 +427,6 @@ namespace Campofinale.Game.MissionSys
                     return quest;
                 })
                 .ToList();
-
-            blocMissionState ??= new BlocMissionState();
-            blocMissionState.blocMissions ??= new Dictionary<string, string>();
-            if (blocMissionState.blocMissions.Count == 0 && ResourceManager.blocMissionTable.Count > 0)
-            {
-                string defaultMission = ResourceManager.blocMissionTable.Values.First().missionId;
-                foreach (var bloc in ResourceManager.blocDataTable.Keys)
-                {
-                    if (!string.IsNullOrWhiteSpace(bloc))
-                    {
-                        blocMissionState.blocMissions.TryAdd(bloc, defaultMission);
-                    }
-                }
-            }
         }
         public GameMission GetMissionById(string id)
         {
@@ -825,34 +799,6 @@ namespace Campofinale.Game.MissionSys
                 missions.Remove(mission);
                 AddMission(missionId, MissionState.Available, notify: true);
             }
-        }
-
-        public ScSyncBlocMissionInfo BuildBlocMissionInfo()
-        {
-            bool hadAssignments = blocMissionState?.blocMissions?.Count > 0;
-            NormalizeState();
-            if (!hadAssignments && blocMissionState.blocMissions.Count > 0)
-            {
-                Save();
-            }
-
-            ScSyncBlocMissionInfo info = new()
-            {
-                RewardGot = blocMissionState.rewardGot,
-                RollCount = blocMissionState.rollCount,
-                NextRefreshTine = blocMissionState.nextRefreshTime,
-                CompletedNum = blocMissionState.completedNum,
-            };
-
-            foreach (var pair in blocMissionState.blocMissions)
-            {
-                if (!info.BlocMissions.ContainsKey(pair.Key))
-                {
-                    info.BlocMissions.Add(pair.Key, pair.Value);
-                }
-            }
-
-            return info;
         }
 
         private void EvaluateMissionCompletionForQuest(string questId)
