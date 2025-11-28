@@ -5020,17 +5020,6 @@ message ScSceneTriggerClientMissionEvent {
   string event_name = 2;
 }
 
-message CsRollBlocMission {
-  string bloc_id = 1;
-}
-
-message ScRollBlocMission {
-  string bloc_id = 1;
-  string mission_id = 2;
-  int64 roll_count = 3;
-  int64 next_refresh_tine = 4;
-}
-
 message ScSyncBlocMissionInfo {
   map<string, string> bloc_missions = 1;
   bool reward_got = 2;
