@@ -62,40 +62,16 @@ Campofinale is a experimental server implementation for a certain factory buildi
     };
     ```
     By Xannix
-    Or you can use the mitmproxy command:
+    Or you can use the mitmproxy (preferred) command:
 
     ```shell
     mitmproxy -s ak.py
     ```
 
-    ak.py:
+    Get ak.py from [here](https://git.teamstardust.org/Campofinale/Campofinale/src/branch/development/docs/ak.py)
+    
+6. Run *Fiddler Classic* - it should start with the new *Custom Rules script* (you can check it in the *FiddlerScript* tab) (Ignore this step if you're using mitmproxy)
 
-    ```py
-    import mitmproxy
-    from mitmproxy import ctx, http
-    class EndFieldModifier:
-        def requestheaders(self,flow: mitmproxy.http.HTTPFlow):
-            if "gryphline.com" in flow.request.host or "hg-cdn.com" in flow.request.host:
-                if flow.request.method=="CONNECT":
-                    return
-                
-                flow.request.scheme="http"
-                flow.request.cookies.update({
-                    "OriginalHost":flow.request.host,
-                    "OriginalUrl":flow.request.url
-                })
-                flow.request.host="localhost"
-                flow.request.port=5000
-                ctx.log.info("URL:"+flow.request.url)
-                
-                
-                
-    addons=[
-        EndFieldModifier()
-    ]
-    ```
-
-6. Run *Fiddler Classic* - it should start with the new *Custom Rules script* (you can check it in the *FiddlerScript* tab)
 7. Run the Game Client and start to play! (Note: Only OS client is supported for now)
 8. You must create an account using `account create (username)` in the server console, then login in the game with an email like `(username)@randomemailformathere.whatyouwant`. There is no password so you can input a random password for its field.
 
