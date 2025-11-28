@@ -186,7 +186,6 @@ namespace Campofinale.Packets.Cs
             session.Send(ScMsgId.ScSettlementSyncAll, settlements);
             session.Send(new PacketScSyncAllRoleScene(session));
             session.Send(new PacketScGameMechanicsSync(session));
-            session.Send(new PacketScSyncAllBloc(session));
             session.Send(new PacketScSyncWallet(session));
             session.Send(new PacketScSyncAllGameVar(session));
             session.Send(new PacketScSyncAllUnlock(session));

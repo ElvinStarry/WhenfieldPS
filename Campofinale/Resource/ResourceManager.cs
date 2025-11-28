@@ -31,16 +31,12 @@ namespace Campofinale.Resource
         public static Dictionary<string, CharacterTable> characterTable = new(); //
         public static Dictionary<string, SystemJumpTable> systemJumpTable = new(); //
         public static Dictionary<string, SettlementBasicDataTable> settlementBasicDataTable = new();
-        public static Dictionary<string, BlocMissionTable> blocMissionTable = new();
-        public static BlocMissionConst blocMissionConst = new();
         public static MissionAreaTable missionAreaTable = new(); //
         public static Dictionary<string, DialogTextTable> dialogTextTable = new();
         public static Dictionary<string, GameSystemConfigTable> gameSystemConfigTable = new();
         public static Dictionary<string, WikiGroupTable> wikiGroupTable = new();
-        public static Dictionary<string, object> blocUnlockTable = new();
         public static Dictionary<string, GameMechanicTable> gameMechanicTable = new();
         public static Dictionary<string, WeaponBasicTable> weaponBasicTable= new();
-        public static Dictionary<string, BlocDataTable> blocDataTable = new(); //
         public static Dictionary<string, ItemTable> itemTable = new();
         public static Dictionary<string, DomainDataTable> domainDataTable = new();
         public static Dictionary<string, CollectionTable> collectionTable = new();
@@ -117,17 +113,13 @@ namespace Campofinale.Resource
             strIdNumTable = JsonConvert.DeserializeObject<StrIdNumTable>(ReadJsonFile("TableCfg/StrIdNumTable.json"));
             systemJumpTable = JsonConvert.DeserializeObject<Dictionary<string, SystemJumpTable>>(ReadJsonFile("TableCfg/SystemJumpTable.json"));
             settlementBasicDataTable = JsonConvert.DeserializeObject<Dictionary<string, SettlementBasicDataTable>>(ReadJsonFile("TableCfg/SettlementBasicDataTable.json"));
-            blocMissionTable = JsonConvert.DeserializeObject<Dictionary<string, BlocMissionTable>>(ReadJsonFile("TableCfg/BlocMissionTable.json"));
-            blocMissionConst = JsonConvert.DeserializeObject<BlocMissionConst>(ReadJsonFile("TableCfg/BlocMissionConst.json")) ?? new BlocMissionConst();
             dialogTextTable = JsonConvert.DeserializeObject<Dictionary<string, DialogTextTable>>(ReadJsonFile("TableCfg/DialogTextTable.json"));
             gameSystemConfigTable = JsonConvert.DeserializeObject<Dictionary<string, GameSystemConfigTable>>(ReadJsonFile("TableCfg/GameSystemConfigTable.json"));
             wikiGroupTable = JsonConvert.DeserializeObject<Dictionary<string, WikiGroupTable>>(ReadJsonFile("TableCfg/WikiGroupTable.json"));
             dialogIdTable = JsonConvert.DeserializeObject<DialogIdTable>(ReadJsonFile("Json/GameplayConfig/DialogIdTable.json"));
-            blocUnlockTable = JsonConvert.DeserializeObject<Dictionary<string, object>>(ReadJsonFile("TableCfg/BlocUnlockTable.json"));
             gameMechanicTable= JsonConvert.DeserializeObject<Dictionary<string, GameMechanicTable>>(ReadJsonFile("TableCfg/GameMechanicTable.json"));
             weaponBasicTable = JsonConvert.DeserializeObject<Dictionary<string, WeaponBasicTable>>(ReadJsonFile("TableCfg/WeaponBasicTable.json"));
             missionAreaTable = JsonConvert.DeserializeObject<MissionAreaTable>(ReadJsonFile("Json/GameplayConfig/MissionAreaTable.json"));
-            blocDataTable = JsonConvert.DeserializeObject<Dictionary<string, BlocDataTable>>(ReadJsonFile("TableCfg/BlocDataTable.json"));
             itemTable = JsonConvert.DeserializeObject<Dictionary<string, ItemTable>>(ReadJsonFile("TableCfg/ItemTable.json"));
             domainDataTable = JsonConvert.DeserializeObject<Dictionary<string, DomainDataTable>>(ReadJsonFile("TableCfg/DomainDataTable.json"));
             collectionTable = JsonConvert.DeserializeObject<Dictionary<string, CollectionTable>>(ReadJsonFile("TableCfg/CollectionTable.json"));
@@ -582,18 +574,6 @@ namespace Campofinale.Resource
         public class EquipSuitTable
         {
             public List<string> equipList;
-        }
-        public class BlocMissionTable
-        {
-            public string missionId;
-
-        }
-        public class BlocMissionConst
-        {
-            public int addRefreshNumDuration;
-            public string livenessMissionId;
-            public int maxBlocMissionCompletedNum;
-            public int maxRefreshNum;
         }
         public class ExpItemDataMap
         {

@@ -39,7 +39,6 @@
             Main = 0,
             Char = 1,
             Factory = 2,
-            Bloc = 3,
             Hide = 4,
             Misc = 5,
             Dungeon = 6,
