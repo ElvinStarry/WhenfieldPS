@@ -20,15 +20,14 @@ namespace Campofinale.Packets.Sc
                     CurLeaderId = session.teams[session.teamIndex].leader,
                     TeamIndex = session.teamIndex,
                     TeamType = CharBagTeamType.Main
-
+                    
                 },
-                SceneGrade = session.sceneManager.GetCurScene().grade,
+                
                 
                 Detail = new()
                 {
                     TeamIndex = session.teamIndex,
                     
-                        
                 },
                 LevelScripts =
                 {
