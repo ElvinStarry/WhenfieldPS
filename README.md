@@ -1,7 +1,7 @@
 # Campofinale
 [EN](README.md) | [IT](docs/README_it-IT.md) | [RU](docs/README_ru-RU.md) | [CN](docs/README_zh-CN.md) | [NL](docs/README_nl-NL.md)
 
-Campofinale is a experimental server implementation for a certain factory building game.
+Campofinale is an experimental server implementation for a certain factory building game.
 
 ## Current Features
 
