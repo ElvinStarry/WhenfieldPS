@@ -299,39 +299,37 @@ namespace Campofinale.Resource
         public static void LoadLevelDatas()
         {
             Logger.Print("Loading LevelData resources");
-            string directoryPath = @"Json/LevelData";
+            string directoryPath = @"Json/LevelConfig";
             string[] jsonFiles = Directory.GetFiles(directoryPath, "*.json", SearchOption.AllDirectories);
             foreach(string json in jsonFiles)
             {
-                if (json.Contains("_lv_data"))
-                {
-                    continue;
-                }
+               
                 LevelScene data = JsonConvert.DeserializeObject<LevelScene>(ReadJsonFile(json));
                 data.levelData = new();
+                string[] dataPaths = Directory.GetFiles(@"Json\LevelData\"+data.id, "*.json", SearchOption.AllDirectories);
                 int i = 0;
-                foreach (string path in data.levelDataPaths)
+                foreach (string path in dataPaths)
                 {
                     
                     try
                     {
 
-                        LevelData data_lv = JsonConvert.DeserializeObject<LevelData>(File.ReadAllText("Json/" + path));
+                        LevelData data_lv = JsonConvert.DeserializeObject<LevelData>(File.ReadAllText(path));
+                        if (data_lv.levelScripts == null)
+                        {
+                            data_lv.levelScripts = new();
+                        }
                         data.levelData.Merge(data_lv);
                         i++;
                     }
                     catch (Exception ex)
                     {
-                        //Logger.PrintError(ex.Message);
+                        Console.WriteLine(ex.Message);
                         Logger.PrintWarn("Missing LevelData natural spawns file for scene " + data.mapIdStr + " path: " + path);
                         
                     }
                 }
-               
-                
-                
                 levelDatas.Add(data);
-               // Print("Loading " + data.id);
             }
 
             Logger.Print($"Loaded {levelDatas.Count} LevelData");
@@ -676,15 +674,20 @@ namespace Campofinale.Resource
         }
         public class LevelScene
         {
+            [JsonProperty("m_id")]
             public string id;
+            [JsonProperty("m_idNum")]
             public int idNum;
+            [JsonProperty("m_mapIdStr")]
             public string mapIdStr;
+            [JsonProperty("m_isSeamless")]
             public bool isSeamless;
+            [JsonProperty("m_defaultState")]
             public DefaultState defaultState=new();
-
+            [JsonProperty("m_playerInitPos")]
             public Vector3f playerInitPos;
+            [JsonProperty("m_playerInitRot")]
             public Vector3f playerInitRot;
-            public List<string> levelDataPaths;
             [JsonIgnore]
             public LevelData levelData;
 
@@ -847,7 +850,7 @@ namespace Campofinale.Resource
                     public Vector3f scale;
                     public bool forceLoad;
                     public int level;
-                    public int dependencyGroupId;
+                    public ulong dependencyGroupId;
                     public List<ParamKeyValue> properties;
                     public Dictionary<InteractiveComponentType, List<ParamKeyValue>> componentProperties = new();
                 }
