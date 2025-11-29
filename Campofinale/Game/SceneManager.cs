@@ -344,7 +344,12 @@ namespace Campofinale.Game
             }
             if (sceneGrade == null)
             {
-                sceneGrade = new();
+                sceneGrade = new()
+                {
+                    monsterBaseLevel=1,
+                    grade=1,
+                    
+                };
             }
             lv_scene.levelData.interactives.ForEach(en =>
             {
@@ -363,7 +368,7 @@ namespace Campofinale.Game
                 };
                 entities.Add(entity);
             });
-            lv_scene.levelData.factoryRegions.ForEach(en =>
+            /*lv_scene.levelData.factoryRegions.ForEach(en =>
             {
                 if (GetOwner().noSpawnAnymore.Contains(en.levelLogicId) && sceneNumId!=87)
                 {
@@ -378,7 +383,7 @@ namespace Campofinale.Game
                 };
                 
                 entities.Add(entity);
-            });
+            });*/
             lv_scene.levelData.enemies.ForEach(en =>
             {
                 if(GetOwner().noSpawnAnymore.Contains(en.levelLogicId) && sceneNumId != 87) return;
