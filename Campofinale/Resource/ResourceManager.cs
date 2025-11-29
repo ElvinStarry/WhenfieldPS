@@ -603,7 +603,7 @@ namespace Campofinale.Resource
         public class AttributeModifier
         {
             public AttributeType attrType;
-            public double attrValue;
+            public List<double> attrValues;
             public ModifierType modifierType;
             public int modifyAttributeType;
         }
@@ -615,7 +615,7 @@ namespace Campofinale.Resource
             public int partType;
             public string suitID;
             public List<AttributeModifier> displayAttrModifiers; 
-            public List<AttributeModifier> attrModifiers;
+            public List<AttributeModifier> equipAttrModifiers;
             public AttributeModifier displayBaseAttrModifier;
         }
         public class WikiGroupTable
