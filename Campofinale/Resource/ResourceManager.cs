@@ -603,7 +603,7 @@ namespace Campofinale.Resource
         public class AttributeModifier
         {
             public AttributeType attrType;
-            public int attrValue;
+            public double attrValue;
             public List<double> attrValues;
             public ModifierType modifierType;
             public int modifyAttributeType;
