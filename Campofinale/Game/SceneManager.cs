@@ -400,7 +400,10 @@ namespace Campofinale.Game
             });
             lv_scene.levelData.npcs.ForEach(en =>
             {
-                
+                if (en.npcGroupId == null)
+                {
+                    en.npcGroupId = "";
+                }
                 if (en.npcGroupId.Contains("chr") && sceneNumId == 98) return;
                 EntityNpc entity = new(en.entityDataIdKey,ownerId,en.position,en.rotation, sceneNumId, en.levelLogicId)
                 {

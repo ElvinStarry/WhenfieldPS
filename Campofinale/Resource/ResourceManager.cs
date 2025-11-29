@@ -1084,8 +1084,8 @@ namespace Campofinale.Resource
                     }
                     public class ParamValueAtom
                     {
-                        public long valueBit64;
-                        public string valueString;
+                        public long valueBit64=0;
+                        public string valueString ="";
 
                         public float ToFloat()
                         {
