@@ -243,6 +243,16 @@ namespace Campofinale.Game
                     grade= grade
                 });
             }
+            List<Scene> Todelete = new();
+            foreach(Scene scene in scenes)
+            {
+                LevelScene sc = ResourceManager.GetLevelData(scene.sceneNumId);
+                if(sc==null) Todelete.Add(scene);
+            }
+            foreach(Scene scene in Todelete)
+            {
+                scenes.Remove(scene);
+            }
         }
 
         public void UnloadAllByConfigPath(string sceneConfigPath)

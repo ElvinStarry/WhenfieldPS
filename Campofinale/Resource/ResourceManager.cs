@@ -305,6 +305,7 @@ namespace Campofinale.Resource
             {
                
                 LevelScene data = JsonConvert.DeserializeObject<LevelScene>(ReadJsonFile(json));
+                //Logger.Print($"{data.id}: {data.idNum}, {data.defaultState.exportedSceneConfigPath}");
                 data.levelData = new();
                 string[] dataPaths = Directory.GetFiles(@"Json\LevelData\"+data.id, "*.json", SearchOption.AllDirectories);
                 int i = 0;
