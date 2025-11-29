@@ -26,20 +26,20 @@ Campofinale is an experimental server implementation for a certain factory build
 
     1. Make sure to setup Mitmproxy accordingly, and of course install the certificate system-wide.
     
-2. Download the [precompiled build](https://github.com/Campofinale/Campofinale/releases/latest) or build it by yourself
-3. Put the `Json`, `TableCfg` and `DynamicAssets` folders inside the `Campofinale.exe` folder (you can download a copy [here](https://github.com/PotRooms/EndFieldData/tree/main))
-4. Run the server (`Campofinale.exe`)
+2. Download the [precompiled build](https://git.teamstardust.org/Campofinale/Campofinale/releases/latest) or build it by yourself
+3. Put the `Json`, `TableCfg` folder inside the `Campofinale.exe` folder (you can download a copy [here](https://git.teamstardust.org/Campofinale/EndfieldData)) | Also get `DynamicAssets` from [here](https://git.teamstardust.org/Campofinale/EndfieldData-Archive/src/branch/main/0.5.28/DynamicAssets) and put them in the same folder as `Campofinale.exe`
+4. Run the server `Campofinale.exe`
 5. Proxy post-install setup
 
     ```shell
-    mitmproxy -s ak.py
+    mitmproxy -s ak.py --mode local:EndfieldTBeta2
     ```
 
-    Get ak.py from [here](https://git.teamstardust.org/Campofinale/Campofinale/src/branch/development/docs/ak.py)
+   Get ak.py from [here](https://git.teamstardust.org/Campofinale/Campofinale/src/branch/development/docs/ak.py)
     
 6. Run the Mitmproxy command (from above) if you haven't
 
-7. Run the Game Client and start to play! (Note: Only OS client is supported for now)
+7. Patch the game client (get the patch from our Discord) - Run launcher.exe after (Note: Only OS client is supported for now)
 8. You must create an account using `account create (username)` in the server console, then login in the game with an email like `(username)@randomemailformathere.whatyouwant`. There is no password so you can input a random password for its field.
 
 ## Additional Information
