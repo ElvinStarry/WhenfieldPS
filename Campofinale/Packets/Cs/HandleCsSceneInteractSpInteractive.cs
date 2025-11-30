@@ -21,10 +21,28 @@ namespace Campofinale.Packets.Cs
                 LevelScene scene = ResourceManager.GetLevelData(entity.sceneNumId);
                 switch (req.OpType)
                 {
-                    case SpInteractiveOpType.CommonActive:
-                        session.bitsetManager.AddValue(Resource.BitsetType.InteractiveActive, ResourceManager.levelShortIdTable[scene.id].ids[(long)entity.guid]);
+                    case SpInteractiveOpType.DefaultInteract:
+                    case SpInteractiveOpType.SetState:
+                        try
+                        {
+                            session.bitsetManager.AddValue(BitsetType.InteractiveTwoState, ResourceManager.levelShortIdTable[scene.id].ids[(long)entity.guid]);
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.PrintError(e.Message);
+                        }
+                        try
+                        {
+                            session.bitsetManager.AddValue(BitsetType.InteractiveActive, ResourceManager.levelShortIdTable[scene.id].ids[(long)entity.guid]);
+                        }
+                        catch(Exception e)
+                        {
+                            Logger.PrintError(e.Message);
+                        }
+                        
                         break;
-                    case SpInteractiveOpType.DoodadCommonPick:
+                    
+                    case SpInteractiveOpType.PickDropPackItem:
                         EntityInteractive interactive = entity as EntityInteractive;
                         if (interactive.templateId== "int_doodad_flower_2")
                         {
@@ -37,6 +55,7 @@ namespace Campofinale.Packets.Cs
                         session.sceneManager.KillEntity(interactive.guid, true, 1);
                         break;
                     default:
+                        Logger.PrintWarn($"Unimplemented SpInteractiveOpType.{(SpInteractiveOpType)req.OpType}");
                         break;
                 }
                 session.Send(new PacketScSyncAllBitset(session));

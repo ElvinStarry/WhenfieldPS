@@ -39,9 +39,13 @@ namespace Campofinale.Game
             {
                 AddValue(BitsetType.LevelHaveBeen, v.idNum);
             }
-            foreach (int v in readActiveBlackbox.ConvertToIntValues())
+            foreach (var v in levelShortIdTable.Values)
             {
-                AddValue(BitsetType.InteractiveTwoState, v);
+                foreach(int vl in v.ids.Values)
+                {
+                    AddValue(BitsetType.InteractiveActive, vl);
+                }
+                
             }
             foreach (int v in strIdNumTable.char_doc_id.dic.Values)
             {

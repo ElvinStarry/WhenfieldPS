@@ -6681,19 +6681,20 @@ message CsSpaceshipGrowCabinCancel {
 message CsSceneInteractSpInteractive {
   uint64 obj_id = 1;
   SpInteractiveOpType op_type = 2;
-  oneof op_payload {
-    CsdSpInteractiveDoodadCommonPick doodad_common_pick = 10;
-    CsdSpInteractiveDoodadCommonBreak doodad_common_break = 11;
-    CsdSpInteractiveCommonActive common_active = 12;
-  }
+  uint64 operateCharId = 3;
+  uint64 newHpRatio = 5;
+  string itemId = 6;
+  int32 state = 7;
+  repeated bool availableList = 8;
 }
 
 enum SpInteractiveOpType {
-  SP_INTERACTIVE_OP_TYPE_NONE = 0;
-  DOODAD_COMMON_PICK = 1;
-  DOODAD_COMMON_BREAK = 2;
-  COMMON_ACTIVE = 3;
-  SP_INTERACTIVE_OP_TYPE_MAX = 4;
+  DefaultInteract = 0;
+  PickDropPackItem = 1;
+  DoodadCommonBreak = 2;
+  SetState = 3;
+  ResetSwitch=4;
+  UpdateAvailableList = 5;
 }
 
 message CsdSpInteractiveDoodadCommonPick {
