@@ -32,7 +32,7 @@ Campofinale is an experimental server implementation for a certain factory build
 5. Proxy post-install setup
 
     ```shell
-    mitmproxy -s ak.py --mode local:EndfieldTBeta2
+    mitmweb -s ak.py --mode local:EndfieldTBeta2 --set stream_large_bodies=3m
     ```
 
    Get ak.py from [here](https://git.teamstardust.org/Campofinale/Campofinale/src/branch/development/docs/ak.py)
