@@ -122,9 +122,9 @@ namespace Campofinale.Database
             //These transactions never need to be changed
             collection.InsertOne(transaction);
         }
-        public List<GachaTransaction> LoadGachaTransaction(ulong roleId, string templateId)
+        public List<GachaTransaction> LoadGachaTransaction(ulong roleId, int type)
         {
-            return _database.GetCollection<GachaTransaction>("gachas").Find(c => c.ownerId== roleId && c.gachaTemplateId==templateId).ToList();
+            return _database.GetCollection<GachaTransaction>("gachas").Find(c => c.ownerId== roleId && c.bannerType == type).ToList();
         }
         public static string GenerateToken(int length)
         {

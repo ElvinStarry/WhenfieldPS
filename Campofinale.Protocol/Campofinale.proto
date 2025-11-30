@@ -3991,6 +3991,13 @@ message ScdGachaPoolRoleData {
   int32 soft_guarantee_progress = 6;
   int32 star5_soft_guarantee_progress = 7;
   int32 up_got_count = 8;
+  int64 timestampToClose = 9;
+  repeated int32 cumulativeRewardList = 10;
+  int32 freeTenPullCount = 11;
+  map<int32, bool> onceAutoRewardCheckMap = 12;
+  map<int32, bool> intervalAutoRewardCheckMap = 13;
+  int32 choicePackCount = 14;
+  int32 star6GotCount = 15;
 }
 
 message ScdGachaPoolCategoryRoleData {
@@ -3998,6 +4005,7 @@ message ScdGachaPoolCategoryRoleData {
   int32 total_pull_count = 2;
   int32 soft_guarantee_progress = 3;
   int32 star5_soft_guarantee_progress = 4;
+  int32 star6GotCount = 5;
 }
 
 message ScdGachaPoolMgr {
