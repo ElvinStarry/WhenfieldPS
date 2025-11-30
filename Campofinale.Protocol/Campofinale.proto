@@ -1417,7 +1417,7 @@ message EquipData {
   uint64 equipid = 1;
   int32 templateid = 2;
   uint64 equip_char_id = 3;
-  repeated EquipAttr attrs = 4;
+  map<int32, int32> enhance = 8;
 }
 
 message GemData {
@@ -1453,6 +1453,8 @@ message ItemInst {
   uint64 inst_id = 1;
   bool is_lock = 101;
   bool is_new = 102;
+  ItemFlag item_flag = 103;
+  int64 expire_ts = 104;
   oneof inst_impl {
     EquipData equip = 2;
     GemData gem = 3;
@@ -1460,7 +1462,11 @@ message ItemInst {
     ItemInstEmpty empty = 31;
   }
 }
-
+enum ItemFlag {
+  ItemNormal = 0;
+  ItemLock = 1;
+  ItemTrash = 2;
+}
 message ItemInstEmpty {
 }
 
@@ -2325,9 +2331,7 @@ message CsEquipEnhance {
 
 message ScEquipEnhance {
   uint64 equip_inst_id = 1;
-  repeated uint32 enhance = 2;
-  repeated EquipAttr enhance_attrs = 3;
-  EquipAttr base_attr = 4;
+  map<int32,int32> enhance = 2;
 }
 
 message CsEquipProduce {
