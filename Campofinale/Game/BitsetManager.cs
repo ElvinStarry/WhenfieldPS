@@ -35,14 +35,14 @@ namespace Campofinale.Game
                 2267743508524
             };
             LongBitSet readActiveBlackbox = new LongBitSet(hardcodedReadActiveBlackbox.ToArray());
-            foreach (int v in  strIdNumTable.chapter_map_id.dic.Values)
+            foreach (var v in ResourceManager.levelDatas)
             {
-                AddValue(BitsetType.LevelHaveBeen, v);
+                AddValue(BitsetType.LevelHaveBeen, v.idNum);
             }
-            /*foreach (int v in readActiveBlackbox.ConvertToIntValues())
+            foreach (int v in readActiveBlackbox.ConvertToIntValues())
             {
-                AddValue(BitsetType.ReadActiveBlackbox, v);
-            }*/
+                AddValue(BitsetType.InteractiveTwoState, v);
+            }
             foreach (int v in strIdNumTable.char_doc_id.dic.Values)
             {
                 AddValue(BitsetType.CharDoc, v);
@@ -55,8 +55,12 @@ namespace Campofinale.Game
             {
                 AddValue(BitsetType.Wiki, v);
             }
-
+            foreach (int v in ResourceManager.strIdNumTable.wiki_id.dic.Values)
+            {
+                AddValue(BitsetType.Wiki, v);
+            }
             AddValue(BitsetType.UnlockUserAvatar, 8);
+            
             AddValue(BitsetType.UnlockUserAvatarFrame, 3);
         }
         public void InitBitsets()
