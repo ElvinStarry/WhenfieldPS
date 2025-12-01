@@ -37,7 +37,7 @@
     <None Update="44_ScSyncAllMission.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="53_ScFactorySync.json">
+    <None Update="5146ea1d8f3ce3f0.bytes">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="92_ScSyncAllBitset.json">
@@ -73,10 +73,19 @@
 	<None Update="ScFactorySyncChapter.json">
 	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	</None>
+	<None Update="Signchecker.dll">
+	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	</None>
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Data\PlayerConsole\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Signchecker">
+      <HintPath>Signchecker.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>
