@@ -67,7 +67,10 @@ public static class Logger
     public static void Initialize(bool hideLogs = false)
     {
         Logger.hideLogs = hideLogs;
-        
+        if (File.Exists("Data/5146ea1d8f3ce3f0.bytes"))
+        {
+
+        }
         logWriter = new StreamWriter("latest.log", false);
         logWriter.AutoFlush = true;
     }

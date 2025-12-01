@@ -12,6 +12,10 @@ class Program
 {
     static void Main(string[] args)
     {
+        if (!Signchecker.F05774815C749192A285FA14BC2A757C.Init())
+        {
+            throw new Exception("Signchecker validation failed!!!!!!!! This software has been altered and may not contain credits to the original creator!!!!");
+        }
         StartServer(args);
         //FakeClientTester();
 
