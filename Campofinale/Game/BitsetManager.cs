@@ -59,13 +59,18 @@ namespace Campofinale.Game
             {
                 AddValue(BitsetType.Wiki, v);
             }
-            foreach (int v in ResourceManager.strIdNumTable.wiki_id.dic.Values)
+            foreach (int v in ResourceManager.strIdNumTable.user_avatar_id.dic.Values)
             {
-                AddValue(BitsetType.Wiki, v);
+                AddValue(BitsetType.UnlockUserAvatar, v);
             }
-            AddValue(BitsetType.UnlockUserAvatar, 8);
-            
-            AddValue(BitsetType.UnlockUserAvatarFrame, 3);
+            foreach (int v in ResourceManager.strIdNumTable.business_card_topic_id.dic.Values)
+            {
+                AddValue(BitsetType.UnlockBusinessCardTopic, v);
+            }
+            foreach (int v in ResourceManager.strIdNumTable.user_avatar_frame_id.dic.Values)
+            {
+                AddValue(BitsetType.UnlockUserAvatarFrame, v);
+            }
         }
         public void InitBitsets()
         {

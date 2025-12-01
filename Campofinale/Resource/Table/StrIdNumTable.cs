@@ -15,5 +15,8 @@ namespace Campofinale.Resource.Table
         public StrIdDic map_mark_temp_id;
         public StrIdDic wiki_id;
         public StrIdDic client_game_var_string_id;
+        public StrIdDic user_avatar_id;
+        public StrIdDic business_card_topic_id;
+        public StrIdDic user_avatar_frame_id;
     }
 }
