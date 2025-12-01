@@ -12,10 +12,12 @@ Campofinale is an experimental server implementation for a certain factory build
 * Save data with MongoDB
 * Combat system
 
+
 ## TODO
 * Android Support
 * Mission System
 * Working buffs
+* Fixing Factory system for new versions
 
 ## Installation Steps (Windows)
 
@@ -32,14 +34,14 @@ Campofinale is an experimental server implementation for a certain factory build
 5. Proxy post-install setup
 
     ```shell
-    mitmproxy -s ak.py --mode local:EndfieldTBeta2
+    mitmweb -s ak.py --mode local:EndfieldTBeta2 --set stream_large_bodies=3m
     ```
 
    Get ak.py from [here](https://git.teamstardust.org/Campofinale/Campofinale/src/branch/development/docs/ak.py)
     
 6. Run the Mitmproxy command (from above) if you haven't
 
-7. Patch the game client (get the patch from our Discord) - Run launcher.exe after (Note: Only OS client is supported for now)
+7. Patch the game client (get the patch from our Discord) - Run launcher.exe after (Note: Only OS client is supported for now, CN CBT3 could work too because offsets are the same)
 8. You must create an account using `account create (username)` in the server console, then login in the game with an email like `(username)@randomemailformathere.whatyouwant`. There is no password so you can input a random password for its field.
 
 ## Additional Information
@@ -54,7 +56,7 @@ If you want to open the in-game console, go to `Settings -> Platform & Account -
 
 ## Discord for support
 
-If you want to discuss, ask for support or help with this project, join our [Discord Server](https://discord.gg/YZGYtAxeZk)!
+If you want to discuss, ask for support or help with this project, join our [Discord Server](https://discord.gg/HdXZY2Q9vs)!
 
 ## Note
 
